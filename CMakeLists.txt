@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(research)
 
-set(ENGINE_DIR "D:/research/engine")
+set(ENGINE_DIR "D:/GeometryLab/engine")
 message(status ${ENGINE_DIR})
 set(EIGEN_DIR "${ENGINE_DIR}/eigen")
 add_subdirectory("src/visual_debugger")
