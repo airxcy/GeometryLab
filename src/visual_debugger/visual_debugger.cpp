@@ -36,6 +36,7 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 	return res;
 }
 
+
 int main(int argc, char** argv)
 {
 	Visual vis;

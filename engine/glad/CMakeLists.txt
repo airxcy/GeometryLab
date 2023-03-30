@@ -1,0 +1,5 @@
+project(glad)
+file(GLOB SRC  src/*.c)
+file(GLOB_RECURSE INCLUDES  include/*.h)
+add_library(${PROJECT_NAME} ${SRC} ${INCLUDES})
+target_include_directories(${PROJECT_NAME} PUBLIC include)
