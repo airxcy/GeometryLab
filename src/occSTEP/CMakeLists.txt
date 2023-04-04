@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.1)
-project(discreteDomain)
+project(occSTEP)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+message("CMAKE_MODULE_PATH" ${CMAKE_MODULE_PATH})
 set(CMAKE_BUILD_TYPE Release)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -19,11 +20,45 @@ add_subdirectory(${ENGINE_DIR}/geometrycentral GEOMETRYCENTRAL)
 add_subdirectory(${ENGINE_DIR}/stb STB)
 add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
 
+# execute_process(COMMAND "cd ../engine/OCCT/build")
+# execute_process(COMMAND "cmake .. --build --install")
+# execute_process(COMMAND "cmake  --build --install")
+# execute_process(COMMAND "cd D:/projects/GeometryLab/build")
+# Open CASCADE Technology
+
+set(OpenCASCADE_DIR ${ENGINE_DIR}/OCC)
+find_package (OpenCASCADE REQUIRED)
+if (NOT OpenCASCADE_FOUND)
+  message (FATAL_ERROR "coult not find OpenCASCADE, please set OpenCASCADE_DIR variable" )
+else()
+  message (STATUS "Using OpenCASCADE from \"${OpenCASCADE_INSTALL_PREFIX}\"" )
+  message (STATUS "OpenCASCADE_INCLUDE_DIR=${OpenCASCADE_INCLUDE_DIR}")
+  message (STATUS "OpenCASCADE_LIBRARY_DIR=${OpenCASCADE_LIBRARY_DIR}")
+  INCLUDE_DIRECTORIES(${OpenCASCADE_INCLUDE_DIR})
+endif()
+
+SET(OpenCASCADE_LIBS 
+  TKernel
+  TKService
+  TKV3d
+  TKOpenGl
+  TKBRep
+  TKGeomBase
+  TKGeomAlgo
+  TKG3d
+  TKG2d
+  TKTopAlgo
+  TKPrim
+)
+
 
 #file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
+
+configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll)
+# execute_process(COMMAND ${OpenCASCADE_BINARY_DIR} copy "${ENGINE_DIR}/freetype/bin/freetype.dll" ${OpenCASCADE_BINARY_DIR})
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
 add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include)
-target_link_libraries(${PROJECT_NAME} polyscope geometry-central)
-
+target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES})
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${OpenCASCADE_BINARY_DIR}")
