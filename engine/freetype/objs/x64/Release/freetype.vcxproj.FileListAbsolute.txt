@@ -1,0 +1,1 @@
+D:\projects\GeometryLab\engine\freetype\objs\x64\Release\freetype.dll

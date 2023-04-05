@@ -54,7 +54,7 @@ SET(OpenCASCADE_LIBS
 
 #file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
 
-configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll)
+configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll COPYONLY)
 # execute_process(COMMAND ${OpenCASCADE_BINARY_DIR} copy "${ENGINE_DIR}/freetype/bin/freetype.dll" ${OpenCASCADE_BINARY_DIR})
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
