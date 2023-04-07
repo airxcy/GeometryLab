@@ -41,8 +41,6 @@ public:
   //! Main application entry point.
   void run();
 
-private:
-
   //! Create GLFW window.
   void initWindow (int theWidth, int theHeight, const char* theTitle);
 
@@ -58,8 +56,7 @@ private:
   //! Clean up before .
   void cleanup();
 
-//! @name GLWF callbacks
-private:
+
   //! Window resize event.
   void onResize (int theWidth, int theHeight);
 
@@ -72,8 +69,6 @@ private:
   //! Mouse move event.
   void onMouseMove (int thePosX, int thePosY);
 
-//! @name GLWF callbacks (static functions)
-private:
 
   //! GLFW callback redirecting messages into Message::DefaultMessenger().
   static void errorCallback (int theError, const char* theDescription);
@@ -101,7 +96,6 @@ private:
   static void onMouseMoveCallback (GLFWwindow* theWin, double thePosX, double thePosY)
   { toView(theWin)->onMouseMove ((int )thePosX, (int )thePosY); }
 
-private:
 
   Handle(GlfwOcctWindow) myOcctWindow;
   Handle(V3d_View) myView;

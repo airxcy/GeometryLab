@@ -39,16 +39,22 @@ endif()
 
 SET(OpenCASCADE_LIBS 
   TKernel
+  TKMath
+  TKBRep
+  TKXSBase
   TKService
   TKV3d
   TKOpenGl
-  TKBRep
   TKGeomBase
   TKGeomAlgo
   TKG3d
   TKG2d
   TKTopAlgo
   TKPrim
+  TKIGES
+  TKSTEP
+  TKVRML
+  TKLCAF
 )
 
 
