@@ -19,6 +19,49 @@
 #include <iostream>
 
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+void initUI(const Handle(GlfwOcctWindow)&  myOcctWindow)
+{
+    // Setup Dear ImGui context
+    const char* glsl_version = "#version 330";
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(myOcctWindow->getGlfwWindow(), true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+}
+
+void processUI(const Handle(GlfwOcctWindow)& myOcctWindow)
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    Standard_Integer w, h;
+    myOcctWindow->Size(w, h);
+    ImGui::NewFrame();
+    ImGui::SetNextWindowPos({ (float)w-80, 0 });
+    ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoBackground);
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1,0,0,1));
+    ImGui::Button("classify");
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void cleanupUI()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
+
 
 namespace
 {
@@ -154,6 +197,8 @@ void GlfwOcctView::initViewer()
     }
 
     Handle(OpenGl_GraphicDriver) aGraphicDriver = new OpenGl_GraphicDriver(myOcctWindow->GetDisplay(), false);
+    aGraphicDriver->SetBuffersNoSwap(true);
+
     Handle(V3d_Viewer) aViewer = new V3d_Viewer(aGraphicDriver);
     aViewer->SetDefaultLights();
     aViewer->SetLightOn();
@@ -164,6 +209,9 @@ void GlfwOcctView::initViewer()
     myView->SetWindow(myOcctWindow, myOcctWindow->NativeGlContext());
     myView->ChangeRenderingParams().ToShowStats = true;
     myContext = new AIS_InteractiveContext(aViewer);
+
+    aGraphicDriver->SetBuffersNoSwap(true);
+    initUI(myOcctWindow);
 }
 
 // ================================================================
@@ -187,6 +235,7 @@ void GlfwOcctView::initDemoScene()
     Standard_Integer NbRoots = reader.NbRootsForTransfer();
     Standard_Integer num = reader.TransferRoots();
     TopoDS_Shape shape = reader.OneShape();
+    
     Handle(AIS_TexturedShape) aisShape = new AIS_TexturedShape(shape);
     myContext->Display(aisShape, AIS_Shaded, 0, false);
 
@@ -208,6 +257,7 @@ void GlfwOcctView::initDemoScene()
 // Function : mainloop
 // Purpose  :
 // ================================================================
+
 void GlfwOcctView::mainloop()
 {
     while (!glfwWindowShouldClose(myOcctWindow->getGlfwWindow()))
@@ -219,6 +269,9 @@ void GlfwOcctView::mainloop()
         if (!myView.IsNull())
         {
             FlushViewEvents(myContext, myView, true);
+            processUI(myOcctWindow);
+            glfwSwapBuffers(myOcctWindow->getGlfwWindow());
+
         }
     }
 }
@@ -300,6 +353,8 @@ void GlfwOcctView::onMouseMove(int thePosX, int thePosY)
         UpdateMousePosition(aNewPos, PressedMouseButtons(), LastMouseFlags(), false);
     }
 }
+
+
 
 
 int main (int, char**)
