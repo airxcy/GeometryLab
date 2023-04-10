@@ -23,7 +23,7 @@
 #define _GlfwOcctView_Header
 
 #include "GlfwOcctWindow.h"
-
+#include "AIS_Triangulation.hxx"
 #include <AIS_InteractiveContext.hxx>
 #include <AIS_ViewController.hxx>
 #include <V3d_View.hxx>
@@ -38,11 +38,8 @@ public:
   //! Destructor.
 	~GlfwOcctView();
 
-  //! Main application entry point.
-  void run();
-
   //! Create GLFW window.
-  void initWindow (int theWidth, int theHeight, const char* theTitle);
+  GLFWwindow* initWindow (int theWidth, int theHeight, const char* theTitle);
 
   //! Create 3D Viewer.
   void initViewer();
@@ -50,8 +47,12 @@ public:
   //! Fill 3D Viewer with a DEMO items.
   void initDemoScene();
 
+  void addShape(TopoDS_Shape& shape);
+
+
+  void addTri(Handle(Poly_Triangulation) tri);
   //! Application event loop.
-  void mainloop();
+  void Flush();
 
   //! Clean up before .
   void cleanup();

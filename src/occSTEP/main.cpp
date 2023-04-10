@@ -1,167 +1,24 @@
 #include "GlfwOcctView.h"
+#include "STEPCAFControl_Reader.hxx"
+#include "Poly_CoherentTriangulation.hxx"
+#include "TopExp_Explorer.hxx"
+#include "TopoDS.hxx"
+#include "TopoDS_Face.hxx"
+#include "BRep_Tool.hxx"
 
-#include <AIS_Shape.hxx>
-#include <Aspect_Handle.hxx>
-#include <Aspect_DisplayConnection.hxx>
-#include <BRepPrimAPI_MakeBox.hxx>
-#include <BRepPrimAPI_MakeCone.hxx>
-#include <Message.hxx>
-#include <Message_Messenger.hxx>
-#include <OpenGl_GraphicDriver.hxx>
-#include <TopAbs_ShapeEnum.hxx>
-#include <STEPCAFControl_Reader.hxx>
-#include <STEPCAFControl_Writer.hxx>
-#include "AIS_TexturedShape.hxx"
-#include "AIS_Shape.hxx"
-#include "AIS.hxx"
-#include "AIS_InteractiveContext.hxx"
-
-#include <iostream>
-
-#include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <GLFW/glfw3.h>
 
-void initUI(const Handle(GlfwOcctWindow)&  myOcctWindow)
+#include <unordered_map>
+
+
+GlfwOcctView anApp;
+GLFWwindow* GLFWwin;
+
+void init()
 {
-    // Setup Dear ImGui context
-    const char* glsl_version = "#version 330";
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    // Setup Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(myOcctWindow->getGlfwWindow(), true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-
-}
-
-void processUI(const Handle(GlfwOcctWindow)& myOcctWindow)
-{
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    Standard_Integer w, h;
-    myOcctWindow->Size(w, h);
-    ImGui::NewFrame();
-    ImGui::SetNextWindowPos({ (float)w-80, 0 });
-    ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoBackground);
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1,0,0,1));
-    ImGui::Button("classify");
-    ImGui::End();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void cleanupUI()
-{
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-}
-
-
-namespace
-{
-    //! Convert GLFW mouse button into Aspect_VKeyMouse.
-    static Aspect_VKeyMouse mouseButtonFromGlfw(int theButton)
-    {
-        switch (theButton)
-        {
-        case GLFW_MOUSE_BUTTON_LEFT:   return Aspect_VKeyMouse_LeftButton;
-        case GLFW_MOUSE_BUTTON_RIGHT:  return Aspect_VKeyMouse_RightButton;
-        case GLFW_MOUSE_BUTTON_MIDDLE: return Aspect_VKeyMouse_MiddleButton;
-        }
-        return Aspect_VKeyMouse_NONE;
-    }
-
-    //! Convert GLFW key modifiers into Aspect_VKeyFlags.
-    static Aspect_VKeyFlags keyFlagsFromGlfw(int theFlags)
-    {
-        Aspect_VKeyFlags aFlags = Aspect_VKeyFlags_NONE;
-        if ((theFlags & GLFW_MOD_SHIFT) != 0)
-        {
-            aFlags |= Aspect_VKeyFlags_SHIFT;
-        }
-        if ((theFlags & GLFW_MOD_CONTROL) != 0)
-        {
-            aFlags |= Aspect_VKeyFlags_CTRL;
-        }
-        if ((theFlags & GLFW_MOD_ALT) != 0)
-        {
-            aFlags |= Aspect_VKeyFlags_ALT;
-        }
-        if ((theFlags & GLFW_MOD_SUPER) != 0)
-        {
-            aFlags |= Aspect_VKeyFlags_META;
-        }
-        return aFlags;
-    }
-}
-
-// ================================================================
-// Function : GlfwOcctView
-// Purpose  :
-// ================================================================
-GlfwOcctView::GlfwOcctView()
-{
-}
-
-// ================================================================
-// Function : ~GlfwOcctView
-// Purpose  :
-// ================================================================
-GlfwOcctView::~GlfwOcctView()
-{
-}
-
-// ================================================================
-// Function : toView
-// Purpose  :
-// ================================================================
-GlfwOcctView* GlfwOcctView::toView(GLFWwindow* theWin)
-{
-    return static_cast<GlfwOcctView*>(glfwGetWindowUserPointer(theWin));
-}
-
-// ================================================================
-// Function : errorCallback
-// Purpose  :
-// ================================================================
-void GlfwOcctView::errorCallback(int theError, const char* theDescription)
-{
-    Message::DefaultMessenger()->Send(TCollection_AsciiString("Error") + theError + ": " + theDescription, Message_Fail);
-}
-
-// ================================================================
-// Function : run
-// Purpose  :
-// ================================================================
-void GlfwOcctView::run()
-{
-    initWindow(800, 600, "glfw occt");
-    initViewer();
-    initDemoScene();
-    if (myView.IsNull())
-    {
-        return;
-    }
-
-    myView->MustBeResized();
-    myOcctWindow->Map();
-    mainloop();
-    cleanup();
-}
-
-// ================================================================
-// Function : initWindow
-// Purpose  :
-// ================================================================
-void GlfwOcctView::initWindow(int theWidth, int theHeight, const char* theTitle)
-{
-    glfwSetErrorCallback(GlfwOcctView::errorCallback);
     glfwInit();
     const bool toAskCoreProfile = true;
     if (toAskCoreProfile)
@@ -173,204 +30,104 @@ void GlfwOcctView::initWindow(int theWidth, int theHeight, const char* theTitle)
 #endif
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
-    myOcctWindow = new GlfwOcctWindow(theWidth, theHeight, theTitle);
-    glfwSetWindowUserPointer(myOcctWindow->getGlfwWindow(), this);
-    // window callback
-    glfwSetWindowSizeCallback(myOcctWindow->getGlfwWindow(), GlfwOcctView::onResizeCallback);
-    glfwSetFramebufferSizeCallback(myOcctWindow->getGlfwWindow(), GlfwOcctView::onFBResizeCallback);
-    // mouse callback
-    glfwSetScrollCallback(myOcctWindow->getGlfwWindow(), GlfwOcctView::onMouseScrollCallback);
-    glfwSetMouseButtonCallback(myOcctWindow->getGlfwWindow(), GlfwOcctView::onMouseButtonCallback);
-    glfwSetCursorPosCallback(myOcctWindow->getGlfwWindow(), GlfwOcctView::onMouseMoveCallback);
+    GLFWwin = anApp.initWindow(800, 600, "step file");
+    anApp.initViewer();
+    // Setup Dear ImGui context
+    const char* glsl_version = "#version 330";
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(GLFWwin, true);
+
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    anApp.initDemoScene();
+    if (anApp.myView.IsNull())
+        return ;
+
+    anApp.myView->MustBeResized();
+    anApp.myOcctWindow->Map();
 }
 
-// ================================================================
-// Function : initViewer
-// Purpose  :
-// ================================================================
-void GlfwOcctView::initViewer()
+void cleanup()
 {
-    if (myOcctWindow.IsNull()
-        || myOcctWindow->getGlfwWindow() == nullptr)
-    {
-        return;
-    }
-
-    Handle(OpenGl_GraphicDriver) aGraphicDriver = new OpenGl_GraphicDriver(myOcctWindow->GetDisplay(), false);
-    aGraphicDriver->SetBuffersNoSwap(true);
-
-    Handle(V3d_Viewer) aViewer = new V3d_Viewer(aGraphicDriver);
-    aViewer->SetDefaultLights();
-    aViewer->SetLightOn();
-    aViewer->SetDefaultTypeOfView(V3d_PERSPECTIVE);
-    aViewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines);
-    myView = aViewer->CreateView();
-    myView->SetImmediateUpdate(false);
-    myView->SetWindow(myOcctWindow, myOcctWindow->NativeGlContext());
-    myView->ChangeRenderingParams().ToShowStats = true;
-    myContext = new AIS_InteractiveContext(aViewer);
-
-    aGraphicDriver->SetBuffersNoSwap(true);
-    initUI(myOcctWindow);
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    anApp.cleanup();
 }
-
-// ================================================================
-// Function : initDemoScene
-// Purpose  :
-// ================================================================
-void GlfwOcctView::initDemoScene()
-{
-    if (myContext.IsNull())
-    {
-        return;
-    }
-
-    myView->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.08, V3d_WIREFRAME);
-
-    gp_Ax2 anAxis;
-    anAxis.SetLocation(gp_Pnt(0.0, 0.0, 0.0));
-
-    STEPControl_Reader reader;
-    IFSelect_ReturnStatus stat = reader.ReadFile("D:/projects/GeometryLab/src/occSTEP/test_model_step203.stp");
-    Standard_Integer NbRoots = reader.NbRootsForTransfer();
-    Standard_Integer num = reader.TransferRoots();
-    TopoDS_Shape shape = reader.OneShape();
-    
-    Handle(AIS_TexturedShape) aisShape = new AIS_TexturedShape(shape);
-    myContext->Display(aisShape, AIS_Shaded, 0, false);
-
-
-    TCollection_AsciiString aGlInfo;
-    {
-        TColStd_IndexedDataMapOfStringString aRendInfo;
-        myView->DiagnosticInformation(aRendInfo, Graphic3d_DiagnosticInfo_Basic);
-        for (TColStd_IndexedDataMapOfStringString::Iterator aValueIter(aRendInfo); aValueIter.More(); aValueIter.Next())
-        {
-            if (!aGlInfo.IsEmpty()) { aGlInfo += "\n"; }
-            aGlInfo += TCollection_AsciiString("  ") + aValueIter.Key() + ": " + aValueIter.Value();
-        }
-    }
-    Message::DefaultMessenger()->Send(TCollection_AsciiString("OpenGL info:\n") + aGlInfo, Message_Info);
-}
-
-// ================================================================
-// Function : mainloop
-// Purpose  :
-// ================================================================
-
-void GlfwOcctView::mainloop()
-{
-    while (!glfwWindowShouldClose(myOcctWindow->getGlfwWindow()))
-    {
-        // glfwPollEvents() for continuous rendering (immediate return if there are no new events)
-        // and glfwWaitEvents() for rendering on demand (something actually happened in the viewer)
-        //glfwPollEvents();
-        glfwWaitEvents();
-        if (!myView.IsNull())
-        {
-            FlushViewEvents(myContext, myView, true);
-            processUI(myOcctWindow);
-            glfwSwapBuffers(myOcctWindow->getGlfwWindow());
-
-        }
-    }
-}
-
-// ================================================================
-// Function : cleanup
-// Purpose  :
-// ================================================================
-void GlfwOcctView::cleanup()
-{
-    if (!myView.IsNull())
-    {
-        myView->Remove();
-    }
-    if (!myOcctWindow.IsNull())
-    {
-        myOcctWindow->Close();
-    }
-    glfwTerminate();
-}
-
-// ================================================================
-// Function : onResize
-// Purpose  :
-// ================================================================
-void GlfwOcctView::onResize(int theWidth, int theHeight)
-{
-    if (theWidth != 0
-        && theHeight != 0
-        && !myView.IsNull())
-    {
-        myView->Window()->DoResize();
-        myView->MustBeResized();
-        myView->Invalidate();
-        myView->Redraw();
-    }
-}
-
-// ================================================================
-// Function : onMouseScroll
-// Purpose  :
-// ================================================================
-void GlfwOcctView::onMouseScroll(double theOffsetX, double theOffsetY)
-{
-    if (!myView.IsNull())
-    {
-        UpdateZoom(Aspect_ScrollDelta(myOcctWindow->CursorPosition(), int(theOffsetY * 8.0)));
-    }
-}
-
-// ================================================================
-// Function : onMouseButton
-// Purpose  :
-// ================================================================
-void GlfwOcctView::onMouseButton(int theButton, int theAction, int theMods)
-{
-    if (myView.IsNull()) { return; }
-
-    const Graphic3d_Vec2i aPos = myOcctWindow->CursorPosition();
-    if (theAction == GLFW_PRESS)
-    {
-        PressMouseButton(aPos, mouseButtonFromGlfw(theButton), keyFlagsFromGlfw(theMods), false);
-    }
-    else
-    {
-        ReleaseMouseButton(aPos, mouseButtonFromGlfw(theButton), keyFlagsFromGlfw(theMods), false);
-    }
-}
-
-// ================================================================
-// Function : onMouseMove
-// Purpose  :
-// ================================================================
-void GlfwOcctView::onMouseMove(int thePosX, int thePosY)
-{
-    const Graphic3d_Vec2i aNewPos(thePosX, thePosY);
-    if (!myView.IsNull())
-    {
-        UpdateMousePosition(aNewPos, PressedMouseButtons(), LastMouseFlags(), false);
-    }
-}
-
 
 
 
 int main (int, char**)
 {
-  GlfwOcctView anApp;
-  anApp.initWindow(800, 600, "glfw occt");
-  anApp.initViewer();
-  anApp.initDemoScene();
-  if (anApp.myView.IsNull())
+  init();
+  STEPControl_Reader reader;
+  IFSelect_ReturnStatus stat = reader.ReadFile("D:/projects/GeometryLab/src/occSTEP/test_model_step203.stp");
+  Standard_Integer NbRoots = reader.NbRootsForTransfer();
+  Standard_Integer num = reader.TransferRoots();
+  TopoDS_Shape shape = reader.OneShape();
+  //anApp.addShape(shape);
+  while (!glfwWindowShouldClose(anApp.myOcctWindow->getGlfwWindow()))
   {
-      return 0;
-  }
+      // glfwPollEvents() for continuous rendering (immediate return if there are no new events)
+      // and glfwWaitEvents() for rendering on demand (something actually happened in the viewer)
+      //glfwPollEvents();
+      glfwWaitEvents();
+      if (!anApp.myView.IsNull())
+      {
+          anApp.Flush();
+          ImGui_ImplOpenGL3_NewFrame();
+          ImGui_ImplGlfw_NewFrame();
+          Standard_Integer w, h;
+          anApp.myOcctWindow->Size(w, h);
+          ImGui::NewFrame();
+          ImGui::SetNextWindowPos({ (float)w - 80, 0 });
+          ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
+          if(ImGui::Button("classify"))
+          {
+              Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
+              for (TopExp_Explorer exp(shape, TopAbs_FACE); exp.More(); exp.Next())
+              {
+                  const TopoDS_Face& face = TopoDS::Face(exp.Current());
+                  TopLoc_Location loc;
+                  Handle(Poly_Triangulation) faceTris = BRep_Tool::Triangulation(face, loc);
 
-  anApp.myView->MustBeResized();
-  anApp.myOcctWindow->Map();
-  anApp.mainloop();
-  anApp.cleanup();
+                  std::unordered_map<int, int> nodesMap;
+                  for (int iNode = 1; iNode <= faceTris->NbNodes(); ++iNode)
+                  {
+                      gp_Pnt P = faceTris->Node(iNode);
+                      const int cohNodeIndex = cohTris->SetNode(P.XYZ());
+
+                      nodesMap.insert({ iNode,cohNodeIndex });
+                  }
+
+                  for (int iTri = 1; iTri <= faceTris->NbTriangles(); ++iTri)
+                  {
+                      const Poly_Triangle& tri = faceTris->Triangle(iTri);
+                      
+                      int iNodes[3];
+                      tri.Get(iNodes[0], iNodes[1], iNodes[2]);
+
+                      int iCohNodes[3] = { nodesMap.at(iNodes[0]),nodesMap.at(iNodes[1]),nodesMap.at(iNodes[2]) };
+                      cohTris->AddTriangle(iCohNodes[0], iCohNodes[1], iCohNodes[2]);
+
+                  }
+              }
+              std::cout << "here" << std::endl;
+              Handle(Poly_Triangulation) tris = cohTris->GetTriangulation();
+
+              anApp.addTri(tris);
+          }
+          ImGui::End();
+          ImGui::Render();
+          ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+          glfwSwapBuffers(anApp.myOcctWindow->getGlfwWindow());
+      }
+  }
+  cleanup();
   return 0;
 }
