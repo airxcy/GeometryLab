@@ -142,7 +142,7 @@ void GlfwOcctView::initViewer()
     myView->SetWindow(myOcctWindow, myOcctWindow->NativeGlContext());
     myView->ChangeRenderingParams().ToShowStats = true;
     myContext = new AIS_InteractiveContext(aViewer);
-
+    myContext->SetDisplayMode(AIS_WireFrame,true);
     aGraphicDriver->SetBuffersNoSwap(true);
     
 }
@@ -184,7 +184,8 @@ void GlfwOcctView::initDemoScene()
 void GlfwOcctView::addTri(Handle(Poly_Triangulation) tri)
 {
     Handle(AIS_Triangulation) s = new AIS_Triangulation(tri);
-    myContext->Display(s, AIS_Shaded, 0, false);
+    s->SetColor(Quantity_Color(1,0,0, Quantity_TOC_RGB));
+    myContext->Display(s, V3d_WIREFRAME, 0, false);
 }
 
 void GlfwOcctView::addShape(TopoDS_Shape& shape)

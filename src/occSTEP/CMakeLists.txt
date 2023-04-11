@@ -40,6 +40,7 @@ endif()
 SET(OpenCASCADE_LIBS 
   TKernel
   TKMath
+  TKMesh
   TKBRep
   TKXSBase
   TKService
