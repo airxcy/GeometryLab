@@ -21,6 +21,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
+#include <netgen/include/meshing>
 
 #include <Eigen/Core>
 #include <unordered_map>
