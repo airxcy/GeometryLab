@@ -1,3 +1,11 @@
+
+//#include "netgen/meshing.hpp"
+
+int main(int* argc, char** argv)
+{
+	return 0;
+}
+/*
 #include "polyscope/polyscope.h"
 #include "polyscope/point_cloud.h"
 #include "polyscope/surface_mesh.h"
@@ -59,3 +67,5 @@ int main(int* argc, char** argv)
 	polyscope::show();
 
 }
+
+*/

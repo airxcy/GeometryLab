@@ -3,9 +3,7 @@ project(GeometryLab)
 
 set(ENGINE_DIR "D:/projects/GeometryLab/engine")
 set(EIGEN_DIR "${ENGINE_DIR}/eigen")
-add_subdirectory("src/occSTEP")
+
+#add_subdirectory("src/occSTEP")
 #add_subdirectory("src/visual_debugger")
-
-#add_subdirectory("src/vector_heat")
-
-#add_subdirectory("src/flip_geodesic")
+add_subdirectory("src/discreteDomain")

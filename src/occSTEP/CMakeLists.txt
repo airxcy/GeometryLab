@@ -37,7 +37,7 @@ else()
   message (STATUS "OpenCASCADE_LIBRARY_DIR=${OpenCASCADE_LIBRARY_DIR}")
   INCLUDE_DIRECTORIES(${OpenCASCADE_INCLUDE_DIR})
 endif()
-add_subdirectory(${ENGINE_DIR}/netgen NETGEN)
+add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
 
 SET(OpenCASCADE_LIBS 
   TKernel
@@ -68,6 +68,6 @@ configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
 add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
-target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include ${ENGINE_DIR}/netgen/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include ${ENGINE_DIR}/netgen/libsrc)
 target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${OpenCASCADE_BINARY_DIR}" )
