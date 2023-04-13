@@ -8,10 +8,29 @@
 #include "TopoDS_Face.hxx"
 #include "BRep_Tool.hxx"
 #include "BRepMesh_IncrementalMesh.hxx"
+#include "BRepBndLib.hxx"
+
 
 #include "GlfwOcctView.h"
 
+#ifndef OCCGEOMETRY
+#define OCCGEOMETRY
 
+#endif // !OCCGEOMETRY
+#define NO_PARALLEL_THREADS
+#include "occgeom.hpp"
+#include "csg.hpp"
+#include "meshing/meshing.hpp"
+namespace nglib {
+#undef nglib_EXPORTS
+    #include "nglib.h"
+    
+}
+
+namespace netgen {
+
+    extern MeshingParameters mparam;
+}
 
 #include "polyscope/polyscope.h"
 #include "polyscope/point_cloud.h"
@@ -21,7 +40,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
-#include <netgen/include/meshing>
+
+
 
 #include <Eigen/Core>
 #include <unordered_map>
@@ -29,6 +49,170 @@
 
 Handle(GlfwOcctView) anApp;
 GLFWwindow* GLFWwin;
+
+
+void occTri2Eigen(TopoDS_Shape& shape)
+{
+    Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
+    int counter = 0;
+    for (TopExp_Explorer exp(shape, TopAbs_FACE); exp.More(); exp.Next())
+    {
+        BRepMesh_IncrementalMesh meshGen(shape, 0.001);
+        Eigen::MatrixXd V;
+        Eigen::MatrixXi F;
+        std::vector< std::vector<double> > vertices;
+        std::vector< std::vector<int> > mesh;
+        std::vector< glm::vec3> clrmp;
+
+        const TopoDS_Face& face = TopoDS::Face(exp.Current());
+        TopLoc_Location loc;
+        Handle(Poly_Triangulation) faceTris = BRep_Tool::Triangulation(face, loc);
+
+        std::unordered_map<int, int> nodesMap;
+        for (int iNode = 1; iNode <= faceTris->NbNodes(); ++iNode)
+        {
+            gp_Pnt P = faceTris->Node(iNode);
+            std::vector<double> vtx = { P.X(),P.Y(), P.Z() };
+            const int cohNodeIndex = vertices.size();
+            vertices.push_back(vtx);
+            nodesMap.insert({ iNode, cohNodeIndex });
+        }
+        auto c = polyscope::getNextUniqueColor();
+        for (int iTri = 1; iTri <= faceTris->NbTriangles(); ++iTri)
+        {
+            int iNodes[3];
+            faceTris->Triangle(iTri).Get(iNodes[0], iNodes[1], iNodes[2]);
+            int iCohNodes[3] = { nodesMap.at(iNodes[0]),nodesMap.at(iNodes[1]),nodesMap.at(iNodes[2]) };
+            std::vector<int> tri = { iCohNodes[0], iCohNodes[1], iCohNodes[2] };
+            mesh.push_back(tri);
+            clrmp.push_back(c);
+        }
+        auto model = polyscope::registerSurfaceMesh(std::to_string(counter), vertices, mesh);
+        model->setTransparency(0.6);
+        model->setEdgeWidth(1);
+        model->setSmoothShade(true);
+        auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
+        auto Q = model->addFaceColorQuantity("face", clrmp);
+        Q->setEnabled(true);
+        counter++;
+        
+    }
+}
+
+
+void ng2Eigen(TopoDS_Shape& shape)
+{
+    Bnd_Box aabb;
+    BRepBndLib::Add(shape, aabb, false);
+    const double diag = std::sqrt(aabb.SquareExtent());
+
+    netgen::MeshingParameters mp;
+
+
+    // Parameters definition.
+    mp.minh = 0.0;
+    mp.maxh = 0.01 * diag;
+    mp.uselocalh = true;
+    mp.secondorder = false;
+    mp.grading = 1.0;
+
+    nglib::Ng_Init();
+    
+    netgen::OCCGeometry occgeo;
+    occgeo.shape = shape;
+    occgeo.changed = 1;
+    occgeo.BuildFMap();
+    occgeo.CalcBoundingBox();
+
+    // Resulting mesh.
+    netgen::Mesh mesh;
+
+    // Mesh building
+    netgen::OCCSetLocalMeshSize(occgeo, mesh,mp,netgen::OCCParameters());
+
+
+
+    const int nbNodes = (int)mesh.GetNP();
+    const int nbTriangles = (int)mesh.GetNSE(); // We expect that mesh contains only triangles.
+
+    
+
+    Handle(Poly_Triangulation) result = new Poly_Triangulation(nbNodes, nbTriangles, false);
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    std::vector< std::vector<double> > vertices;
+    std::vector< std::vector<int> > trimesh;
+    std::vector< glm::vec3> clrmp;
+    for (int i = 1; i <= nbNodes; ++i)
+    {
+        const netgen::MeshPoint& point = mesh.Point(netgen::PointIndex(i));
+        vertices.push_back({ point[0], point[1], point[2] });
+    }
+
+    for (int i = 1; i <= nbTriangles; ++i)
+    {
+        const netgen::Element2d& elem = mesh.SurfaceElement(netgen::ElementIndex(i));
+        {
+            trimesh.push_back({ elem[0], elem[1], elem[2] });
+        }
+    }
+
+    auto model = polyscope::registerSurfaceMesh("netgen", vertices, trimesh);
+    model->setTransparency(0.6);
+    model->setEdgeWidth(1);
+    model->setSmoothShade(true);
+    auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
+    auto Q = model->addFaceColorQuantity("face", clrmp);
+    Q->setEnabled(true);
+
+}
+int main (int, char**)
+{
+  //init();
+    
+    polyscope::options::programName = "Triangle";
+    polyscope::options::groundPlaneMode = polyscope::GroundPlaneMode::None;
+    polyscope::view::style = polyscope::view::NavigateStyle::Free;
+    polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };
+    
+    polyscope::init();
+    auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
+
+      STEPControl_Reader reader;
+      IFSelect_ReturnStatus stat = reader.ReadFile("D:/projects/GeometryLab/src/occSTEP/test_model_step203.stp");
+      Standard_Integer NbRoots = reader.NbRootsForTransfer();
+      Standard_Integer num = reader.TransferRoots();
+      TopoDS_Iterator tree(reader.OneShape());
+      
+      //tree->Next();
+      TopoDS_Shape shape = tree.Value();
+      //std::cout << shape.NbChildren() << std::endl;
+      //occTri2Eigen(shape);
+      ng2Eigen(shape);
+    //anApp.addShape(shape);
+      polyscope::state::userCallback = [&]()
+      {
+          ImGui::GetStyle().AntiAliasedLines = false;
+
+          auto viewsz = ImGui::GetMainViewport()->Size;
+          ImGui::SetNextWindowPos({ viewsz[0] - 80, 0});
+          ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
+          if (ImGui::Button("classify"))
+          {
+
+
+          }
+          ImGui::PopStyleColor();
+          ImGui::End();
+      };
+
+      polyscope::show();
+
+  return 0;
+}
+
+
 /*
 void init()
 {
@@ -141,95 +325,3 @@ void occGLFWLoop()
     cleanup();
 }
 */
-
-void occTri2Eigen(TopoDS_Shape& shape)
-{
-    Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
-    int counter = 0;
-    for (TopExp_Explorer exp(shape, TopAbs_FACE); exp.More(); exp.Next())
-    {
-        BRepMesh_IncrementalMesh meshGen(shape, 0.001);
-        Eigen::MatrixXd V;
-        Eigen::MatrixXi F;
-        std::vector< std::vector<double> > vertices;
-        std::vector< std::vector<int> > mesh;
-        std::vector< glm::vec3> clrmp;
-
-        const TopoDS_Face& face = TopoDS::Face(exp.Current());
-        TopLoc_Location loc;
-        Handle(Poly_Triangulation) faceTris = BRep_Tool::Triangulation(face, loc);
-
-        std::unordered_map<int, int> nodesMap;
-        for (int iNode = 1; iNode <= faceTris->NbNodes(); ++iNode)
-        {
-            gp_Pnt P = faceTris->Node(iNode);
-            std::vector<double> vtx = { P.X(),P.Y(), P.Z() };
-            const int cohNodeIndex = vertices.size();
-            vertices.push_back(vtx);
-            nodesMap.insert({ iNode, cohNodeIndex });
-        }
-        auto c = polyscope::getNextUniqueColor();
-        for (int iTri = 1; iTri <= faceTris->NbTriangles(); ++iTri)
-        {
-            int iNodes[3];
-            faceTris->Triangle(iTri).Get(iNodes[0], iNodes[1], iNodes[2]);
-            int iCohNodes[3] = { nodesMap.at(iNodes[0]),nodesMap.at(iNodes[1]),nodesMap.at(iNodes[2]) };
-            std::vector<int> tri = { iCohNodes[0], iCohNodes[1], iCohNodes[2] };
-            mesh.push_back(tri);
-            clrmp.push_back(c);
-        }
-        auto model = polyscope::registerSurfaceMesh(std::to_string(counter), vertices, mesh);
-        model->setTransparency(0.6);
-        model->setEdgeWidth(1);
-        model->setSmoothShade(true);
-        auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
-        auto Q = model->addFaceColorQuantity("face", clrmp);
-        Q->setEnabled(true);
-        counter++;
-    }
-}
-
-int main (int, char**)
-{
-  //init();
-    
-    polyscope::options::programName = "Triangle";
-    polyscope::options::groundPlaneMode = polyscope::GroundPlaneMode::None;
-    polyscope::view::style = polyscope::view::NavigateStyle::Free;
-    polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };
-    
-    polyscope::init();
-    auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
-
-      STEPControl_Reader reader;
-      IFSelect_ReturnStatus stat = reader.ReadFile("D:/projects/GeometryLab/src/occSTEP/test_model_step203.stp");
-      Standard_Integer NbRoots = reader.NbRootsForTransfer();
-      Standard_Integer num = reader.TransferRoots();
-      TopoDS_Iterator tree(reader.OneShape());
-      
-      //tree->Next();
-      TopoDS_Shape shape = tree.Value();
-      //std::cout << shape.NbChildren() << std::endl;
-      occTri2Eigen(shape);
-    //anApp.addShape(shape);
-      polyscope::state::userCallback = [&]()
-      {
-          ImGui::GetStyle().AntiAliasedLines = false;
-
-          auto viewsz = ImGui::GetMainViewport()->Size;
-          ImGui::SetNextWindowPos({ viewsz[0] - 80, 0});
-          ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
-          if (ImGui::Button("classify"))
-          {
-
-
-          }
-          ImGui::PopStyleColor();
-          ImGui::End();
-      };
-
-      polyscope::show();
-
-  return 0;
-}

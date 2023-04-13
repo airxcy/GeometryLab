@@ -300,7 +300,7 @@ ExternalProject_Add (netgen
    ALWAYS 1            # No stamp file, step always runs
    )
 
-
+message("-----------------------------" ${CMAKE_CURRENT_BINARY_DIR})
 install(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build . --target install --config ${CMAKE_BUILD_TYPE} WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}/netgen\")")
 
 add_custom_target(test_netgen
