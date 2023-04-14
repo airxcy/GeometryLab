@@ -59,7 +59,7 @@ namespace netgen {
 namespace nglib {
 #include "nglib.h"
 }
-
+#include <iostream>
 using namespace netgen;
 
 // constants and types:
@@ -72,6 +72,7 @@ namespace nglib
    // initialize, deconstruct Netgen library:
    NGLIB_API void Ng_Init ()
    {
+      std::cout<< "------"<<std::endl;
       mycout = &cout;
       myerr = &cerr;
       // netgen::testout->SetOutStream (new ofstream ("test.out"));

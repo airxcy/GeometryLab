@@ -51,6 +51,7 @@ namespace metis { extern "C" {
 
 
 /*** Windows headers ***/
+/*
 #ifdef _MSC_VER
 # define WIN32_LEAN_AND_MEAN
 # ifndef NO_PARALLEL_THREADS
@@ -68,7 +69,7 @@ namespace metis { extern "C" {
 
 
 #endif
-
+*/
 
 using namespace std;
 

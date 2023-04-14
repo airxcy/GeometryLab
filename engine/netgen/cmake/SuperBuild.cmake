@@ -108,6 +108,7 @@ if(BUILD_OCC)
   list(APPEND NETGEN_DEPENDENCIES project_occ)
   set(OpenCascade_ROOT ${OCC_DIR})
 else(BUILD_OCC)
+    message("}}}}}}}}}}}}-----------------" ${OpenCASCADE_DIR})
     if(WIN32 AND NOT OCC_INCLUDE_DIR AND NOT OpenCASCADE_DIR)
         # we can download prebuilt occ binaries for windows
         ExternalProject_Add(win_download_occ

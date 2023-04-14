@@ -1,4 +1,8 @@
 
+
+
+
+
 #include "STEPCAFControl_Reader.hxx"
 #include "Poly_CoherentTriangulation.hxx"
 #include "TopExp_Explorer.hxx"
@@ -13,24 +17,17 @@
 
 #include "GlfwOcctView.h"
 
+namespace nglib {
+#include <nglib.h>
+}
+
 #ifndef OCCGEOMETRY
 #define OCCGEOMETRY
-
 #endif // !OCCGEOMETRY
-#define NO_PARALLEL_THREADS
-#include "occgeom.hpp"
-#include "csg.hpp"
-#include "meshing/meshing.hpp"
-namespace nglib {
-#undef nglib_EXPORTS
-    #include "nglib.h"
-    
-}
+#include <occgeom.hpp>
+#include <meshing.hpp>
+//#include <ngexception.hpp>
 
-namespace netgen {
-
-    extern MeshingParameters mparam;
-}
 
 #include "polyscope/polyscope.h"
 #include "polyscope/point_cloud.h"
@@ -102,28 +99,35 @@ void occTri2Eigen(TopoDS_Shape& shape)
 
 void ng2Eigen(TopoDS_Shape& shape)
 {
+    std::cout << "here" << std::endl;
+    
     Bnd_Box aabb;
     BRepBndLib::Add(shape, aabb, false);
     const double diag = std::sqrt(aabb.SquareExtent());
-
-    netgen::MeshingParameters mp;
-
-
+    
+    
+    
+    
+    //netgen::MeshingParameters& mp=netgen::mparam;
+    
+    
     // Parameters definition.
-    mp.minh = 0.0;
-    mp.maxh = 0.01 * diag;
-    mp.uselocalh = true;
-    mp.secondorder = false;
-    mp.grading = 1.0;
-
+    //mp.minh = 0.0;
+    //mp.maxh = 0.01 * diag;
+    //mp.uselocalh = true;
+    //mp.secondorder = false;
+    //mp.grading = 1.0;
+   
     nglib::Ng_Init();
     
+    /*
     netgen::OCCGeometry occgeo;
     occgeo.shape = shape;
     occgeo.changed = 1;
+    
     occgeo.BuildFMap();
     occgeo.CalcBoundingBox();
-
+    
     // Resulting mesh.
     netgen::Mesh mesh;
 
@@ -164,9 +168,9 @@ void ng2Eigen(TopoDS_Shape& shape)
     auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
     auto Q = model->addFaceColorQuantity("face", clrmp);
     Q->setEnabled(true);
-
+    */
 }
-int main (int, char**)
+int main (const int, const char**)
 {
   //init();
     
@@ -176,10 +180,12 @@ int main (int, char**)
     polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };
     
     polyscope::init();
-    auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
 
+    auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
+    
       STEPControl_Reader reader;
       IFSelect_ReturnStatus stat = reader.ReadFile("D:/projects/GeometryLab/src/occSTEP/test_model_step203.stp");
+      
       Standard_Integer NbRoots = reader.NbRootsForTransfer();
       Standard_Integer num = reader.TransferRoots();
       TopoDS_Iterator tree(reader.OneShape());
@@ -188,7 +194,9 @@ int main (int, char**)
       TopoDS_Shape shape = tree.Value();
       //std::cout << shape.NbChildren() << std::endl;
       //occTri2Eigen(shape);
+      
       ng2Eigen(shape);
+      /*
     //anApp.addShape(shape);
       polyscope::state::userCallback = [&]()
       {
@@ -208,7 +216,7 @@ int main (int, char**)
       };
 
       polyscope::show();
-
+      */
   return 0;
 }
 

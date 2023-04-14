@@ -48,7 +48,7 @@ set(NETGEN_TK_INCLUDE_PATH "")
 set(NETGEN_TK_LIBRARY "")
 set(NETGEN_X11_X11_LIB "")
 set(NETGEN_X11_Xmu_LIB "")
-set(NETGEN_ZLIB_INCLUDE_DIRS "C:/Strawberry/c/include")
+set(NETGEN_ZLIB_INCLUDE_DIRS "D:/projects/GeometryLab/engine/netgen/include")
 set(NETGEN_ZLIB_LIBRARIES "D:/projects/GeometryLab/engine/netgen/lib/zlib.lib")
 
 set(NETGEN_USE_GUI OFF)

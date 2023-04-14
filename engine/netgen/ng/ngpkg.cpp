@@ -2826,7 +2826,7 @@ void PlayAnimFile(const char* name, int speed, int maxcnt)
     if(serversocketmanager.Good())
       serversocketusernetgen.Reset(new ServerSocketUserNetgen (serversocketmanager, mesh, geometry));
 #endif
-
+    std::cout<< "------"<<std::endl;
     Ng_CSG_Init(interp);
     Ng_stl_Init(interp);
     Ng_geom2d_Init (interp);

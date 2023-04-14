@@ -12,6 +12,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 
+
 add_subdirectory("${ENGINE_DIR}/glfw" glfw)
 add_subdirectory("${ENGINE_DIR}/glad" glad)
 add_subdirectory("${ENGINE_DIR}/imgui" imgui)
@@ -26,7 +27,9 @@ add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
 # execute_process(COMMAND "cd D:/projects/GeometryLab/build")
 # Open CASCADE Technology
 
-set(OpenCASCADE_DIR ${ENGINE_DIR}/OCC)
+
+
+
 set(CMAKE_PREFIX_PATH ${ENGINE_DIR}/occ/cmake)
 find_package (OpenCASCADE REQUIRED)
 if (NOT OpenCASCADE_FOUND)
@@ -37,6 +40,9 @@ else()
   message (STATUS "OpenCASCADE_LIBRARY_DIR=${OpenCASCADE_LIBRARY_DIR}")
   INCLUDE_DIRECTORIES(${OpenCASCADE_INCLUDE_DIR})
 endif()
+
+
+message("-----------------" ${OpenCASCADE_DIR})
 add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
 
 SET(OpenCASCADE_LIBS 
@@ -63,15 +69,35 @@ SET(OpenCASCADE_LIBS
 
 #file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
 
-configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll COPYONLY)
-configure_file(${ENGINE_DIR}/netgen/bin/ngcore.dll D:/projects/GeometryLab/build/src/occSTEP/Release/ngcore.dll COPYONLY)
-configure_file(${ENGINE_DIR}/netgen/bin/nglib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/nglib.dll COPYONLY)
-configure_file(${ENGINE_DIR}/netgen/bin/zlib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/zlib.dll COPYONLY)
+
+file(GLOB netgendll "${ENGINE_DIR}/netgen/bin/*.dll")
+file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/bin/*.dll")
+add_custom_target(copy_dll ALL
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${ENGINE_DIR}/freetype/bin/freetype.dll
+        Release/freetype.dll
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${netgendll}
+        $<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${occdll}
+        $<CONFIG>/
+    COMMENT "Copying $<CONFIG>"
+)
+
+
+set(CMAKE_EXE_LINKER_FLAGS "-static")
+# configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll COPYONLY)
+# configure_file(${ENGINE_DIR}/netgen/bin/ngcore.dll D:/projects/GeometryLab/build/src/occSTEP/Release/ngcore.dll COPYONLY)
+# configure_file(${ENGINE_DIR}/netgen/bin/nglib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/nglib.dll COPYONLY)
+# configure_file(${ENGINE_DIR}/netgen/bin/zlib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/zlib.dll COPYONLY)
 # execute_process(COMMAND ${OpenCASCADE_BINARY_DIR} copy "${ENGINE_DIR}/freetype/bin/freetype.dll" ${OpenCASCADE_BINARY_DIR})
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
 link_directories(${ENGINE_DIR}/netgen/lib)
 add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
-target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include ${ENGINE_DIR}/netgen/include ${ENGINE_DIR}/netgen/include/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
+  ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include 
+  ${ENGINE_DIR}/netgen/include ${ENGINE_DIR}/netgen/include/include)
 target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES} ngcore nglib)
-set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${OpenCASCADE_BINARY_DIR}" )
+add_dependencies(${PROJECT_NAME} copy_dll)
