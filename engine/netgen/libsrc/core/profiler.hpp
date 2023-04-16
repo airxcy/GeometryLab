@@ -34,16 +34,16 @@ namespace ngcore
         int usedcounter = 0;
     };
 
-    NGCORE_API static std::vector<TimerVal> timers;
+     static std::vector<TimerVal> timers;
 
-    NGCORE_API static TTimePoint * thread_times;
-    NGCORE_API static TTimePoint * thread_flops;
-    NGCORE_API static std::shared_ptr<Logger> logger;
-    NGCORE_API static std::array<size_t, NgProfiler::SIZE> dummy_thread_times;
-    NGCORE_API static std::array<size_t, NgProfiler::SIZE> dummy_thread_flops;
+     static TTimePoint * thread_times;
+     static TTimePoint * thread_flops;
+     static std::shared_ptr<Logger> logger;
+     static std::array<size_t, NgProfiler::SIZE> dummy_thread_times;
+     static std::array<size_t, NgProfiler::SIZE> dummy_thread_flops;
   private:
 
-    NGCORE_API static std::string filename;
+     static std::string filename;
   public:
     NgProfiler();
     ~NgProfiler();
@@ -56,9 +56,9 @@ namespace ngcore
     static void SetFileName (const std::string & afilename) { filename = afilename; }
 
     /// create new timer, use integer index
-    NGCORE_API static int CreateTimer (const std::string & name);
+     static int CreateTimer (const std::string & name);
 
-    NGCORE_API static void Reset ();
+     static void Reset ();
 
 
     /// start timer of index nr
@@ -128,7 +128,7 @@ namespace ngcore
     static void SetName (int nr, const std::string & name) { timers[nr].name = name; }
     static std::string GetName (int nr) { return timers[nr].name; }
     /// print profile
-    NGCORE_API static void Print (FILE * prof);
+     static void Print (FILE * prof);
 
     class RegionTimer
     {

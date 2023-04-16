@@ -22,7 +22,7 @@ namespace netgen
 
 
   template < int D >
-  class DLL_HEADER SplineGeometry
+  class  SplineGeometry
   {
     // protected:
   public:  

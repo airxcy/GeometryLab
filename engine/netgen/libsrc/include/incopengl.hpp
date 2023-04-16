@@ -53,5 +53,5 @@ extern void (*glGenRenderbuffers) (GLsizei n, GLuint *renderbuffers);
 extern void (*glRenderbufferStorage) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 extern void (*glFramebufferRenderbuffer) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 #endif
-DLL_HEADER void LoadOpenGLFunctionPointers();
+ void LoadOpenGLFunctionPointers();
 #endif // INCOPENGL_HPP___

@@ -28,10 +28,10 @@ extern "C" int Ng_occ_Init (Tcl_Interp * interp);
 
 namespace netgen
 {
-  extern DLL_HEADER shared_ptr<NetgenGeometry> ng_geometry;
-  extern DLL_HEADER shared_ptr<Mesh> mesh;
-  extern DLL_HEADER MeshingParameters mparam;
-  extern DLL_HEADER OCCParameters occparam;
+  extern  shared_ptr<NetgenGeometry> ng_geometry;
+  extern  shared_ptr<Mesh> mesh;
+  extern  MeshingParameters mparam;
+  extern  OCCParameters occparam;
  
   char * err_needsoccgeometry = (char*) "This operation needs an OCC geometry";
   extern char * err_needsmesh;

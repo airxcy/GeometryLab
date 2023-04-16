@@ -27,7 +27,7 @@ void Parallel_Exit();
 namespace netgen {
   extern AutoPtr<Mesh>  mesh;
   // extern VisualSceneMesh vsmesh;
-  extern NGLIB_API MeshingParameters mparam;
+  extern  MeshingParameters mparam;
 }
 
 using namespace netgen;

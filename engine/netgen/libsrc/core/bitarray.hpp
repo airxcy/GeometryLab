@@ -39,11 +39,11 @@ public:
   BitArray ()
     : size(0), data(nullptr) { ; }
   /// array of asize bits
-  NGCORE_API BitArray (size_t asize);
+   BitArray (size_t asize);
   /// array of asize bits
-  NGCORE_API BitArray (size_t asize, LocalHeap & lh);
+   BitArray (size_t asize, LocalHeap & lh);
   ///
-  NGCORE_API BitArray (const BitArray & ba2);
+   BitArray (const BitArray & ba2);
   BitArray (BitArray && ba2)
     : size(ba2.size), data(ba2.data), owns_data(ba2.owns_data)
   {
@@ -69,16 +69,16 @@ public:
   }
 
   /// Set size, loose values
-  NGCORE_API void SetSize (size_t asize);
+   void SetSize (size_t asize);
 
   /// the size
   size_t Size () const { return size; }
 
   /// set all bits
-  NGCORE_API BitArray & Set () throw();
+   BitArray & Set () throw();
 
   /// clear all bits
-  NGCORE_API BitArray & Clear () throw();
+   BitArray & Clear () throw();
 
   /// set bit i
   [[deprecated("Use either SetBit() or SetBitAtomic()")]]
@@ -130,25 +130,25 @@ public:
     return Test(i);
   }
 
-  NGCORE_API bool operator==(const BitArray& other) const;
+   bool operator==(const BitArray& other) const;
 
   /// invert all bits
-  NGCORE_API BitArray & Invert ();
+   BitArray & Invert ();
 
   /// logical AND with ba2
-  NGCORE_API BitArray & And (const BitArray & ba2);
+   BitArray & And (const BitArray & ba2);
 
   /// logical OR with ba2
-  NGCORE_API BitArray & Or (const BitArray & ba2);
+   BitArray & Or (const BitArray & ba2);
 
   /// copy from ba2
-  NGCORE_API BitArray & operator= (const BitArray & ba2);
+   BitArray & operator= (const BitArray & ba2);
 
-  NGCORE_API size_t NumSet () const;
+   size_t NumSet () const;
 
-  NGCORE_API void DoArchive(class Archive& archive);
+   void DoArchive(class Archive& archive);
   
-  NGCORE_API auto * Data() const { return data; }
+   auto * Data() const { return data; }
 
   const MemoryTracer& GetMemoryTracer() const { return mt; }
   void StartMemoryTracing() const
@@ -203,7 +203,7 @@ private:
     return res;
   }
 
-  NGCORE_API std::ostream & operator<<(std::ostream & s, const BitArray & ba);
+   std::ostream & operator<<(std::ostream & s, const BitArray & ba);
 
 } // namespace ngcore
 

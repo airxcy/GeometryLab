@@ -257,7 +257,7 @@ namespace netgen
 
   
   [[deprecated("do we still send commands?")]]                      
-  DLL_HEADER void MyMPI_SendCmd (const char * cmd);
+   void MyMPI_SendCmd (const char * cmd);
   [[deprecated("do we still send commands?")]]                        
   extern string MyMPI_RecvCmd ();
 

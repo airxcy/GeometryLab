@@ -121,7 +121,7 @@ void CreateSTLParametersFromKwargs(STLParameters& stlparam, py::dict kwargs)
 }
 
 
-NGCORE_API_EXPORT void ExportSTL(py::module & m)
+_EXPORT void ExportSTL(py::module & m)
 {
   py::class_<STLGeometry,shared_ptr<STLGeometry>, NetgenGeometry> (m,"STLGeometry")
     .def(py::init<>())

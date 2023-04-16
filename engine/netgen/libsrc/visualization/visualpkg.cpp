@@ -377,7 +377,7 @@ namespace netgen
   }
 
   VisualSceneMeshDoctor vsmeshdoc;
-  DLL_HEADER extern shared_ptr<Mesh> mesh;
+   extern shared_ptr<Mesh> mesh;
 
   int Ng_MeshDoctor(ClientData clientData,
 	  Tcl_Interp * interp,

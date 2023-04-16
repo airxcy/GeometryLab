@@ -93,8 +93,8 @@ namespace ngcore
     Iterator end() const { return Iterator(*this, BASE+size); }
   };
 
-  NGCORE_API extern size_t * TablePrefixSum32 (FlatArray<unsigned int> entrysize);
-  NGCORE_API extern size_t * TablePrefixSum64 (FlatArray<size_t> entrysize);
+   extern size_t * TablePrefixSum32 (FlatArray<unsigned int> entrysize);
+   extern size_t * TablePrefixSum64 (FlatArray<size_t> entrysize);
 
 
   NETGEN_INLINE size_t * TablePrefixSum (FlatArray<unsigned int> entrysize)
@@ -433,7 +433,7 @@ namespace ngcore
     return table;
   }
 
-  class NGCORE_API FilteredTableCreator : public TableCreator<int>
+  class  FilteredTableCreator : public TableCreator<int>
   {
   protected:
     const BitArray* takedofs;

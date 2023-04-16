@@ -433,7 +433,7 @@ namespace ngcore
 
     };
 
-  NGCORE_API PajeTrace *trace;
+   PajeTrace *trace;
 
   void PajeTrace::Write( const std::string & filename )
     {

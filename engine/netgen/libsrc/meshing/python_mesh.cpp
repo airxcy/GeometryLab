@@ -94,7 +94,7 @@ static Transformation<3> global_trafo(Vec<3> (0,0,0));
 
 
 
-DLL_HEADER void ExportNetgenMeshing(py::module &m) 
+ void ExportNetgenMeshing(py::module &m) 
 {
 #ifdef NG_MPI4PY
   import_mpi4py();

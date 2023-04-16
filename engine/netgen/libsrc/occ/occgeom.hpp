@@ -34,7 +34,7 @@
 namespace netgen
 {
 
-  // extern DLL_HEADER MeshingParameters mparam;
+  // extern  MeshingParameters mparam;
 
 #define PROJECTION_TOLERANCE 1e-10
 
@@ -105,7 +105,7 @@ namespace netgen
     return a00*a11*a22 + a01*a12*a20 + a10*a21*a02 - a20*a11*a02 - a10*a01*a22 - a21*a12*a00;
   }
   
-  class DLL_HEADER OCCParameters
+  class  OCCParameters
   {
   public:
 
@@ -130,7 +130,7 @@ namespace netgen
   };
 
 
-  class DLL_HEADER OCCGeometry : public NetgenGeometry
+  class  OCCGeometry : public NetgenGeometry
   {
     Point<3> center;
     OCCParameters occparam;
@@ -421,17 +421,17 @@ namespace netgen
 
   void PrintContents (OCCGeometry * geom);
 
-  DLL_HEADER OCCGeometry * LoadOCC_IGES (const filesystem::path & filename);
-  DLL_HEADER OCCGeometry * LoadOCC_STEP (const filesystem::path & filename);
-  DLL_HEADER OCCGeometry * LoadOCC_BREP (const filesystem::path & filename);
+   OCCGeometry * LoadOCC_IGES (const filesystem::path & filename);
+   OCCGeometry * LoadOCC_STEP (const filesystem::path & filename);
+   OCCGeometry * LoadOCC_BREP (const filesystem::path & filename);
 
   // Philippose - 31.09.2009
   // External access to the mesh generation functions within the OCC
   // subsystem (Not sure if this is the best way to implement this....!!)
-  DLL_HEADER extern void OCCSetLocalMeshSize(const OCCGeometry & geom, Mesh & mesh, const MeshingParameters & mparam,
+   extern void OCCSetLocalMeshSize(const OCCGeometry & geom, Mesh & mesh, const MeshingParameters & mparam,
                                              const OCCParameters& occparam);
 
-  DLL_HEADER extern bool OCCMeshFace (const OCCGeometry & geom, Mesh & mesh, FlatArray<int, PointIndex> glob2loc,
+   extern bool OCCMeshFace (const OCCGeometry & geom, Mesh & mesh, FlatArray<int, PointIndex> glob2loc,
                        const MeshingParameters & mparam, int nr, int projecttype, bool delete_on_failure);
 
 

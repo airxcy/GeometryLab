@@ -54,7 +54,7 @@ namespace netgen
   enum OPTIMIZEGOAL { OPT_QUALITY, OPT_CONFORM, OPT_REST, OPT_WORSTCASE, OPT_LEGAL };
 
 
-  extern DLL_HEADER size_t timestamp;
+  extern  size_t timestamp;
   inline size_t GetTimeStamp() 
   { 
     return timestamp; 
@@ -67,8 +67,8 @@ namespace netgen
   }
   
   /*
-  extern DLL_HEADER int GetTimeStamp();
-  extern DLL_HEADER int NextTimeStamp();
+  extern  int GetTimeStamp();
+  extern  int NextTimeStamp();
   */
   class PointGeomInfo
   {
@@ -437,7 +437,7 @@ namespace netgen
     }
 
     ///
-    DLL_HEADER Element2d ();
+     Element2d ();
     Element2d (const Element2d &) = default;
     Element2d (Element2d &&) = default;
     Element2d & operator= (const Element2d &) = default;
@@ -460,13 +460,13 @@ namespace netgen
       return *this;
     }
     ///
-    DLL_HEADER Element2d (int anp);
+     Element2d (int anp);
     ///
-    DLL_HEADER Element2d (ELEMENT_TYPE type);
+     Element2d (ELEMENT_TYPE type);
     ///
-    DLL_HEADER Element2d (int pi1, int pi2, int pi3);
+     Element2d (int pi1, int pi2, int pi3);
     ///
-    DLL_HEADER Element2d (int pi1, int pi2, int pi3, int pi4);
+     Element2d (int pi1, int pi2, int pi3, int pi4);
     ///
     ELEMENT_TYPE GetType () const { return typ; }
     /// 
@@ -599,7 +599,7 @@ namespace netgen
     /// invert orientation
     inline void Invert ();
     ///
-    DLL_HEADER void Invert2 ();
+     void Invert2 ();
     /// first point number is smallest
     inline void NormalizeNumbering ();
     ///
@@ -621,13 +621,13 @@ namespace netgen
 			    class DenseMatrix & trans) const;
 
     void GetShape (const Point<2> & p, class Vector & shape) const;
-    DLL_HEADER void GetShapeNew (const Point<2> & p, class FlatVector & shape) const;
+     void GetShapeNew (const Point<2> & p, class FlatVector & shape) const;
     template <typename T>
-    DLL_HEADER void GetShapeNew (const Point<2,T> & p, TFlatVector<T> shape) const;
+     void GetShapeNew (const Point<2,T> & p, TFlatVector<T> shape) const;
     /// matrix 2 * np
-    DLL_HEADER void GetDShape (const Point<2> & p, class DenseMatrix & dshape) const;
+     void GetDShape (const Point<2> & p, class DenseMatrix & dshape) const;
     template <typename T>
-    DLL_HEADER void GetDShapeNew (const Point<2,T> & p, class MatrixFixWidth<2,T> & dshape) const;
+     void GetDShapeNew (const Point<2,T> & p, class MatrixFixWidth<2,T> & dshape) const;
     
     /// matrix 2 * np
     void GetPointMatrix (const NgArray<Point<2>> & points,
@@ -764,16 +764,16 @@ namespace netgen
     }
 
     ///
-    DLL_HEADER Element () = default;
+     Element () = default;
     Element (const Element &) = default;
     Element (Element &&) = default;
     Element & operator= (const Element &) = default;
     Element & operator= (Element &&) = default;
 
     ///
-    DLL_HEADER Element (int anp);
+     Element (int anp);
     ///
-    DLL_HEADER Element (ELEMENT_TYPE type);
+     Element (ELEMENT_TYPE type);
     ///
     // Element & operator= (const Element & el2);
 
@@ -781,9 +781,9 @@ namespace netgen
     flagstruct& Flags() { return flags; }
   
     ///
-    DLL_HEADER void SetNP (int anp);
+     void SetNP (int anp);
     ///
-    DLL_HEADER void SetType (ELEMENT_TYPE atyp);
+     void SetType (ELEMENT_TYPE atyp);
     ///
     int GetNP () const { return np; }
     ///
@@ -814,7 +814,7 @@ namespace netgen
         }
     }
 
-    DLL_HEADER bool operator==(const Element & el2) const;
+     bool operator==(const Element & el2) const;
 
     // old style:
     int NP () const { return np; }
@@ -896,7 +896,7 @@ namespace netgen
     /// Calculates Volume of element
     double Volume (const T_POINTS & points) const;
     ///
-    DLL_HEADER void Print (ostream & ost) const;
+     void Print (ostream & ost) const;
     ///
     int GetNFaces () const
     {
@@ -921,9 +921,9 @@ namespace netgen
     ///
     inline void GetFace (int i, Element2d & face) const;
     ///
-    DLL_HEADER void GetFace2 (int i, Element2d & face) const;
+     void GetFace2 (int i, Element2d & face) const;
     ///
-    DLL_HEADER void Invert ();
+     void Invert ();
 
     int GetHpElnr() const { return hp_elnr; }
     void SetHpElnr(int _hp_elnr) { hp_elnr = _hp_elnr; }
@@ -937,7 +937,7 @@ namespace netgen
     void GetNodesLocalNew (NgArray<Point<3> > & points) const;
 
     /// split surface into 3 node trigs
-    DLL_HEADER void GetSurfaceTriangles (NgArray<Element2d> & surftrigs) const;
+     void GetSurfaceTriangles (NgArray<Element2d> & surftrigs) const;
 
 
     /// get number of 'integration points'
@@ -952,7 +952,7 @@ namespace netgen
     void GetShape (const Point<3> & p, class Vector & shape) const;
     // void GetShapeNew (const Point<3> & p, class FlatVector & shape) const;
     template <typename T>
-    DLL_HEADER void GetShapeNew (const Point<3,T> & p, TFlatVector<T> shape) const;
+     void GetShapeNew (const Point<3,T> & p, TFlatVector<T> shape) const;
     /// matrix 2 * np
     void GetDShape (const Point<3> & p, class DenseMatrix & dshape) const;
     template <typename T>
@@ -1028,7 +1028,7 @@ namespace netgen
   {
   public:
     ///
-    DLL_HEADER Segment();
+     Segment();
     Segment (const Segment& other) = default;
 
     // friend ostream & operator<<(ostream  & s, const Segment & seg);
@@ -1156,13 +1156,13 @@ namespace netgen
     double domout_singular;
 
   public:
-    DLL_HEADER FaceDescriptor();
-    DLL_HEADER FaceDescriptor(int surfnri, int domini, int domouti, int tlosurfi);
-    DLL_HEADER FaceDescriptor(const Segment & seg);
-    DLL_HEADER FaceDescriptor(const FaceDescriptor& other);
-    DLL_HEADER ~FaceDescriptor()  { ; }
+     FaceDescriptor();
+     FaceDescriptor(int surfnri, int domini, int domouti, int tlosurfi);
+     FaceDescriptor(const Segment & seg);
+     FaceDescriptor(const FaceDescriptor& other);
+     ~FaceDescriptor()  { ; }
 
-    DLL_HEADER int SegmentFits (const Segment & seg);
+     int SegmentFits (const Segment & seg);
 
     int SurfNr () const { return surfnr; }
     int DomainIn () const { return domin; }
@@ -1177,14 +1177,14 @@ namespace netgen
     // Philippose - 06/07/2009
     // Get Surface colour
     Vec<4> SurfColour () const { return surfcolour; }
-    /* DLL_HEADER */ const string & GetBCName () const { return bcname; }
+    /*  */ const string & GetBCName () const { return bcname; }
     // string * BCNamePtr () { return bcname; }
     // const string * BCNamePtr () const  { return bcname; }
     void SetSurfNr (int sn) { surfnr = sn; }
     void SetDomainIn (int di) { domin = di; }
     void SetDomainOut (int dom) { domout = dom; }
     void SetBCProperty (int bc) { bcprop = bc; }
-    DLL_HEADER void SetBCName (string * bcn); //  { bcname = bcn; }
+     void SetBCName (string * bcn); //  { bcname = bcn; }
     void SetBCName (const string & bcn) { bcname = bcn; }    
     // Philippose - 06/07/2009
     // Set the surface colour
@@ -1222,7 +1222,7 @@ namespace netgen
 
 
 
-  class DLL_HEADER MeshingParameters
+  class  MeshingParameters
   {
   public:
     /**
@@ -1520,17 +1520,17 @@ namespace netgen
 
   public:
     ///
-    DLL_HEADER Identifications (class Mesh & amesh);
+     Identifications (class Mesh & amesh);
     ///
-    DLL_HEADER ~Identifications ();
+     ~Identifications ();
 
-    DLL_HEADER void Delete ();
+     void Delete ();
 
     /*
       Identify points pi1 and pi2, due to
       identification nr identnr
     */
-    DLL_HEADER void Add (PointIndex pi1, PointIndex pi2, int identnr);
+     void Add (PointIndex pi1, PointIndex pi2, int identnr);
     void Add (PointIndex pi1, PointIndex pi2, string name, ID_TYPE type)
     {
         auto nr = GetNr(name);
@@ -1581,7 +1581,7 @@ namespace netgen
     }
     
     ///
-    DLL_HEADER void GetPairs (int identnr, NgArray<INDEX_2> & identpairs) const;
+     void GetPairs (int identnr, NgArray<INDEX_2> & identpairs) const;
     ///
     int GetMaxNr () const { return maxidentnr; }  
 
@@ -1595,7 +1595,7 @@ namespace netgen
     /// remove secondorder
     void SetMaxPointNr (int maxpnum);
 
-    DLL_HEADER void Print (ostream & ost) const;
+     void Print (ostream & ost) const;
 
     void DoArchive (Archive & ar);
   };

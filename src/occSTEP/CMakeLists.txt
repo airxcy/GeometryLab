@@ -70,23 +70,24 @@ SET(OpenCASCADE_LIBS
 #file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
 
 
-file(GLOB netgendll "${ENGINE_DIR}/netgen/bin/*.dll")
 file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/bin/*.dll")
 add_custom_target(copy_dll ALL
     COMMAND ${CMAKE_COMMAND} -E copy
         ${ENGINE_DIR}/freetype/bin/freetype.dll
-        Release/freetype.dll
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${netgendll}
+        $<CONFIG>/freetype.dll
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        NETGENLIB/$<CONFIG>/
+        $<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        NETGENLIB/libsrc/core/$<CONFIG>/
         $<CONFIG>/
     COMMAND ${CMAKE_COMMAND} -E copy
         ${occdll}
         $<CONFIG>/
-    COMMENT "Copying $<CONFIG>"
+    COMMENT "Copying"
 )
 
 
-set(CMAKE_EXE_LINKER_FLAGS "-static")
 # configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll COPYONLY)
 # configure_file(${ENGINE_DIR}/netgen/bin/ngcore.dll D:/projects/GeometryLab/build/src/occSTEP/Release/ngcore.dll COPYONLY)
 # configure_file(${ENGINE_DIR}/netgen/bin/nglib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/nglib.dll COPYONLY)
@@ -98,6 +99,6 @@ link_directories(${ENGINE_DIR}/netgen/lib)
 add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
   ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include 
-  ${ENGINE_DIR}/netgen/include ${ENGINE_DIR}/netgen/include/include)
+  ${ENGINE_DIR}/netgen/libsrc ${ENGINE_DIR}/netgen/libsrc/include ${ENGINE_DIR}/netgen/nglib)
 target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES} ngcore nglib)
 add_dependencies(${PROJECT_NAME} copy_dll)

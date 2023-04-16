@@ -12,7 +12,7 @@
 
 #include "exception.hpp"
 #include "logging.hpp"          // for logger
-#include "ngcore_api.hpp"       // for NGCORE_API
+#include "ngcore_api.hpp"       // for 
 #include "type_traits.hpp"      // for all_of_tmpl
 #include "localheap.hpp"
 #include "memtracer.hpp"

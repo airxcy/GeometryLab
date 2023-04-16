@@ -120,14 +120,14 @@ namespace netgen
   };
 
 
-  class DLL_HEADER MouseEventHandler
+  class  MouseEventHandler
   {
   public:
     virtual void DblClick (int elnr, double x, double y, double z) = 0;
   };
 
   
-  class DLL_HEADER UserVisualizationObject
+  class  UserVisualizationObject
   {
   public:
     virtual ~UserVisualizationObject() { ; } 

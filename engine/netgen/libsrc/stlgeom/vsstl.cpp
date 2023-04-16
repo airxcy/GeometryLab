@@ -21,7 +21,7 @@ namespace netgen
 
 /* *********************** Draw STL Geometry **************** */
 
-DLL_HEADER extern shared_ptr<Mesh> mesh;
+ extern shared_ptr<Mesh> mesh;
 
 
 // #include "../../ngtcltk/mvdraw.hpp"
@@ -1216,7 +1216,7 @@ void VisualSceneSTLMeshing :: MouseDblClick (int px, int py)
 #include <../general/ngpython.hpp>
 #include <core/ngcore_api.hpp>
 
-NGCORE_API_EXPORT void ExportSTLVis(py::module &m)
+_EXPORT void ExportSTLVis(py::module &m)
 {
 	using namespace netgen;
 

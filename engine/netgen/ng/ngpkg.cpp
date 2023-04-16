@@ -40,8 +40,8 @@ extern bool nodisplay;
 
 namespace netgen
 {
-  DLL_HEADER extern MeshingParameters mparam;
-  DLL_HEADER extern void ImportSolution2(const char * filename);
+   extern MeshingParameters mparam;
+   extern void ImportSolution2(const char * filename);
 #include "demoview.hpp"
 }
 
@@ -88,8 +88,8 @@ namespace netgen
   }
   */
 
-  DLL_HEADER extern std::shared_ptr<NetgenGeometry> ng_geometry;
-  DLL_HEADER extern std::shared_ptr<Mesh> mesh;
+   extern std::shared_ptr<NetgenGeometry> ng_geometry;
+   extern std::shared_ptr<Mesh> mesh;
   Tcl_Interp * tcl_interp;
 
 
@@ -105,15 +105,15 @@ namespace netgen
 
   // visualization scenes, pointer vs selects which one is drawn:
 
-  DLL_HEADER extern VisualSceneSurfaceMeshing vssurfacemeshing;
-  DLL_HEADER extern VisualSceneMeshDoctor vsmeshdoc;
+   extern VisualSceneSurfaceMeshing vssurfacemeshing;
+   extern VisualSceneMeshDoctor vsmeshdoc;
 
   static VisualSceneSpecPoints vsspecpoints;
 
 
 
-  DLL_HEADER extern VisualScene *visual_scene;
-  DLL_HEADER extern VisualScene visual_scene_cross;
+   extern VisualScene *visual_scene;
+   extern VisualScene visual_scene_cross;
 
 
 

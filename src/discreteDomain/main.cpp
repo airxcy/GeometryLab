@@ -1,8 +1,17 @@
-
-//#include "netgen/meshing.hpp"
-
+#include <iostream>
+namespace nglib {
+	#include <nglib.h>
+}
+namespace dd {
+#include "asdf.h"
+}
 int main(int* argc, char** argv)
 {
+	std::cout << "init" << std::endl;
+	dd::aa();
+	nglib::asdf();
+	nglib::Ng_Init();
+	std::cout << "done" << std::endl;
 	return 0;
 }
 /*

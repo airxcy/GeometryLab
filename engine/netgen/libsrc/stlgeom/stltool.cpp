@@ -1495,6 +1495,6 @@ void STLParameters :: Print (ostream & ost) const
 }
 
 
-DLL_HEADER extern STLParameters stlparam;
+ extern STLParameters stlparam;
 STLParameters stlparam;
 }

@@ -139,7 +139,7 @@ struct Vertex : Point<2>
   EdgeInfo info;
   PointInfo pinfo;
 
-  DLL_HEADER Vertex * Insert(Point<2> p, double lam = -1.0);
+   Vertex * Insert(Point<2> p, double lam = -1.0);
 
   void Link( Vertex * v )
   {
@@ -636,19 +636,19 @@ struct Solid2d
 
   Solid2d() = default;
   Solid2d(string name_) : name(name_) {}
-  DLL_HEADER Solid2d(const Array<std::variant<Point<2>, EdgeInfo, PointInfo>> & points, string name_=MAT_DEFAULT, string bc_=BC_DEFAULT);
+   Solid2d(const Array<std::variant<Point<2>, EdgeInfo, PointInfo>> & points, string name_=MAT_DEFAULT, string bc_=BC_DEFAULT);
   Solid2d(Solid2d && other) = default;
   Solid2d(const Solid2d & other) = default;
 
-  DLL_HEADER Solid2d operator+(const Solid2d & other) const;
-  DLL_HEADER Solid2d operator*(const Solid2d & other) const;
-  DLL_HEADER Solid2d operator-(const Solid2d & other) const;
+   Solid2d operator+(const Solid2d & other) const;
+   Solid2d operator*(const Solid2d & other) const;
+   Solid2d operator-(const Solid2d & other) const;
 
   Solid2d& operator=(Solid2d && other) = default;
   Solid2d& operator=(const Solid2d & other) = default;
-  DLL_HEADER Solid2d& operator+=(const Solid2d & other);
-  DLL_HEADER Solid2d& operator*=(const Solid2d & other);
-  DLL_HEADER Solid2d& operator-=(const Solid2d & other);
+   Solid2d& operator+=(const Solid2d & other);
+   Solid2d& operator*=(const Solid2d & other);
+   Solid2d& operator-=(const Solid2d & other);
 
   void Append( const Loop & poly )
   {
@@ -731,20 +731,20 @@ class CSG2d
       solids.Append(s);
     }
 
-    DLL_HEADER shared_ptr<netgen::SplineGeometry2d> GenerateSplineGeometry();
-    DLL_HEADER shared_ptr<netgen::Mesh> GenerateMesh(MeshingParameters & mp);
+     shared_ptr<netgen::SplineGeometry2d> GenerateSplineGeometry();
+     shared_ptr<netgen::Mesh> GenerateMesh(MeshingParameters & mp);
 };
 
-DLL_HEADER Solid2d Circle( Point<2> center, double r, string name="", string bc="");
-DLL_HEADER Solid2d Rectangle( Point<2> p0, Point<2> p1, string mat=MAT_DEFAULT, string bc=BC_DEFAULT );
+ Solid2d Circle( Point<2> center, double r, string name="", string bc="");
+ Solid2d Rectangle( Point<2> p0, Point<2> p1, string mat=MAT_DEFAULT, string bc=BC_DEFAULT );
 
-DLL_HEADER void AddIntersectionPoints ( Solid2d & s1, Solid2d & s2 );
-DLL_HEADER Solid2d ClipSolids ( const Solid2d & s1, const Solid2d & s2, char op);
-DLL_HEADER Solid2d ClipSolids ( const Solid2d & s1, Solid2d && s2, char op);
-DLL_HEADER Solid2d ClipSolids ( Solid2d && s1, const Solid2d & s2, char op);
-DLL_HEADER Solid2d ClipSolids ( Solid2d && s1, Solid2d && s2, char op);
+ void AddIntersectionPoints ( Solid2d & s1, Solid2d & s2 );
+ Solid2d ClipSolids ( const Solid2d & s1, const Solid2d & s2, char op);
+ Solid2d ClipSolids ( const Solid2d & s1, Solid2d && s2, char op);
+ Solid2d ClipSolids ( Solid2d && s1, const Solid2d & s2, char op);
+ Solid2d ClipSolids ( Solid2d && s1, Solid2d && s2, char op);
 
-DLL_HEADER IntersectionType intersect(const Point<2> P1, const Point<2> P2, const Point<2> Q1, const Point<2> Q2, double& alpha, double& beta);
+ IntersectionType intersect(const Point<2> P1, const Point<2> P2, const Point<2> Q1, const Point<2> Q2, double& alpha, double& beta);
 
 }
 #endif // NETGEN_CSG2D_HPP_INCLUDED

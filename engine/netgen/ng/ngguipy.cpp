@@ -2,12 +2,12 @@
 #include <../general/ngpython.hpp>
 #include <core/ngcore_api.hpp>
 
-void NGCORE_API_IMPORT ExportMeshVis(py::module &m);
-void NGCORE_API_IMPORT ExportCSGVis(py::module &m);
-void NGCORE_API_IMPORT ExportSTLVis(py::module &m);
+void _IMPORT ExportMeshVis(py::module &m);
+void _IMPORT ExportCSGVis(py::module &m);
+void _IMPORT ExportSTLVis(py::module &m);
 namespace netgen
 {
-  std::vector<unsigned char> NGCORE_API_IMPORT Snapshot( int w, int h );
+  std::vector<unsigned char> _IMPORT Snapshot( int w, int h );
 }
 
 PYBIND11_MODULE(libngguipy, ngpy)

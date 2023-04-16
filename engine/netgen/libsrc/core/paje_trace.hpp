@@ -6,13 +6,13 @@
 #include <vector>
 
 #include "logging.hpp"       // for logger
-#include "ngcore_api.hpp"    // for NGCORE_API
+#include "ngcore_api.hpp"    // for 
 #include "utils.hpp"
 
 namespace ngcore
 {
 
-  extern NGCORE_API class PajeTrace *trace;
+  extern  class PajeTrace *trace;
   class PajeTrace
     {
     public:
@@ -21,10 +21,10 @@ namespace ngcore
     protected:
       std::shared_ptr<Logger> logger = GetLogger("PajeTrace");
     private:
-      NGCORE_API static size_t max_tracefile_size;
-      NGCORE_API static bool trace_thread_counter;
-      NGCORE_API static bool trace_threads;
-      NGCORE_API static bool mem_tracing_enabled;
+       static size_t max_tracefile_size;
+       static bool trace_thread_counter;
+       static bool trace_threads;
+       static bool mem_tracing_enabled;
 
       bool tracing_enabled;
       TTimePoint start_time;
@@ -32,9 +32,9 @@ namespace ngcore
       size_t n_memory_events_at_start;
 
     public:
-      NGCORE_API void WriteTimingChart();
+       void WriteTimingChart();
 #ifdef NETGEN_TRACE_MEMORY
-      NGCORE_API void WriteMemoryChart( std::string fname );
+       void WriteMemoryChart( std::string fname );
 #endif // NETGEN_TRACE_MEMORY
 
       // Approximate number of events to trace. Tracing will
@@ -134,16 +134,16 @@ namespace ngcore
       std::vector<std::tuple<std::string, int>> user_containers;
       std::vector<TimerEvent> gpu_events;
       std::vector<std::vector<ThreadLink> > links;
-      NGCORE_API static std::vector<MemoryEvent> memory_events;
+       static std::vector<MemoryEvent> memory_events;
 
     public:
-      NGCORE_API void StopTracing();
+       void StopTracing();
 
       PajeTrace() = delete;
       PajeTrace(const PajeTrace &) = delete;
       PajeTrace(PajeTrace &&) = delete;
-      NGCORE_API PajeTrace(int anthreads, std::string aname = "");
-      NGCORE_API ~PajeTrace();
+       PajeTrace(int anthreads, std::string aname = "");
+       ~PajeTrace();
 
       void operator=(const PajeTrace &) = delete;
       void operator=(PajeTrace &&) = delete;

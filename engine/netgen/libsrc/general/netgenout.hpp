@@ -9,8 +9,8 @@
 namespace netgen
 {
 
-  //DLL_HEADER extern int printmessage_importance;
-DLL_HEADER extern int printdots;
+  // extern int printmessage_importance;
+ extern int printdots;
 
 
 

@@ -16,20 +16,20 @@ namespace netgen
 {
 
   ///
-  DLL_HEADER extern double GetTime ();
-  DLL_HEADER extern void ResetTime ();
+   extern double GetTime ();
+   extern void ResetTime ();
 
   ///
-  DLL_HEADER extern int testmode;
+   extern int testmode;
 
   /// calling parameters
   // extern Flags parameters;
 
-  // extern DLL_HEADER MeshingParameters mparam;
+  // extern  MeshingParameters mparam;
 
-  DLL_HEADER extern mutex tcl_todo_mutex;
+   extern mutex tcl_todo_mutex;
 
-  class DLL_HEADER multithreadt
+  class  multithreadt
   {
   public:
     int pause;
@@ -45,21 +45,21 @@ namespace netgen
     multithreadt();
   };
 
-  DLL_HEADER extern volatile multithreadt multithread;
+   extern volatile multithreadt multithread;
 
-  DLL_HEADER extern string ngdir;
-  DLL_HEADER extern DebugParameters debugparam;
-  DLL_HEADER extern bool verbose;
+   extern string ngdir;
+   extern DebugParameters debugparam;
+   extern bool verbose;
 
-  DLL_HEADER extern int h_argc;
-  DLL_HEADER extern char ** h_argv;
+   extern int h_argc;
+   extern char ** h_argv;
 
 
-  DLL_HEADER extern weak_ptr<Mesh> global_mesh;
-  DLL_HEADER void SetGlobalMesh (shared_ptr<Mesh> m);
+   extern weak_ptr<Mesh> global_mesh;
+   void SetGlobalMesh (shared_ptr<Mesh> m);
 
   // global communicator for netgen (dummy if no MPI)
-  // extern DLL_HEADER NgMPI_Comm ng_comm;
+  // extern  NgMPI_Comm ng_comm;
   
 }
 

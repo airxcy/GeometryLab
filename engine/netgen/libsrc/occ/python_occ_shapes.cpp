@@ -659,7 +659,7 @@ public:
 
 
 
-DLL_HEADER void ExportNgOCCShapes(py::module &m) 
+ void ExportNgOCCShapes(py::module &m) 
 {
   py::enum_<TopAbs_ShapeEnum>(m, "TopAbs_ShapeEnum", "Enumeration of all supported TopoDS_Shapes")
     .value("COMPOUND", TopAbs_COMPOUND)   .value("COMPSOLID", TopAbs_COMPSOLID)

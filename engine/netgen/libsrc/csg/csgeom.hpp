@@ -23,7 +23,7 @@ namespace netgen
      A top level object is an entity to be meshed.
      I can be either a solid, or one surface patch of a solid.
   */
-  class DLL_HEADER TopLevelObject
+  class  TopLevelObject
   {
     Solid * solid;
     Surface * surface;
@@ -98,7 +98,7 @@ namespace netgen
   /**
      CSGeometry has the whole geometric information
   */
-  class DLL_HEADER CSGeometry : public NetgenGeometry
+  class  CSGeometry : public NetgenGeometry
   {
   private:
     /// all surfaces

@@ -17,7 +17,7 @@
 namespace netgen
 {
 
-  DLL_HEADER extern shared_ptr<Mesh> mesh;
+   extern shared_ptr<Mesh> mesh;
 
 NGGUI_API void ImportSolution2 (const char * filename)
 {

@@ -312,7 +312,7 @@ public:
 
 
 
-DLL_HEADER extern void HPRefinement (Mesh & mesh, Refinement * ref, int levels,
+ extern void HPRefinement (Mesh & mesh, Refinement * ref, int levels,
 			  double fac1=0.125, bool setorders=true, bool ref_level = false);
 
 

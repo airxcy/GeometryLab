@@ -29,14 +29,14 @@ class NgBitArray
   unsigned char * data;
 
 public:
-  DLL_HEADER NgBitArray ();
+   NgBitArray ();
   ///
-  DLL_HEADER NgBitArray (INDEX asize);
+   NgBitArray (INDEX asize);
   ///
-  DLL_HEADER ~NgBitArray ();
+   ~NgBitArray ();
 
   /// 
-  DLL_HEADER void SetSize (INDEX asize);
+   void SetSize (INDEX asize);
   ///
   INDEX Size () const
   {
@@ -44,14 +44,14 @@ public:
   }
 
   ///
-  DLL_HEADER void Set ();
+   void Set ();
   ///
   void Set (INDEX i)
   {
     data[Addr(i)] |= Mask(i);
   }
   
-  DLL_HEADER void Clear ();
+   void Clear ();
 
 
   void Clear (INDEX i)

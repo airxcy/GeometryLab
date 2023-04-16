@@ -128,7 +128,7 @@ namespace netgen
 
 
 
-  class DLL_HEADER SplineGeometry2d : public SplineGeometry<2>, public NetgenGeometry
+  class  SplineGeometry2d : public SplineGeometry<2>, public NetgenGeometry
   {
   protected:
     NgArray<char*> materials;

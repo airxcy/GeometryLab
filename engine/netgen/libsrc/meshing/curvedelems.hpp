@@ -36,8 +36,8 @@ class CurvedElements
   void buildJacPols();
 
 public:
-  DLL_HEADER CurvedElements (const Mesh & amesh);
-  DLL_HEADER ~CurvedElements();
+   CurvedElements (const Mesh & amesh);
+   ~CurvedElements();
 
   // bool IsHighOrder() const { return order > 1; }
   bool IsHighOrder() const { return ishighorder; }
@@ -45,7 +45,7 @@ public:
   // void SetHighOrder (int aorder) { order=aorder; }
   void SetIsHighOrder (bool ho) { ishighorder = ho; }
   
-  DLL_HEADER void BuildCurvedElements(const Refinement * ref, int aorder, bool arational = false);
+   void BuildCurvedElements(const Refinement * ref, int aorder, bool arational = false);
 
   int GetOrder () { return order; }
 
@@ -57,10 +57,10 @@ public:
       & edgeweight & order & rational & ishighorder;
   }
 
-  DLL_HEADER bool IsSegmentCurved (SegmentIndex segnr) const;
-  DLL_HEADER bool IsSurfaceElementCurved (SurfaceElementIndex sei) const;
-  DLL_HEADER bool IsElementCurved (ElementIndex ei) const;
-  DLL_HEADER bool IsElementHighOrder (ElementIndex ei) const;
+   bool IsSegmentCurved (SegmentIndex segnr) const;
+   bool IsSurfaceElementCurved (SurfaceElementIndex sei) const;
+   bool IsElementCurved (ElementIndex ei) const;
+   bool IsElementHighOrder (ElementIndex ei) const;
 
 
   void CalcSegmentTransformation (double xi, SegmentIndex segnr,
@@ -135,7 +135,7 @@ public:
                                             T * x, size_t sx,
                                             T * dxdxi, size_t sdxdxi);
 
-  DLL_HEADER void CalcMultiPointSurfaceTransformation (NgArray< Point<2> > * xi, SurfaceElementIndex elnr,
+   void CalcMultiPointSurfaceTransformation (NgArray< Point<2> > * xi, SurfaceElementIndex elnr,
 					    NgArray< Point<3> > * x,
 					    NgArray< Mat<3,2> > * dxdxi);
 
@@ -145,7 +145,7 @@ public:
                                             T * x, size_t sx,
                                             T * dxdxi, size_t sdxdxi);
 
-  DLL_HEADER void CalcMultiPointElementTransformation (NgArray< Point<3> > * xi, ElementIndex elnr,
+   void CalcMultiPointElementTransformation (NgArray< Point<3> > * xi, ElementIndex elnr,
 					    NgArray< Point<3> > * x,
 					    NgArray< Mat<3,3> > * dxdxi);
 
@@ -161,13 +161,13 @@ public:
 private:
 
   template <typename T>
-  DLL_HEADER void CalcSegmentTransformation (const T & xi, SegmentIndex segnr,
+   void CalcSegmentTransformation (const T & xi, SegmentIndex segnr,
 				  Point<3,T> * x = NULL, Vec<3,T> * dxdxi = NULL, bool * curved = NULL);
 
-  DLL_HEADER void CalcSurfaceTransformation (Point<2> xi, SurfaceElementIndex elnr,
+   void CalcSurfaceTransformation (Point<2> xi, SurfaceElementIndex elnr,
 				  Point<3> * x = NULL, Mat<3,2> * dxdxi = NULL, bool * curved = NULL);
 
-  DLL_HEADER void CalcElementTransformation (Point<3> xi, ElementIndex elnr,
+   void CalcElementTransformation (Point<3> xi, ElementIndex elnr,
 				  Point<3> * x = NULL, Mat<3,3> * dxdxi = NULL, // bool * curved = NULL,
                                   void * buffer = NULL, bool valid = 0);
 

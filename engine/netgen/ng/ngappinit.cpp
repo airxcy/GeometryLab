@@ -20,11 +20,11 @@
 
 namespace netgen
 {
-  DLL_HEADER extern Flags parameters;
-  DLL_HEADER extern bool netgen_executable_started;
+   extern Flags parameters;
+   extern bool netgen_executable_started;
 }
  
-DLL_HEADER extern bool nodisplay;
+ extern bool nodisplay;
 
 
 using netgen::parameters;
@@ -205,7 +205,7 @@ int main(int argc, char ** argv)
             cout << "using internal Tcl-script" << endl;
       
           // connect to one string 
-          DLL_HEADER extern const char * ngscript[];
+           extern const char * ngscript[];
           const char ** hcp = ngscript;
           int len = 0;
           while (*hcp)

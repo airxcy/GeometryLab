@@ -1,5 +1,5 @@
 #include <mydefs.hpp>
-DLL_HEADER const char * ngscript[] = {""
+ const char * ngscript[] = {""
 ,"catch {lappend auto_path $env(NETGENDIR) }\n"
 ,"catch {lappend auto_path $env(NETGENDIR)/../lib }\n"
 ,"if {[catch {Ng_GetCommandLineParameter batchmode} result ]} {\n"

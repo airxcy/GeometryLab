@@ -14,7 +14,7 @@
 namespace netgen
 {
 
-  class DLL_HEADER SurfaceGeometry : public NetgenGeometry
+  class  SurfaceGeometry : public NetgenGeometry
   {
     function<Vec<3>(Point<2>)> func;
     double eps=1e-4;

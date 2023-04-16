@@ -4,7 +4,7 @@
 namespace netgen
 {
 
-  DLL_HEADER void Optimize2d (Mesh & mesh, MeshingParameters & mp)
+   void Optimize2d (Mesh & mesh, MeshingParameters & mp)
   {
     static Timer timer("optimize2d"); RegionTimer reg(timer);
 

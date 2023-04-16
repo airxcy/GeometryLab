@@ -3,7 +3,7 @@
 
 
 ///
-DLL_HEADER extern void InsertVirtualBoundaryLayer (Mesh & mesh);
+ extern void InsertVirtualBoundaryLayer (Mesh & mesh);
 
 /// Create a typical prismatic boundary layer on the given 
 /// surfaces
@@ -23,10 +23,10 @@ public:
   Array<size_t> project_boundaries;
 };
 
-DLL_HEADER void GenerateBoundaryLayer (Mesh & mesh,
+ void GenerateBoundaryLayer (Mesh & mesh,
                                        const BoundaryLayerParameters & blp);
 
-DLL_HEADER int /* new_domain_number */ GenerateBoundaryLayer2 (Mesh & mesh, int domain, const Array<double> & thicknesses, bool should_make_new_domain=true, const Array<int> & boundaries=Array<int>{});
+ int /* new_domain_number */ GenerateBoundaryLayer2 (Mesh & mesh, int domain, const Array<double> & thicknesses, bool should_make_new_domain=true, const Array<int> & boundaries=Array<int>{});
 
 class BoundaryLayerTool
 {

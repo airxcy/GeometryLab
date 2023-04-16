@@ -17,7 +17,7 @@ namespace netgen
 
 MeshDoctorParameters meshdoctor;
 
-DLL_HEADER extern shared_ptr<Mesh> mesh;
+ extern shared_ptr<Mesh> mesh;
 
 
 

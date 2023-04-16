@@ -49,7 +49,7 @@ namespace netgen
     string name = "";
   };
 
-  class DLL_HEADER GeometryShape
+  class  GeometryShape
   {
   public:
     int nr = -1;
@@ -65,14 +65,14 @@ namespace netgen
   };
 
 
-  class DLL_HEADER GeometryVertex : public GeometryShape
+  class  GeometryVertex : public GeometryShape
   {
   public:
     virtual Point<3> GetPoint() const = 0;
     virtual bool IsMappedShape( const GeometryShape & other, const Transformation<3> & trafo, double tolerance ) const override;
   };
 
-  class DLL_HEADER GeometryEdge : public GeometryShape
+  class  GeometryEdge : public GeometryShape
   {
   protected:
       GeometryVertex *start, *end;
@@ -113,7 +113,7 @@ namespace netgen
     virtual void Divide(const MeshingParameters & mparam, const Mesh & mesh, Array<Point<3>> & points, Array<double> & params);
   };
 
-  class DLL_HEADER GeometryFace : public GeometryShape
+  class  GeometryFace : public GeometryShape
   {
   public:
     Array<GeometryEdge*> edges;
@@ -177,10 +177,10 @@ namespace netgen
                        int depth = 0, double h = 0.) const;
   };
 
-  class DLL_HEADER GeometrySolid : public GeometryShape
+  class  GeometrySolid : public GeometryShape
   { };
 
-  class DLL_HEADER NetgenGeometry
+  class  NetgenGeometry
   {
     unique_ptr<Refinement> ref;
   protected:
@@ -327,7 +327,7 @@ namespace netgen
 
 
 
-  class DLL_HEADER GeometryRegister
+  class  GeometryRegister
   {
   public:
     virtual ~GeometryRegister();
@@ -338,7 +338,7 @@ namespace netgen
     virtual void SetParameters (Tcl_Interp * /* interp */) { ; }
   };
 
-  class DLL_HEADER GeometryRegisterArray : public NgArray<GeometryRegister*>
+  class  GeometryRegisterArray : public NgArray<GeometryRegister*>
   {
   public:
     virtual ~GeometryRegisterArray()
@@ -350,8 +350,8 @@ namespace netgen
     virtual shared_ptr<NetgenGeometry> LoadFromMeshFile (istream & ist) const;
   };
 
-  // extern DLL_HEADER NgArray<GeometryRegister*> geometryregister; 
-  extern DLL_HEADER GeometryRegisterArray geometryregister; 
+  // extern  NgArray<GeometryRegister*> geometryregister; 
+  extern  GeometryRegisterArray geometryregister; 
 }
 
 

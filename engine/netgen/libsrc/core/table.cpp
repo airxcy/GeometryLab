@@ -62,9 +62,9 @@ namespace ngcore
     return index;
   }
 
-  NGCORE_API size_t * TablePrefixSum32 (FlatArray<unsigned int> entrysize)
+   size_t * TablePrefixSum32 (FlatArray<unsigned int> entrysize)
   { return TablePrefixSum2 (entrysize); }
-  NGCORE_API size_t * TablePrefixSum64 (FlatArray<size_t> entrysize)
+   size_t * TablePrefixSum64 (FlatArray<size_t> entrysize)
   { return TablePrefixSum2 (entrysize); }
 
   /*

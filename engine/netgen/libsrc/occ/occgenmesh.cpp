@@ -32,7 +32,7 @@ namespace netgen
 #define VSMALL 1e-10
 
 
-  DLL_HEADER bool merge_solids = false;
+   bool merge_solids = false;
 
 
   // can you please explain what you intend to compute here (JS) !!!

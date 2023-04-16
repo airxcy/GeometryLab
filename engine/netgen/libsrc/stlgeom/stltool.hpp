@@ -252,12 +252,12 @@ public:
   void Print (ostream & ost) const;
 };
 
-DLL_HEADER extern STLDoctorParams stldoctor;
+ extern STLDoctorParams stldoctor;
 
 
 
 // TODO change enable flag to optional parameters
-class DLL_HEADER STLParameters
+class  STLParameters
 {
 public:
   /// angle for edge detection

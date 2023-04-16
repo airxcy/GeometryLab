@@ -69,13 +69,13 @@ extern double ComputeCylinderRadius (const Vec3d & n1, const Vec3d & n2,
 				     double h1, double h2);
 
 /// Minimal distance of point p to the line segment [lp1,lp2]
-DLL_HEADER double MinDistLP2 (const Point2d & lp1, const Point2d & lp2, const Point2d & p);
+ double MinDistLP2 (const Point2d & lp1, const Point2d & lp2, const Point2d & p);
 
 /// Minimal distance of point p to the line segment [lp1,lp2]
-DLL_HEADER double MinDistLP2 (const Point3d & lp1, const Point3d & lp2, const Point3d & p);
+ double MinDistLP2 (const Point3d & lp1, const Point3d & lp2, const Point3d & p);
 
 /// Minimal distance of point p to the triangle segment [tp1,tp2,pt3]
-DLL_HEADER double MinDistTP2 (const Point3d & tp1, const Point3d & tp2, 
+ double MinDistTP2 (const Point3d & tp1, const Point3d & tp2, 
 			  const Point3d & tp3, const Point3d & p);
 
   inline double MinDistTP2 (const Point<2> & tp1, const Point<2> & tp2, 

@@ -34,17 +34,17 @@ void ReadEnclString(istream & in, string & str, const char encl);
 
 class MyStr;
 
-DLL_HEADER MyStr operator + (const MyStr &, const MyStr &);
-DLL_HEADER int operator == (const MyStr &, const MyStr &);
-DLL_HEADER int operator < (const MyStr &, const MyStr &);
-DLL_HEADER int operator <= (const MyStr &, const MyStr &);
-DLL_HEADER int operator > (const MyStr &, const MyStr &);
-DLL_HEADER int operator >= (const MyStr &, const MyStr &);
-DLL_HEADER int operator != (const MyStr &, const MyStr &);
-DLL_HEADER ostream& operator << (ostream &, const MyStr &);
-DLL_HEADER istream& operator >> (istream &, MyStr &);
+ MyStr operator + (const MyStr &, const MyStr &);
+ int operator == (const MyStr &, const MyStr &);
+ int operator < (const MyStr &, const MyStr &);
+ int operator <= (const MyStr &, const MyStr &);
+ int operator > (const MyStr &, const MyStr &);
+ int operator >= (const MyStr &, const MyStr &);
+ int operator != (const MyStr &, const MyStr &);
+ ostream& operator << (ostream &, const MyStr &);
+ istream& operator >> (istream &, MyStr &);
 
-class DLL_HEADER MyStr
+class  MyStr
 {
 public:
   MyStr();
@@ -72,7 +72,7 @@ public:
   int Find(const char *);
   int Find(const MyStr &);
   MyStr& operator = (const MyStr &);
-  DLL_HEADER friend MyStr operator + (const MyStr &, const MyStr &);
+   friend MyStr operator + (const MyStr &, const MyStr &);
   void operator += (const MyStr &);
   char* c_str();
   string cpp_string(void) const;
@@ -90,14 +90,14 @@ public:
   char& operator [] (unsigned int);
   char operator [] (unsigned int) const;
 
-  DLL_HEADER friend int operator == (const MyStr &, const MyStr &);
-  DLL_HEADER friend int operator < (const MyStr &, const MyStr &);
-  DLL_HEADER friend int operator <= (const MyStr &, const MyStr &);
-  DLL_HEADER friend int operator > (const MyStr &, const MyStr &);
-  DLL_HEADER friend int operator >= (const MyStr &, const MyStr &);
-  DLL_HEADER friend int operator != (const MyStr &, const MyStr &);
-  DLL_HEADER friend ostream& operator << (ostream &, const MyStr &);
-  DLL_HEADER friend istream& operator >> (istream &, MyStr &);
+   friend int operator == (const MyStr &, const MyStr &);
+   friend int operator < (const MyStr &, const MyStr &);
+   friend int operator <= (const MyStr &, const MyStr &);
+   friend int operator > (const MyStr &, const MyStr &);
+   friend int operator >= (const MyStr &, const MyStr &);
+   friend int operator != (const MyStr &, const MyStr &);
+   friend ostream& operator << (ostream &, const MyStr &);
+   friend istream& operator >> (istream &, MyStr &);
   static void SetToErrHandler(void (*)());
 private:
   MyStr(unsigned, int);

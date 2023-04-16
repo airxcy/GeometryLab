@@ -12,7 +12,7 @@
 namespace ngcore
 {
 
-  NGCORE_API extern int printmessage_importance;
+   extern int printmessage_importance;
  
   // important message
   class IM
@@ -35,7 +35,7 @@ namespace ngcore
   {
     std::ostream & ost;
     bool active;
-    NGCORE_API static bool glob_active;
+     static bool glob_active;
     double trunc;
   public:
     NGSOStream (std::ostream & aost, bool aactive)

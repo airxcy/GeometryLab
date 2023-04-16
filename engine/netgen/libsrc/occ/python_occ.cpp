@@ -59,12 +59,12 @@ void CreateOCCParametersFromKwargs(OCCParameters& occparam, py::dict kwargs)
 
 extern py::object CastShape(const TopoDS_Shape & s);
 
-DLL_HEADER void ExportNgOCCBasic(py::module &m);
-DLL_HEADER void ExportNgOCCShapes(py::module &m);
+ void ExportNgOCCBasic(py::module &m);
+ void ExportNgOCCShapes(py::module &m);
 
 
 
-DLL_HEADER void ExportNgOCC(py::module &m) 
+ void ExportNgOCC(py::module &m) 
 {
   m.attr("occ_version") = OCC_VERSION_COMPLETE;
 

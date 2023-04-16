@@ -1,0 +1,8 @@
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/zlib.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/zlibstatic.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/example.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/minigzip.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/RUN_TESTS.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/INSTALL.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/ALL_BUILD.dir
+D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/ZERO_CHECK.dir

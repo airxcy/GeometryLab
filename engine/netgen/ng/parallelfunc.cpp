@@ -55,7 +55,7 @@ namespace netgen {
   extern VisualSceneMesh vsmesh;
   extern VisualSceneSolution & GetVSSolution();
   extern Flags parameters;
-  extern DLL_HEADER MeshingParameters mparam;
+  extern  MeshingParameters mparam;
 }
 
 using namespace netgen;

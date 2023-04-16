@@ -25,7 +25,7 @@ namespace ngcore
       The flag structure maintains string flags, numerical flags,
       define flags, string list flags, num list flags.
   */
-  class NGCORE_API Flags 
+  class  Flags 
   {
     /// string flags
     SymbolTable<std::string> strflags;

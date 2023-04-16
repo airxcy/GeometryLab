@@ -34,7 +34,7 @@ namespace netgen
     string GetBCName(int i) const { return bcnames[i]; }
     string GetBCNameOf(Point<3> p1, Point<3> p2) const;
     
-    DLL_HEADER void AppendPoint(const Point<3> & p, const double reffac = 1., const bool hpref=false);
+     void AppendPoint(const Point<3> & p, const double reffac = 1., const bool hpref=false);
     void AppendSegment(shared_ptr<SplineSeg<3>> spline, string & bcname, double amaxh = -1);
 
     const shared_ptr<NgArray<shared_ptr<OneSurfacePrimitive>>> CreateCuttingSurfaces();

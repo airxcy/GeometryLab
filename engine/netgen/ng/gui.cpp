@@ -5,17 +5,17 @@
 
 namespace netgen
 {
-  NGCORE_API_EXPORT Flags parameters;
+  _EXPORT Flags parameters;
 }
 
-NGCORE_API_EXPORT bool nodisplay = false;
+_EXPORT bool nodisplay = false;
 
 extern "C" int Ng_Init (Tcl_Interp * interp);
 extern "C" int Ng_Vis_Init (Tcl_Interp * interp);
 extern "C" void Ng_TclCmd(string);
 
 // tcl package dynamic load
-extern "C" int NGCORE_API_EXPORT Gui_Init (Tcl_Interp * interp)
+extern "C" int _EXPORT Gui_Init (Tcl_Interp * interp)
 {
   Tcl_InitStubs( interp, TCL_VERSION, 0 );
   Tk_InitStubs( interp, TK_VERSION, 0 );

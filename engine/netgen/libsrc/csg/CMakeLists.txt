@@ -7,9 +7,6 @@ target_sources(nglib PRIVATE
         python_csg.cpp splinesurface.cpp
 )
 
-if(USE_GUI)
-    target_sources(nggui PRIVATE vscsg.cpp csgpkg.cpp)
-endif(USE_GUI)
 
 install(FILES
   algprim.hpp brick.hpp csgeom.hpp csg.hpp csgparser.hpp
@@ -18,5 +15,5 @@ install(FILES
   polyhedra.hpp revolution.hpp singularref.hpp solid.hpp
   specpoin.hpp spline3d.hpp splinesurface.hpp surface.hpp
   triapprox.hpp vscsg.hpp
-  DESTINATION ${NG_INSTALL_DIR_INCLUDE}/csg COMPONENT netgen_devel
+  DESTINATION ${NG_INSTALL_DIR_INCLUDE}/csg 
 )

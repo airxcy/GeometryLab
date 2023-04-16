@@ -45,7 +45,7 @@ namespace ngcore
       static constexpr std::false_type check(...);
       using type = decltype(check<T>(nullptr)); // NOLINT
     public:
-      NGCORE_API static constexpr bool value = type::value;
+       static constexpr bool value = type::value;
     };
   }
   template<typename T>

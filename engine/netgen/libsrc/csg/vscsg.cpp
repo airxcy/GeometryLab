@@ -17,11 +17,11 @@ namespace netgen
 
   /* *********************** Draw Geometry **************** */
 
-  DLL_HEADER extern shared_ptr<Mesh> mesh;
-  DLL_HEADER extern NgArray<SpecialPoint> global_specpoints;
+   extern shared_ptr<Mesh> mesh;
+   extern NgArray<SpecialPoint> global_specpoints;
   NgArray<SpecialPoint> & specpoints = global_specpoints;
   
-  DLL_HEADER extern NgArray<Box<3> > boxes;
+   extern NgArray<Box<3> > boxes;
 
 
 

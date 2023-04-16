@@ -19,7 +19,7 @@
 
 using namespace netgen;
 
-DLL_HEADER void ExportNgOCCBasic(py::module &m) 
+ void ExportNgOCCBasic(py::module &m) 
 {
   py::class_<gp_Pnt>(m, "gp_Pnt", "3d OCC point")
     .def(py::init([] (py::tuple pnt)

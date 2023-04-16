@@ -37,15 +37,15 @@ namespace netgen
         return Vec<3> (v.X(), v.Y(), v.Z());
     }
 
-    DLL_HEADER Point<3> occ2ng (const TopoDS_Shape & s);
+     Point<3> occ2ng (const TopoDS_Shape & s);
 
     inline Point<3> occ2ng (const TopoDS_Vertex & v)
     {
         return occ2ng (BRep_Tool::Pnt (v));
     }
 
-    DLL_HEADER Transformation<3> occ2ng (const gp_Trsf & t);
-    DLL_HEADER Transformation<3> occ2ng (const gp_GTrsf & t);
+     Transformation<3> occ2ng (const gp_Trsf & t);
+     Transformation<3> occ2ng (const gp_GTrsf & t);
     inline Transformation<3> occ2ng (const variant<gp_Trsf, gp_GTrsf> & t)
     {
       if(auto t1 = get_if<gp_Trsf>(&t))
@@ -58,7 +58,7 @@ namespace netgen
         return gp_Pnt(p(0), p(1), p(2));
     }
 
-    DLL_HEADER Box<3> GetBoundingBox( const TopoDS_Shape & shape );
+     Box<3> GetBoundingBox( const TopoDS_Shape & shape );
 
     class OCCIdentification
     {
@@ -130,9 +130,9 @@ namespace netgen
     class ListOfShapes : public std::vector<TopoDS_Shape>
     {
     public:
-      DLL_HEADER TopoDS_Shape Max(gp_Vec dir);
-      DLL_HEADER TopoDS_Shape Nearest(gp_Pnt pnt);
-      DLL_HEADER ListOfShapes SubShapes(TopAbs_ShapeEnum type) const;
+       TopoDS_Shape Max(gp_Vec dir);
+       TopoDS_Shape Nearest(gp_Pnt pnt);
+       ListOfShapes SubShapes(TopAbs_ShapeEnum type) const;
 
       ListOfShapes Solids() const
       {

@@ -27,7 +27,7 @@ namespace netgen {
                                  shared_ptr<Mesh> & mesh, 
                                  MeshingParameters & mp);
    extern MeshingParameters mparam;
-   DLL_HEADER extern STLParameters stlparam;
+    extern STLParameters stlparam;
 }
 
 
@@ -64,15 +64,16 @@ using namespace netgen;
 
 // constants and types:
 
+
+
 namespace nglib
 {
   inline void NOOP_Deleter(void *) { ; }
 
   
    // initialize, deconstruct Netgen library:
-   NGLIB_API void Ng_Init ()
+    void Ng_Init ()
    {
-      std::cout<< "------"<<std::endl;
       mycout = &cout;
       myerr = &cerr;
       // netgen::testout->SetOutStream (new ofstream ("test.out"));
@@ -83,7 +84,7 @@ namespace nglib
 
 
    // Clean-up functions before ending usage of nglib
-   NGLIB_API void Ng_Exit ()
+    void Ng_Exit ()
    {
       ;
    }
@@ -92,7 +93,7 @@ namespace nglib
 
 
    // Create a new netgen mesh object
-   NGLIB_API Ng_Mesh * Ng_NewMesh ()
+    Ng_Mesh * Ng_NewMesh ()
    {
       Mesh * mesh = new Mesh;  
       mesh->AddFaceDescriptor (FaceDescriptor (1, 1, 0, 1));
@@ -103,7 +104,7 @@ namespace nglib
 
 
    // Delete an existing netgen mesh object
-   NGLIB_API void Ng_DeleteMesh (Ng_Mesh * mesh)
+    void Ng_DeleteMesh (Ng_Mesh * mesh)
    {
       if(mesh != NULL)
       {
@@ -122,7 +123,7 @@ namespace nglib
 
 
    // Save a netgen mesh in the native VOL format 
-   NGLIB_API void Ng_SaveMesh(Ng_Mesh * mesh, const char* filename)
+    void Ng_SaveMesh(Ng_Mesh * mesh, const char* filename)
    {
       ((Mesh*)mesh)->Save(filename);
    }
@@ -131,7 +132,7 @@ namespace nglib
 
 
    // Load a netgen native VOL mesh from a given file
-   NGLIB_API Ng_Mesh * Ng_LoadMesh(const char* filename)
+    Ng_Mesh * Ng_LoadMesh(const char* filename)
    {
       Mesh * mesh = new Mesh;
       mesh->Load(filename);
@@ -142,7 +143,7 @@ namespace nglib
 
 
    // Merge another mesh file into the currently loaded one
-   NGLIB_API Ng_Result Ng_MergeMesh( Ng_Mesh* mesh, const char* filename)
+    Ng_Result Ng_MergeMesh( Ng_Mesh* mesh, const char* filename)
    {
       Ng_Result status = NG_OK;
 
@@ -183,7 +184,7 @@ namespace nglib
 
 
    // Merge another mesh file into the currently loaded one
-   NGLIB_API Ng_Result Ng_MergeMesh( Ng_Mesh* mesh1, Ng_Mesh* mesh2)
+    Ng_Result Ng_MergeMesh( Ng_Mesh* mesh1, Ng_Mesh* mesh2)
    {
       return NG_ERROR;
    }
@@ -192,7 +193,7 @@ namespace nglib
 
 
    // Manually add a point to an existing mesh object
-   NGLIB_API void Ng_AddPoint (Ng_Mesh * mesh, double * x)
+    void Ng_AddPoint (Ng_Mesh * mesh, double * x)
    {
       Mesh * m = (Mesh*)mesh;
       m->AddPoint (Point3d (x[0], x[1], x[2]));
@@ -202,7 +203,7 @@ namespace nglib
 
 
    // Manually add a surface element of a given type to an existing mesh object
-   NGLIB_API void Ng_AddSurfaceElement (Ng_Mesh * mesh, Ng_Surface_Element_Type et,
+    void Ng_AddSurfaceElement (Ng_Mesh * mesh, Ng_Surface_Element_Type et,
                                          int * pi)
    {
       Mesh * m = (Mesh*)mesh;
@@ -218,7 +219,7 @@ namespace nglib
 
 
    // Manually add a volume element of a given type to an existing mesh object
-   NGLIB_API void Ng_AddVolumeElement (Ng_Mesh * mesh, Ng_Volume_Element_Type et,
+    void Ng_AddVolumeElement (Ng_Mesh * mesh, Ng_Volume_Element_Type et,
                                         int * pi)
    {
       Mesh * m = (Mesh*)mesh;
@@ -235,7 +236,7 @@ namespace nglib
 
 
    // Obtain the number of points in the mesh
-   NGLIB_API int Ng_GetNP (Ng_Mesh * mesh)
+    int Ng_GetNP (Ng_Mesh * mesh)
    {
       return ((Mesh*)mesh) -> GetNP();
    }
@@ -244,7 +245,7 @@ namespace nglib
 
 
    // Obtain the number of surface elements in the mesh
-   NGLIB_API int Ng_GetNSE (Ng_Mesh * mesh)
+    int Ng_GetNSE (Ng_Mesh * mesh)
    {
       return ((Mesh*)mesh) -> GetNSE();
    }
@@ -253,7 +254,7 @@ namespace nglib
 
 
    // Obtain the number of volume elements in the mesh
-   NGLIB_API int Ng_GetNE (Ng_Mesh * mesh)
+    int Ng_GetNE (Ng_Mesh * mesh)
    {
       return ((Mesh*)mesh) -> GetNE();
    }
@@ -262,7 +263,7 @@ namespace nglib
 
 
    //  Return point coordinates of a given point index in the mesh
-   NGLIB_API void Ng_GetPoint (Ng_Mesh * mesh, int num, double * x)
+    void Ng_GetPoint (Ng_Mesh * mesh, int num, double * x)
    {
       const Point3d & p = ((Mesh*)mesh)->Point(num);
       x[0] = p.X();
@@ -274,7 +275,7 @@ namespace nglib
 
 
    // Return the surface element at a given index "pi"
-   NGLIB_API Ng_Surface_Element_Type 
+    Ng_Surface_Element_Type 
       Ng_GetSurfaceElement (Ng_Mesh * mesh, int num, int * pi)
    {
       const Element2d & el = ((Mesh*)mesh)->SurfaceElement(num);
@@ -305,7 +306,7 @@ namespace nglib
 
 
    // Return the volume element at a given index "pi"
-   NGLIB_API Ng_Volume_Element_Type
+    Ng_Volume_Element_Type
       Ng_GetVolumeElement (Ng_Mesh * mesh, int num, int * pi)
    {
       const Element & el = ((Mesh*)mesh)->VolumeElement(num);
@@ -328,7 +329,7 @@ namespace nglib
 
 
    // Set a global limit on the maximum mesh size allowed
-   NGLIB_API void Ng_RestrictMeshSizeGlobal (Ng_Mesh * mesh, double h)
+    void Ng_RestrictMeshSizeGlobal (Ng_Mesh * mesh, double h)
    {
       ((Mesh*)mesh) -> SetGlobalH (h);
    }
@@ -337,7 +338,7 @@ namespace nglib
 
 
    // Set a local limit on the maximum mesh size allowed around the given point
-   NGLIB_API void Ng_RestrictMeshSizePoint (Ng_Mesh * mesh, double * p, double h)
+    void Ng_RestrictMeshSizePoint (Ng_Mesh * mesh, double * p, double h)
    {
       ((Mesh*)mesh) -> RestrictLocalH (Point3d (p[0], p[1], p[2]), h);
    }
@@ -346,7 +347,7 @@ namespace nglib
 
 
    // Set a local limit on the maximum mesh size allowed within a given box region
-   NGLIB_API void Ng_RestrictMeshSizeBox (Ng_Mesh * mesh, double * pmin, double * pmax, double h)
+    void Ng_RestrictMeshSizeBox (Ng_Mesh * mesh, double * pmin, double * pmax, double h)
    {
       for (double x = pmin[0]; x < pmax[0]; x += h)
          for (double y = pmin[1]; y < pmax[1]; y += h)
@@ -358,7 +359,7 @@ namespace nglib
 
 
    // Generates volume mesh from an existing surface mesh
-   NGLIB_API Ng_Result Ng_GenerateVolumeMesh (Ng_Mesh * mesh, Ng_Meshing_Parameters * mp)
+    Ng_Result Ng_GenerateVolumeMesh (Ng_Mesh * mesh, Ng_Meshing_Parameters * mp)
    {
       Mesh * m = (Mesh*)mesh;
 
@@ -381,7 +382,7 @@ namespace nglib
 
 
    /* ------------------ 2D Meshing Functions ------------------------- */
-   NGLIB_API void Ng_AddPoint_2D (Ng_Mesh * mesh, double * x)
+    void Ng_AddPoint_2D (Ng_Mesh * mesh, double * x)
    {
       Mesh * m = (Mesh*)mesh;
 
@@ -391,7 +392,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_AddBoundarySeg_2D (Ng_Mesh * mesh, int pi1, int pi2)
+    void Ng_AddBoundarySeg_2D (Ng_Mesh * mesh, int pi1, int pi2)
    {
       Mesh * m = (Mesh*)mesh;
 
@@ -404,7 +405,7 @@ namespace nglib
 
 
 
-   NGLIB_API int Ng_GetNP_2D (Ng_Mesh * mesh)
+    int Ng_GetNP_2D (Ng_Mesh * mesh)
    {
       Mesh * m = (Mesh*)mesh;
       return m->GetNP();
@@ -413,7 +414,7 @@ namespace nglib
 
 
 
-   NGLIB_API int Ng_GetNE_2D (Ng_Mesh * mesh)
+    int Ng_GetNE_2D (Ng_Mesh * mesh)
    {
       Mesh * m = (Mesh*)mesh;
       return m->GetNSE();
@@ -422,7 +423,7 @@ namespace nglib
 
 
 
-   NGLIB_API int Ng_GetNSeg_2D (Ng_Mesh * mesh)
+    int Ng_GetNSeg_2D (Ng_Mesh * mesh)
    {
       Mesh * m = (Mesh*)mesh;
       return m->GetNSeg();
@@ -431,7 +432,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_GetPoint_2D (Ng_Mesh * mesh, int num, double * x)
+    void Ng_GetPoint_2D (Ng_Mesh * mesh, int num, double * x)
    {
       Mesh * m = (Mesh*)mesh;
 
@@ -443,7 +444,7 @@ namespace nglib
 
 
 
-   NGLIB_API Ng_Surface_Element_Type
+    Ng_Surface_Element_Type
       Ng_GetElement_2D (Ng_Mesh * mesh, int num, int * pi, int * matnum)
    {
       const Element2d & el = ((Mesh*)mesh)->SurfaceElement(num);
@@ -478,7 +479,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_GetSegment_2D (Ng_Mesh * mesh, int num, int * pi, int * matnum)
+    void Ng_GetSegment_2D (Ng_Mesh * mesh, int num, int * pi, int * matnum)
    {
       const Segment & seg = ((Mesh*)mesh)->LineSegment(num);
       pi[0] = seg[0];
@@ -491,7 +492,7 @@ namespace nglib
 
 
 
-   NGLIB_API Ng_Geometry_2D * Ng_LoadGeometry_2D (const char * filename)
+    Ng_Geometry_2D * Ng_LoadGeometry_2D (const char * filename)
    {
       SplineGeometry2d * geom = new SplineGeometry2d();
       geom -> Load (filename);
@@ -499,7 +500,7 @@ namespace nglib
    }
 
 
-   NGLIB_API Ng_Result Ng_GenerateMesh_2D (Ng_Geometry_2D * geom,
+    Ng_Result Ng_GenerateMesh_2D (Ng_Geometry_2D * geom,
                                             Ng_Mesh ** mesh,
                                             Ng_Meshing_Parameters * mp)
    {
@@ -520,7 +521,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_HP_Refinement (Ng_Geometry_2D * geom,
+    void Ng_HP_Refinement (Ng_Geometry_2D * geom,
       Ng_Mesh * mesh,
       int levels)
    {
@@ -531,7 +532,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_HP_Refinement (Ng_Geometry_2D * geom,
+    void Ng_HP_Refinement (Ng_Geometry_2D * geom,
       Ng_Mesh * mesh,
       int levels, double parameter)
    {
@@ -546,7 +547,7 @@ namespace nglib
    NgArray<Point<3> > readedges; //only before init stlgeometry
 
    // loads geometry from STL file
-   NGLIB_API Ng_STL_Geometry * Ng_STL_LoadGeometry (const char * filename, int binary)
+    Ng_STL_Geometry * Ng_STL_LoadGeometry (const char * filename, int binary)
    {
       int i;
       STLGeometry geom;
@@ -596,7 +597,7 @@ namespace nglib
 
 
    // generate new STL Geometry
-   NGLIB_API Ng_STL_Geometry * Ng_STL_NewGeometry ()
+    Ng_STL_Geometry * Ng_STL_NewGeometry ()
    {
       return (Ng_STL_Geometry*)(void*)new STLGeometry;
    } 
@@ -605,7 +606,7 @@ namespace nglib
 
 
    // after adding triangles (and edges) initialize
-   NGLIB_API Ng_Result Ng_STL_InitSTLGeometry (Ng_STL_Geometry * geom)
+    Ng_Result Ng_STL_InitSTLGeometry (Ng_STL_Geometry * geom)
    {
       STLGeometry* geo = (STLGeometry*)geom;
       geo->InitSTLGeometry(readtrias);
@@ -630,7 +631,7 @@ namespace nglib
 
 
    // automatically generates edges:
-   NGLIB_API Ng_Result Ng_STL_MakeEdges (Ng_STL_Geometry * geom,
+    Ng_Result Ng_STL_MakeEdges (Ng_STL_Geometry * geom,
                                           Ng_Mesh* mesh,
                                           Ng_Meshing_Parameters * mp)
    {
@@ -676,7 +677,7 @@ namespace nglib
 
 
    // generates mesh, empty mesh be already created.
-   NGLIB_API Ng_Result Ng_STL_GenerateSurfaceMesh (Ng_STL_Geometry * geom,
+    Ng_Result Ng_STL_GenerateSurfaceMesh (Ng_STL_Geometry * geom,
                                                     Ng_Mesh* mesh,
                                                     Ng_Meshing_Parameters * mp)
    {
@@ -738,7 +739,7 @@ namespace nglib
    // fills STL Geometry
    // positive orientation
    // normal vector may be null-pointer
-   NGLIB_API void Ng_STL_AddTriangle (Ng_STL_Geometry * geom, 
+    void Ng_STL_AddTriangle (Ng_STL_Geometry * geom, 
                                        double * p1, double * p2, double * p3, 
                                        double * nv)
    {
@@ -757,7 +758,7 @@ namespace nglib
    }
 
    // add (optional) edges:
-   NGLIB_API void Ng_STL_AddEdge (Ng_STL_Geometry * geom, 
+    void Ng_STL_AddEdge (Ng_STL_Geometry * geom, 
       double * p1, double * p2)
    {
       readedges.Append(Point3d(p1[0],p1[1],p1[2]));
@@ -773,7 +774,7 @@ namespace nglib
 
    // ------------------ Begin - Meshing Parameters related functions ------------------
    // Constructor for the local nglib meshing parameters class
-   NGLIB_API Ng_Meshing_Parameters :: Ng_Meshing_Parameters()
+    Ng_Meshing_Parameters :: Ng_Meshing_Parameters()
    {
       uselocalh = 1;
 
@@ -814,7 +815,7 @@ namespace nglib
 
 
    // Reset the local meshing parameters to the default values
-   NGLIB_API void Ng_Meshing_Parameters :: Reset_Parameters()
+    void Ng_Meshing_Parameters :: Reset_Parameters()
    {
       uselocalh = 1;
 
@@ -855,7 +856,7 @@ namespace nglib
 
 
    // 
-   NGLIB_API void Ng_Meshing_Parameters :: Transfer_Parameters()
+    void Ng_Meshing_Parameters :: Transfer_Parameters()
    {
       mparam.uselocalh = uselocalh;
       
@@ -888,7 +889,7 @@ namespace nglib
 
 
    // ------------------ Begin - Second Order Mesh generation functions ----------------
-   NGLIB_API void Ng_Generate_SecondOrder(Ng_Mesh * mesh)
+    void Ng_Generate_SecondOrder(Ng_Mesh * mesh)
    {
      Refinement ref(*((Mesh*) mesh)->GetGeometry());
       ref.MakeSecondOrder(*(Mesh*) mesh);
@@ -897,7 +898,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_2D_Generate_SecondOrder(Ng_Geometry_2D * geom,
+    void Ng_2D_Generate_SecondOrder(Ng_Geometry_2D * geom,
 					  Ng_Mesh * mesh)
    {
       ( (SplineGeometry2d*)geom ) -> GetRefinement().MakeSecondOrder( * (Mesh*) mesh );
@@ -906,7 +907,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_STL_Generate_SecondOrder(Ng_STL_Geometry * geom,
+    void Ng_STL_Generate_SecondOrder(Ng_STL_Geometry * geom,
 					   Ng_Mesh * mesh)
    {
       ((STLGeometry*)geom)->GetRefinement().MakeSecondOrder(*(Mesh*) mesh);
@@ -915,7 +916,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_CSG_Generate_SecondOrder (Ng_CSG_Geometry * geom,
+    void Ng_CSG_Generate_SecondOrder (Ng_CSG_Geometry * geom,
 					   Ng_Mesh * mesh)
    {
       ((CSGeometry*)geom)->GetRefinement().MakeSecondOrder(*(Mesh*) mesh);
@@ -930,7 +931,7 @@ namespace nglib
 
 
    // ------------------ Begin - Uniform Mesh Refinement functions ---------------------
-   NGLIB_API void Ng_Uniform_Refinement (Ng_Mesh * mesh)
+    void Ng_Uniform_Refinement (Ng_Mesh * mesh)
    {
      Refinement ref(*((Mesh*)mesh)->GetGeometry());
      ref.Refine ( * (Mesh*) mesh );
@@ -939,7 +940,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_2D_Uniform_Refinement (Ng_Geometry_2D * geom,
+    void Ng_2D_Uniform_Refinement (Ng_Geometry_2D * geom,
       Ng_Mesh * mesh)
    {
       ( (SplineGeometry2d*)geom ) -> GetRefinement().Refine ( * (Mesh*) mesh );
@@ -948,7 +949,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_STL_Uniform_Refinement (Ng_STL_Geometry * geom,
+    void Ng_STL_Uniform_Refinement (Ng_STL_Geometry * geom,
       Ng_Mesh * mesh)
    {
       ( (STLGeometry*)geom ) -> GetRefinement().Refine ( * (Mesh*) mesh );
@@ -957,7 +958,7 @@ namespace nglib
 
 
 
-   NGLIB_API void Ng_CSG_Uniform_Refinement (Ng_CSG_Geometry * geom,
+    void Ng_CSG_Uniform_Refinement (Ng_CSG_Geometry * geom,
       Ng_Mesh * mesh)
    {
       ( (CSGeometry*)geom ) -> GetRefinement().Refine ( * (Mesh*) mesh );
@@ -977,7 +978,7 @@ namespace netgen
 {
    char geomfilename[255];
 
-   NGLIB_API void MyError2 (const char * ch)
+    void MyError2 (const char * ch)
    {
       cerr << ch;
    }
@@ -986,7 +987,7 @@ namespace netgen
 
 
    //Destination for messages, errors, ...
-   NGLIB_API void Ng_PrintDest2(const char * s)
+    void Ng_PrintDest2(const char * s)
    {
 #ifdef PARALLEL
      int id = 0;
@@ -998,7 +999,7 @@ namespace netgen
 
 
   /*
-   NGLIB_API double GetTime ()
+    double GetTime ()
    {
       return 0;
    }

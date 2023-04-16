@@ -15,29 +15,29 @@ public:
   bool onlyonce = false;
   NgTaskManager task_manager = &DummyTaskManager;
   NgTracer tracer = &DummyTracer;
-  DLL_HEADER BisectionOptions ();
+   BisectionOptions ();
 };
 
 class ZRefinementOptions
 {
 public:
   int minref;
-  DLL_HEADER ZRefinementOptions();
+   ZRefinementOptions();
 };
 
 
 
-DLL_HEADER extern void BisectTetsCopyMesh (Mesh &, const NetgenGeometry *,
+ extern void BisectTetsCopyMesh (Mesh &, const NetgenGeometry *,
 				BisectionOptions & opt);
 
-DLL_HEADER extern void ZRefinement (Mesh &, const class NetgenGeometry *,
+ extern void ZRefinement (Mesh &, const class NetgenGeometry *,
 			 ZRefinementOptions & opt);
 
 
 
 
 
-class DLL_HEADER Refinement
+class  Refinement
 {
  const NetgenGeometry& geo;
 

@@ -9,7 +9,7 @@
 
 namespace netgen {
 
-DLL_HEADER extern
+ extern
 void WriteFile (int typ,
                 const Mesh & mesh,
                 const NetgenGeometry & geom,
@@ -19,7 +19,7 @@ void WriteFile (int typ,
 
 
 
-DLL_HEADER extern
+ extern
 void ReadFile (Mesh & mesh,
                const filesystem::path & filename);
 
@@ -150,17 +150,17 @@ extern void ReadFNFFormat (Mesh & mesh,
 
 
 
-extern void DLL_HEADER ReadCGNSMesh (Mesh & mesh,
+extern void  ReadCGNSMesh (Mesh & mesh,
                            const filesystem::path & filename);
 
-extern void DLL_HEADER WriteCGNSMesh (const Mesh & mesh,
+extern void  WriteCGNSMesh (const Mesh & mesh,
                            const filesystem::path & filename);
 
 // read/write mesh and solutions from CGNS file
 extern tuple<shared_ptr<Mesh>, vector<string>, vector<Array<double>>, vector<int>>
-DLL_HEADER ReadCGNSFile(const filesystem::path & filename, int base);
+ ReadCGNSFile(const filesystem::path & filename, int base);
 
-extern void DLL_HEADER WriteCGNSFile(shared_ptr<Mesh> mesh, const filesystem::path & filename, vector<string> fields,
+extern void  WriteCGNSFile(shared_ptr<Mesh> mesh, const filesystem::path & filename, vector<string> fields,
                                 vector<Array<double>> values, vector<int> locations);
 
 
@@ -168,11 +168,11 @@ void WriteDolfinFormat (const Mesh & mesh,
                         const filesystem::path & filename);
 
 
-extern void DLL_HEADER RegisterUserFormats (NgArray<const char*> & names,
+extern void  RegisterUserFormats (NgArray<const char*> & names,
                                  NgArray<const char*> & extensions);
 
 
-extern bool DLL_HEADER WriteUserFormat (const filesystem::path & format,
+extern bool  WriteUserFormat (const filesystem::path & format,
                                         const Mesh & mesh,
                                         // const NetgenGeometry & geom,
                                         const filesystem::path & filename);

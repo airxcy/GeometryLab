@@ -14,7 +14,7 @@ namespace netgen
    templates, global types, defines and variables
 */
 
-DLL_HEADER extern const string netgen_version;
+ extern const string netgen_version;
 
 ///	The following value may be adapted to the hardware !
 #ifndef CLOCKS_PER_SEC
@@ -27,19 +27,19 @@ DLL_HEADER extern const string netgen_version;
   testout is opened by main */
 
 /** use instead of cout */
-DLL_HEADER extern ostream * mycout;
+ extern ostream * mycout;
 
 /** error output stream */
-DLL_HEADER extern ostream * myerr;
+ extern ostream * myerr;
 
 /** Error messages display.
   Error messages are displayed by this function */
-DLL_HEADER extern void MyError (const char * ch);
+ extern void MyError (const char * ch);
 
 
 /** Rings the bell.
   Produces nr beeps. */
-DLL_HEADER extern void MyBeep (int nr = 1);
+ extern void MyBeep (int nr = 1);
 
 
 /**

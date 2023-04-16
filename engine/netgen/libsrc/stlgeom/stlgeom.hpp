@@ -45,7 +45,7 @@ namespace netgen
   }
   */
   
-// extern DLL_HEADER MeshingParameters mparam;
+// extern  MeshingParameters mparam;
   
 
 
@@ -101,7 +101,7 @@ namespace netgen
 
 
 
-  class DLL_HEADER STLGeometry : public NetgenGeometry, public STLTopology
+  class  STLGeometry : public NetgenGeometry, public STLTopology
   {
     // edges to be meshed:
     NgArray<STLEdge> edges;

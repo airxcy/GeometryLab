@@ -8,7 +8,7 @@ get_filename_component(NETGEN_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 get_filename_component(NETGEN_DIR "${NETGEN_CMAKE_DIR}/../" ABSOLUTE)
 
-set(NETGEN_COMPILE_DEFINITIONS "$<$<CONFIG:Release>:UNICODE>;$<$<CONFIG:Release>:_UNICODE>;$<$<CONFIG:Release>:_CRT_SECURE_NO_WARNINGS>;$<$<CONFIG:Release>:_CRT_NONSTDC_NO_DEPRECATE>;$<$<CONFIG:Release>:HAVE_TK>;$<$<CONFIG:Release>:HAVE_FREETYPE>;$<$<CONFIG:Release>:HAVE_OPENGL_EXT>;OCCGEOMETRY")
+set(NETGEN_COMPILE_DEFINITIONS "$<$<CONFIG:Release>:UNICODE>;$<$<CONFIG:Release>:_UNICODE>;$<$<CONFIG:Release>:_CRT_SECURE_NO_WARNINGS>;$<$<CONFIG:Release>:_CRT_NONSTDC_NO_DEPRECATE>;$<$<CONFIG:Release>:HAVE_TK>;$<$<CONFIG:Release>:HAVE_FREETYPE>;$<$<CONFIG:Release>:HAVE_OPENGL_EXT>;CMAKE_GENERATOR_PLATFORM=x64;OCCGEOMETRY")
 
 get_filename_component(NETGEN_INCLUDE_DIR "${NETGEN_CMAKE_DIR}/../include" ABSOLUTE)
 get_filename_component(NETGEN_BINARY_DIR "${NETGEN_CMAKE_DIR}/../bin" ABSOLUTE)
@@ -48,8 +48,8 @@ set(NETGEN_TK_INCLUDE_PATH "")
 set(NETGEN_TK_LIBRARY "")
 set(NETGEN_X11_X11_LIB "")
 set(NETGEN_X11_Xmu_LIB "")
-set(NETGEN_ZLIB_INCLUDE_DIRS "D:/projects/GeometryLab/engine/netgen/include")
-set(NETGEN_ZLIB_LIBRARIES "D:/projects/GeometryLab/engine/netgen/lib/zlib.lib")
+set(NETGEN_ZLIB_INCLUDE_DIRS "D:/projects/GeometryLab/build/src/discreteDomain/NETGENLIB/dependencies/zlib")
+set(NETGEN_ZLIB_LIBRARIES "D:/projects/GeometryLab/build/src/discreteDomain/NETGENLIB/dependencies/zlib/Release/zlibstatic.lib")
 
 set(NETGEN_USE_GUI OFF)
 set(NETGEN_USE_PYTHON OFF)

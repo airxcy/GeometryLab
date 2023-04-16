@@ -94,9 +94,9 @@ namespace ngcore
     return ost << version.to_string();
   }
 
-  NGCORE_API const VersionInfo& GetLibraryVersion(const std::string& library);
-  NGCORE_API const std::map<std::string, VersionInfo>& GetLibraryVersions();
-  NGCORE_API void SetLibraryVersion(const std::string& library, const VersionInfo& version);
+   const VersionInfo& GetLibraryVersion(const std::string& library);
+   const std::map<std::string, VersionInfo>& GetLibraryVersions();
+   void SetLibraryVersion(const std::string& library, const VersionInfo& version);
 } // namespace ngcore
 
 #endif // NETGEN_CORE_VERSION_HPP

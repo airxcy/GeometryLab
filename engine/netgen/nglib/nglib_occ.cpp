@@ -12,7 +12,7 @@ namespace netgen
 {
    inline void NOOP_Deleter(void *) { ; }
    extern MeshingParameters mparam;
-   DLL_HEADER extern OCCParameters occparam;
+    extern OCCParameters occparam;
 } // namespace netgen
 
 using namespace netgen;
@@ -22,14 +22,14 @@ namespace nglib
 
    // --------------------- OCC Geometry / Meshing Utility Functions -------------------
    // Create new OCC Geometry Object
-   NGLIB_API Ng_OCC_Geometry * Ng_OCC_NewGeometry ()
+    Ng_OCC_Geometry * Ng_OCC_NewGeometry ()
    {
       return (Ng_OCC_Geometry*)(void*)new OCCGeometry;
    }
 
 
    // Delete the OCC Geometry Object
-   NGLIB_API Ng_Result Ng_OCC_DeleteGeometry(Ng_OCC_Geometry * geom)
+    Ng_Result Ng_OCC_DeleteGeometry(Ng_OCC_Geometry * geom)
    {
       if (geom != NULL)
       {
@@ -43,7 +43,7 @@ namespace nglib
 
 
    // Loads geometry from STEP File
-   NGLIB_API Ng_OCC_Geometry * Ng_OCC_Load_STEP (const char * filename)
+    Ng_OCC_Geometry * Ng_OCC_Load_STEP (const char * filename)
    {
       // Call the STEP File Load function. Note.. the geometry class
       // is created and instantiated within the load function
@@ -54,7 +54,7 @@ namespace nglib
 
 
    // Loads geometry from IGES File
-   NGLIB_API Ng_OCC_Geometry * Ng_OCC_Load_IGES (const char * filename)
+    Ng_OCC_Geometry * Ng_OCC_Load_IGES (const char * filename)
    {
       // Call the IGES File Load function. Note.. the geometry class
       // is created and instantiated within the load function
@@ -65,7 +65,7 @@ namespace nglib
 
 
    // Loads geometry from BREP File
-   NGLIB_API Ng_OCC_Geometry * Ng_OCC_Load_BREP (const char * filename)
+    Ng_OCC_Geometry * Ng_OCC_Load_BREP (const char * filename)
    {
       // Call the BREP File Load function. Note.. the geometry class
       // is created and instantiated within the load function
@@ -77,7 +77,7 @@ namespace nglib
 
    // Locally limit the size of the mesh to be generated at various points
    // based on the topology of the geometry
-   NGLIB_API Ng_Result Ng_OCC_SetLocalMeshSize (Ng_OCC_Geometry * geom,
+    Ng_Result Ng_OCC_SetLocalMeshSize (Ng_OCC_Geometry * geom,
                                                  Ng_Mesh * mesh,
                                                  Ng_Meshing_Parameters * mp)
    {
@@ -105,7 +105,7 @@ namespace nglib
 
 
    // Mesh the edges and add Face descriptors to prepare for surface meshing
-   NGLIB_API Ng_Result Ng_OCC_GenerateEdgeMesh (Ng_OCC_Geometry * geom,
+    Ng_Result Ng_OCC_GenerateEdgeMesh (Ng_OCC_Geometry * geom,
                                                  Ng_Mesh * mesh,
                                                  Ng_Meshing_Parameters * mp)
    {
@@ -131,7 +131,7 @@ namespace nglib
 
 
    // Mesh the edges and add Face descriptors to prepare for surface meshing
-   NGLIB_API Ng_Result Ng_OCC_GenerateSurfaceMesh (Ng_OCC_Geometry * geom,
+    Ng_Result Ng_OCC_GenerateSurfaceMesh (Ng_OCC_Geometry * geom,
                                                     Ng_Mesh * mesh,
                                                     Ng_Meshing_Parameters * mp)
    {
@@ -176,7 +176,7 @@ namespace nglib
    // Extract the face map from the OCC geometry
    // The face map basically gives an index to each face in the geometry,
    // which can be used to access a specific face
-   NGLIB_API Ng_Result Ng_OCC_GetFMap(Ng_OCC_Geometry * geom,
+    Ng_Result Ng_OCC_GetFMap(Ng_OCC_Geometry * geom,
                                        Ng_OCC_TopTools_IndexedMapOfShape * FMap)
    {
       OCCGeometry* occgeom = (OCCGeometry*)geom;
@@ -197,13 +197,13 @@ namespace nglib
 
    // ------------------ End - OCC Geometry / Meshing Utility Functions ----------------
 
-   NGLIB_API void Ng_OCC_Generate_SecondOrder (Ng_OCC_Geometry * geom,
+    void Ng_OCC_Generate_SecondOrder (Ng_OCC_Geometry * geom,
                   Ng_Mesh * mesh)
    {
       ((OCCGeometry*)geom )->GetRefinement().MakeSecondOrder(*(Mesh*) mesh);
    }
 
-   NGLIB_API void Ng_OCC_Uniform_Refinement (Ng_OCC_Geometry * geom,
+    void Ng_OCC_Uniform_Refinement (Ng_OCC_Geometry * geom,
       Ng_Mesh * mesh)
    {
       ( (OCCGeometry*)geom ) -> GetRefinement().Refine ( * (Mesh*) mesh );

@@ -18,7 +18,7 @@
 
 namespace netgen
 {
-  DLL_HEADER MeshingParameters mparam;
+   MeshingParameters mparam;
 
   /** Force linking of geom2d library (for SplineGeometryRegister)**/
   SplineGeometry2d dummy_2dgeom; 

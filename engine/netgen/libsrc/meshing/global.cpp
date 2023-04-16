@@ -29,12 +29,12 @@ namespace netgen
 
   // some functions (visualization) still need a global mesh
   // TraceGlobal glob1("global1");
-  DLL_HEADER shared_ptr<Mesh> mesh;
-  DLL_HEADER shared_ptr<NetgenGeometry> ng_geometry;
+   shared_ptr<Mesh> mesh;
+   shared_ptr<NetgenGeometry> ng_geometry;
   // TraceGlobal glob2("global2");
 
   // global communicator for netgen
-  // DLL_HEADER NgMPI_Comm ng_comm;
+  //  NgMPI_Comm ng_comm;
   
   weak_ptr<Mesh> global_mesh;
   void SetGlobalMesh (shared_ptr<Mesh> m)
@@ -45,7 +45,7 @@ namespace netgen
   
   // true if netgen was started using the netgen executable
   // false if netgen.gui was imported from python
-  DLL_HEADER bool netgen_executable_started = false;
+   bool netgen_executable_started = false;
   
   //  Flags parameters;
   int silentflag = 0;
@@ -61,7 +61,7 @@ namespace netgen
       (*mycout) << s << flush;
   }
 
-  DLL_HEADER void MyError(const char * ch)
+   void MyError(const char * ch)
   {
     cout << ch;
     (*testout) << "Error !!! " << ch << endl << flush;

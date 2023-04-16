@@ -2,9 +2,9 @@
 #define VISUAL_API_HPP_INCLUDED
 
 #ifdef nggui_EXPORTS
-#define NGGUI_API NGCORE_API_EXPORT
+#define NGGUI_API _EXPORT
 #else
-#define NGGUI_API NGCORE_API_IMPORT
+#define NGGUI_API _IMPORT
 #endif
 
 #endif // VISUAL_API_HPP_INCLUDED

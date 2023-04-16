@@ -9,10 +9,10 @@ class Ng_SolutionData;
 
 // Function pointers for visualization purposed, all set to nullptr by default and initialized correctly when the GUI library is loaded
 
-DLL_HEADER extern void (*Ptr_Ng_ClearSolutionData) ();
-DLL_HEADER extern void (*Ptr_Ng_InitSolutionData) (Ng_SolutionData * soldata);
-DLL_HEADER extern void (*Ptr_Ng_SetSolutionData) (Ng_SolutionData * soldata);
-DLL_HEADER extern void (*Ptr_Ng_Redraw) (bool blocking);
+ extern void (*Ptr_Ng_ClearSolutionData) ();
+ extern void (*Ptr_Ng_InitSolutionData) (Ng_SolutionData * soldata);
+ extern void (*Ptr_Ng_SetSolutionData) (Ng_SolutionData * soldata);
+ extern void (*Ptr_Ng_Redraw) (bool blocking);
 
 // Tcl wrapper functions
 class Tcl_Interp;
@@ -36,12 +36,12 @@ namespace netgen {
     inline constexpr int NG_TCL_RETURN   = 2;
     inline constexpr int NG_TCL_BREAK    = 3;
     inline constexpr int NG_TCL_CONTINUE = 4;
-    DLL_HEADER extern void (*Ptr_Ng_Tcl_SetResult)(Tcl_Interp *interp, char *result, Tcl_FreeProc *freeProc);
-    DLL_HEADER extern void (*Ptr_Ng_Tcl_CreateCommand)(Tcl_Interp *interp,
+     extern void (*Ptr_Ng_Tcl_SetResult)(Tcl_Interp *interp, char *result, Tcl_FreeProc *freeProc);
+     extern void (*Ptr_Ng_Tcl_CreateCommand)(Tcl_Interp *interp,
                                     const char *cmdName, Tcl_CmdProc *proc);
 
-    DLL_HEADER extern void (*Ptr_Render)(bool);
-    DLL_HEADER extern void (*Ptr_UpdateVisSurfaceMeshData)(int,
+     extern void (*Ptr_Render)(bool);
+     extern void (*Ptr_UpdateVisSurfaceMeshData)(int,
             shared_ptr<NgArray<Point<3>>>,
             shared_ptr<NgArray<INDEX_2>>,
             shared_ptr<NgArray<Point<2>>>

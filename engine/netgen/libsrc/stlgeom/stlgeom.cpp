@@ -93,7 +93,7 @@ void STLGeometry :: Save (const filesystem::path & filename) const
 
 
 
-DLL_HEADER extern STLParameters stlparam;
+ extern STLParameters stlparam;
 int STLGeometry :: GenerateMesh (shared_ptr<Mesh> & mesh, MeshingParameters & mparam)
 {
   STLParameters stlpar = stlparam;

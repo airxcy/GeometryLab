@@ -1,0 +1,10 @@
+^D:\PROJECTS\GEOMETRYLAB\ENGINE\NETGEN\EXTERNAL_DEPENDENCIES\ZLIB\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/projects/GeometryLab/engine/netgen/external_dependencies/zlib -BD:/projects/GeometryLab/engine/netgen/external_dependencies/zlib --check-stamp-file D:/projects/GeometryLab/engine/netgen/external_dependencies/zlib/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

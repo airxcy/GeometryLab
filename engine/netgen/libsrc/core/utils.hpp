@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 
-#include "ngcore_api.hpp"       // for NGCORE_API and CPU arch macros
+#include "ngcore_api.hpp"       // for  and CPU arch macros
 
 #if defined(__APPLE__) && defined(NETGEN_ARCH_ARM64)
 #include <mach/mach_time.h>
@@ -27,11 +27,11 @@ namespace ngcore
 {
   // MPI rank, nranks TODO: Rename
   // [[deprecated("don't use global id/ntasks")]]       
-  extern NGCORE_API int id;
+  extern  int id;
   // [[deprecated("don't use global id/ntasks")]]         
-  extern NGCORE_API int ntasks;
+  extern  int ntasks;
   
-  NGCORE_API std::string Demangle(const char* typeinfo);
+   std::string Demangle(const char* typeinfo);
 
   template<typename T>
   std::string GetName(const T& obj)
@@ -46,7 +46,7 @@ namespace ngcore
 #endif
 
   using TClock = std::chrono::system_clock;
-  extern NGCORE_API const std::chrono::time_point<TClock> wall_time_start;
+  extern  const std::chrono::time_point<TClock> wall_time_start;
 
   // Time in seconds since program start
   inline double WallTime () noexcept
@@ -58,7 +58,7 @@ namespace ngcore
 
   // High precision clock counter register
   using TTimePoint = size_t;
-  extern NGCORE_API double seconds_per_tick;
+  extern  double seconds_per_tick;
 
   inline TTimePoint GetTimeCounter() noexcept
   {
@@ -319,10 +319,10 @@ namespace ngcore
     ~MyLock () { mutex.unlock(); }
   };
 
-  NGCORE_API int GetCompiledSIMDSize();
-  NGCORE_API bool IsRangeCheckEnabled();
+   int GetCompiledSIMDSize();
+   bool IsRangeCheckEnabled();
 
-  NGCORE_API std::filesystem::path GetTempFilename();
+   std::filesystem::path GetTempFilename();
 
 } // namespace ngcore
 

@@ -38,7 +38,7 @@ namespace netgen
   using namespace std;
   using namespace ngcore;
   
-  // extern DLL_HEADER NgMPI_Comm ng_comm;
+  // extern  NgMPI_Comm ng_comm;
   
   static constexpr int POINTINDEX_BASE = 1;
 
@@ -259,7 +259,7 @@ namespace netgen
   { func(0,1); }
   inline void DummyTracer2 (string, bool) { ; } 
   
-  class DLL_HEADER Ngx_Mesh
+  class  Ngx_Mesh
   {
   private:
     shared_ptr<Mesh> mesh;
@@ -409,7 +409,7 @@ namespace netgen
 
 
 
-  DLL_HEADER Ngx_Mesh * LoadMesh (const string & filename);
+   Ngx_Mesh * LoadMesh (const string & filename);
 }
 
 

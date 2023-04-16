@@ -20,7 +20,7 @@
 
 #include "exception.hpp"        // for UnreachableCodeException, Exception
 #include "logging.hpp"          // for logger
-#include "ngcore_api.hpp"       // for NGCORE_API
+#include "ngcore_api.hpp"       // for 
 #include "type_traits.hpp"      // for all_of_tmpl
 #include "utils.hpp"            // for Demangle, unlikely
 #include "version.hpp"          // for VersionInfo
@@ -39,7 +39,7 @@ namespace ngcore
   pybind11::object CastAnyToPy(const std::any& a);
 #endif // NETGEN_PYTHON
 
-  class NGCORE_API Archive;
+  class  Archive;
   namespace detail
   {
     // create new pointer of type T if it is default constructible, else throw
@@ -65,7 +65,7 @@ namespace ngcore
       static constexpr std::false_type check(...);
       using type = decltype(check<T>(nullptr)); // NOLINT
     public:
-      NGCORE_API static constexpr bool value = type::value;
+       static constexpr bool value = type::value;
     };
 
     // Check if class is archivable
@@ -80,7 +80,7 @@ namespace ngcore
       static constexpr std::false_type check(...);
       using type = decltype(check<T>(nullptr)); // NOLINT
     public:
-      NGCORE_API static constexpr bool value = type::value;
+       static constexpr bool value = type::value;
     };
 
     struct ClassArchiveInfo
@@ -116,7 +116,7 @@ namespace ngcore
   
   
   // Base Archive class
-  class NGCORE_API Archive
+  class  Archive
   {
     const bool is_output;
     // how many different shared_ptr/pointer have been (un)archived
@@ -730,7 +730,7 @@ namespace ngcore
   };
 
   // BinaryOutArchive ======================================================================
-  class NGCORE_API BinaryOutArchive : public Archive
+  class  BinaryOutArchive : public Archive
   {
     static constexpr size_t BUFFERSIZE = 1024;
     std::array<char,BUFFERSIZE> buffer{};
@@ -824,7 +824,7 @@ namespace ngcore
   };
 
   // BinaryInArchive ======================================================================
-  class NGCORE_API BinaryInArchive : public Archive
+  class  BinaryInArchive : public Archive
   {
   protected:
     std::shared_ptr<std::istream> stream;
@@ -899,7 +899,7 @@ namespace ngcore
   };
 
   // TextOutArchive ======================================================================
-  class NGCORE_API TextOutArchive : public Archive
+  class  TextOutArchive : public Archive
   {
   protected:
     std::shared_ptr<std::ostream> stream;
@@ -954,7 +954,7 @@ namespace ngcore
   };
 
   // TextInArchive ======================================================================
-  class NGCORE_API TextInArchive : public Archive
+  class  TextInArchive : public Archive
   {
   protected:
     std::shared_ptr<std::istream> stream;
@@ -1024,7 +1024,7 @@ namespace ngcore
   // This class enables to easily create hashes for archivable objects by xoring
   // threw its data
 
-  class NGCORE_API HashArchive : public Archive
+  class  HashArchive : public Archive
   {
     size_t hash_value = 0;
     char* h;

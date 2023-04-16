@@ -188,12 +188,12 @@ namespace netgen
     mutable double proj_latest_t;
   public:
     ///
-    DLL_HEADER SplineSeg3 (const GeomPoint<D> & ap1,
+     SplineSeg3 (const GeomPoint<D> & ap1,
 		const GeomPoint<D> & ap2, 
 		const GeomPoint<D> & ap3,
                 string bcname="default",
                 double maxh=1e99);
-    DLL_HEADER SplineSeg3 (const GeomPoint<D> & ap1,
+     SplineSeg3 (const GeomPoint<D> & ap1,
 		const GeomPoint<D> & ap2,
 		const GeomPoint<D> & ap3,
                 double aweight,
@@ -210,28 +210,28 @@ namespace netgen
     double GetWeight () const { return weight; }
     void SetWeight (double w) { weight = w; }
     ///
-    DLL_HEADER virtual Point<D> GetPoint (double t) const;
+     virtual Point<D> GetPoint (double t) const;
     ///
-    DLL_HEADER virtual Vec<D> GetTangent (const double t) const;
+     virtual Vec<D> GetTangent (const double t) const;
 
   
-    DLL_HEADER virtual void GetDerivatives (const double t, 
+     virtual void GetDerivatives (const double t, 
 				 Point<D> & point,
 				 Vec<D> & first,
 				 Vec<D> & second) const;
     ///
-    DLL_HEADER virtual const GeomPoint<D> & StartPI () const { return p1; };
+     virtual const GeomPoint<D> & StartPI () const { return p1; };
     ///
-    DLL_HEADER virtual const GeomPoint<D> & EndPI () const { return p3; }
+     virtual const GeomPoint<D> & EndPI () const { return p3; }
     ///
-    DLL_HEADER virtual void GetCoeff (Vector & coeffs) const;
-    DLL_HEADER virtual void GetCoeff (Vector & coeffs, Point<D> p0) const;
+     virtual void GetCoeff (Vector & coeffs) const;
+     virtual void GetCoeff (Vector & coeffs, Point<D> p0) const;
     
     virtual string GetType(void) const {return "spline3";}
 
     const GeomPoint<D> & TangentPoint (void) const { return p2; }
 
-    DLL_HEADER virtual void LineIntersections (const double a, const double b, const double c,
+     virtual void LineIntersections (const double a, const double b, const double c,
 				    NgArray < Point<D> > & points, const double eps) const;
 
     virtual bool InConvexHull (Point<D> p, double eps) const
@@ -239,11 +239,11 @@ namespace netgen
       return MinDistTP2 (p1, p2, p3, p) < sqr(eps);
     }
 
-    DLL_HEADER virtual double MaxCurvature(void) const;
+     virtual double MaxCurvature(void) const;
 
-    DLL_HEADER virtual void Project (const Point<D> point, Point<D> & point_on_curve, double & t) const;
+     virtual void Project (const Point<D> point, Point<D> & point_on_curve, double & t) const;
 
-    DLL_HEADER virtual void GetRawData (NgArray<double> & data) const;
+     virtual void GetRawData (NgArray<double> & data) const;
   };
 
 

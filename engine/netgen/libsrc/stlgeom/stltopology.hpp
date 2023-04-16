@@ -319,7 +319,7 @@ public:
   virtual ~STLTopology();
 
   static STLGeometry * LoadNaomi (istream & ist);
-  DLL_HEADER static STLGeometry * Load (istream & ist, bool surface=false);
+   static STLGeometry * Load (istream & ist, bool surface=false);
   static STLGeometry * LoadBinary (istream & ist);
 
   void Save (const filesystem::path & filename) const;
@@ -372,7 +372,7 @@ public:
   int GetNTE() const { return topedges.Size(); }
   const STLTopEdge & GetTopEdge (int nr) const { return topedges.Get(nr); }
   STLTopEdge & GetTopEdge (int nr)  { return topedges.Elem(nr); }
-  DLL_HEADER int GetTopEdgeNum (int pi1, int pi2) const;
+   int GetTopEdgeNum (int pi1, int pi2) const;
 
 
   int NOTrigsPerPoint(int pn) { return trigsperpoint.EntrySize(pn); }
@@ -389,9 +389,9 @@ public:
   STL_GEOM_STATUS GetStatus () const { return status; }
   const string & GetStatusText () const { return statustext; }
 
-  DLL_HEADER void InvertTrig (int trig);
-  DLL_HEADER void DeleteTrig (int trig);
-  DLL_HEADER void OrientAfterTrig (int trig);
+   void InvertTrig (int trig);
+   void DeleteTrig (int trig);
+   void OrientAfterTrig (int trig);
 
 
   // Table will be constructed, if topology is not ok

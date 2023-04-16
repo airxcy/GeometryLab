@@ -5,16 +5,16 @@
 #include <stdexcept>       // for exception
 #include <string>          // for string
 
-#include "ngcore_api.hpp"  // for NGCORE_API
+#include "ngcore_api.hpp"  // for 
 
 
 namespace ngcore
 {
 
-  NGCORE_API std::string GetBackTrace();
+   std::string GetBackTrace();
 
   // Exception for code that shouldn't be executed
-  class NGCORE_API UnreachableCodeException : public std::exception
+  class  UnreachableCodeException : public std::exception
   {
     const char* what() const noexcept override
     {
@@ -23,7 +23,7 @@ namespace ngcore
   };
 
   // Default exception class
-  class NGCORE_API Exception : public std::exception
+  class  Exception : public std::exception
   {
     /// a verbal description of the exception
     std::string m_what;
@@ -50,11 +50,11 @@ namespace ngcore
     const char* what() const noexcept override { return m_what.c_str(); }
   };
   
-  NGCORE_API void ThrowException(const std::string & s);
-  NGCORE_API void ThrowException(const char * s);
+   void ThrowException(const std::string & s);
+   void ThrowException(const char * s);
   
   // Out of Range exception
-  class NGCORE_API RangeException : public Exception
+  class  RangeException : public Exception
   {
   public:
     /// where it occurs, index, minimal and maximal indices
@@ -77,7 +77,7 @@ namespace ngcore
   };
 
   // Exception used if no simd implementation is available to fall back to standard evaluation
-  class NGCORE_API ExceptionNOSIMD : public Exception
+  class  ExceptionNOSIMD : public Exception
   { public: using Exception::Exception; };
 } // namespace ngcore
 

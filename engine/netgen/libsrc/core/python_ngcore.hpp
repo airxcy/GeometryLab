@@ -104,8 +104,8 @@ template <typename Type> struct type_caster<ngcore::Array<Type>, enable_if_t<!ng
 
 namespace ngcore
 {
-  NGCORE_API extern bool ngcore_have_numpy;
-  NGCORE_API extern bool parallel_pickling;
+   extern bool ngcore_have_numpy;
+   extern bool parallel_pickling;
   
   // Python class name type traits
   template <typename T>
@@ -181,7 +181,7 @@ namespace ngcore
     }
 
   template<typename ARCHIVE>
-  class NGCORE_API_EXPORT PyArchive : public ARCHIVE
+  class _EXPORT PyArchive : public ARCHIVE
   {
   private:
     pybind11::list lst;
@@ -423,12 +423,12 @@ namespace ngcore
   }
 
   
-  void NGCORE_API SetFlag(Flags &flags, std::string s, py::object value);
+  void  SetFlag(Flags &flags, std::string s, py::object value);
   // Parse python kwargs to flags
-  Flags NGCORE_API CreateFlagsFromKwArgs(const py::kwargs& kwargs, py::object pyclass = py::none(),
+  Flags  CreateFlagsFromKwArgs(const py::kwargs& kwargs, py::object pyclass = py::none(),
                                          py::list info = py::list());
   // Create python dict from kwargs
-  py::dict NGCORE_API CreateDictFromFlags(const Flags& flags);
+  py::dict  CreateDictFromFlags(const Flags& flags);
 
 
 } // namespace ngcore

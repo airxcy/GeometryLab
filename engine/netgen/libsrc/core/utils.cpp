@@ -53,12 +53,12 @@ namespace ngcore
 
 #ifdef WIN32
   // windows does demangling in typeid(T).name()
-  NGCORE_API std::string Demangle(const char* typeinfo) {
+   std::string Demangle(const char* typeinfo) {
       std::string name = typeinfo;
       return detail::CleanupDemangledName(name);
   }
 #else
-  NGCORE_API std::string Demangle(const char* typeinfo)
+   std::string Demangle(const char* typeinfo)
   {
     int status=0;
     try
@@ -98,12 +98,12 @@ namespace ngcore
   int printmessage_importance = 0;
   bool NGSOStream :: glob_active = true;
 
-  NGCORE_API int GetCompiledSIMDSize()
+   int GetCompiledSIMDSize()
   {
       return GetDefaultSIMDSize();
   }
 
-  NGCORE_API bool IsRangeCheckEnabled()
+   bool IsRangeCheckEnabled()
   {
 #ifdef NETGEN_ENABLE_CHECK_RANGE
       return true;
@@ -112,7 +112,7 @@ namespace ngcore
 #endif
   }
 
-  NGCORE_API std::filesystem::path GetTempFilename()
+   std::filesystem::path GetTempFilename()
   {
       static int counter = 0;
       auto path = std::filesystem::temp_directory_path();

@@ -71,7 +71,7 @@ public:
     virtual int     sync();
 };
 
-class DLL_HEADER gzstreambase : virtual public std::ios {
+class  gzstreambase : virtual public std::ios {
 protected:
     gzstreambuf buf;
 public:
@@ -89,7 +89,7 @@ public:
 // function interface of the zlib. Files are compatible with gzip compression.
 // ----------------------------------------------------------------------------
 
-class DLL_HEADER igzstream : public gzstreambase, public std::istream {
+class  igzstream : public gzstreambase, public std::istream {
 public:
     igzstream() : std::istream( &buf) {} 
     igzstream( const filesystem::path & name, int open_mode = std::ios::in)
@@ -100,7 +100,7 @@ public:
     }
 };
 
-class DLL_HEADER ogzstream : public gzstreambase, public std::ostream {
+class  ogzstream : public gzstreambase, public std::ostream {
 public:
     ogzstream() : std::ostream( &buf) {}
     ogzstream( const filesystem::path & name, int mode = std::ios::out)

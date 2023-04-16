@@ -89,29 +89,29 @@ namespace netgen
     int dimension;
   public:
     ///
-    DLL_HEADER LocalH (Point<3> pmin, Point<3> pmax, double grading, int adimension = 3);
+     LocalH (Point<3> pmin, Point<3> pmax, double grading, int adimension = 3);
     ///
     LocalH (const Box<3> & box, double grading, int adimension = 3)
       : LocalH (box.PMin(), box.PMax(), grading, adimension) { ; }
     /// Default ctor for archive
     LocalH() = default;
 
-    DLL_HEADER ~LocalH();
+     ~LocalH();
     ///
-    DLL_HEADER unique_ptr<LocalH> Copy();
-    DLL_HEADER unique_ptr<LocalH> Copy( const Box<3> & bbox );
+     unique_ptr<LocalH> Copy();
+     unique_ptr<LocalH> Copy( const Box<3> & bbox );
     ///
-    DLL_HEADER void Delete();
+     void Delete();
     ///
-    DLL_HEADER void DoArchive(Archive& ar);
+     void DoArchive(Archive& ar);
     ///
     void SetGrading (double agrading) { grading = agrading; }
     ///
-    DLL_HEADER void SetH (Point<3> x, double h);
+     void SetH (Point<3> x, double h);
     ///
-    DLL_HEADER double GetH (Point<3> x) const;
+     double GetH (Point<3> x) const;
     /// minimal h in box (pmin, pmax)
-    DLL_HEADER double GetMinH (Point<3> pmin, Point<3> pmax) const;
+     double GetMinH (Point<3> pmin, Point<3> pmax) const;
 
     /// mark boxes intersecting with boundary-box
     // void CutBoundary (const Point3d & pmin, const Point3d & pmax)

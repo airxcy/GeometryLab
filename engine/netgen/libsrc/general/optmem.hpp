@@ -26,13 +26,13 @@ private:
   mutex block_allocator_mutex;
 public:
   ///
-  DLL_HEADER BlockAllocator (unsigned asize, unsigned ablocks = 100);
+   BlockAllocator (unsigned asize, unsigned ablocks = 100);
   ///
-  DLL_HEADER ~BlockAllocator ();
+   ~BlockAllocator ();
   ///
-  DLL_HEADER void * Alloc ();
+   void * Alloc ();
   ///
-  DLL_HEADER void Free (void * p);
+   void Free (void * p);
 };
 
 }

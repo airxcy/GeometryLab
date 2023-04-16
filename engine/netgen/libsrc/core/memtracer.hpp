@@ -36,8 +36,8 @@ namespace ngcore
   class MemoryTracer
   {
     #ifdef NETGEN_TRACE_MEMORY
-    NGCORE_API static std::vector<std::string> names;
-    NGCORE_API static std::vector<int> parents;
+     static std::vector<std::string> names;
+     static std::vector<int> parents;
 
     static int CreateId(const std::string& name)
     {

@@ -170,7 +170,7 @@ namespace netgen
 
 
 
-DLL_HEADER void ExportCSG(py::module &m)
+ void ExportCSG(py::module &m)
 {
   py::class_<SplineGeometry<2>, shared_ptr<SplineGeometry<2>>>
     (m, "SplineCurve2d")

@@ -31,7 +31,7 @@ namespace spdlog
 
 namespace ngcore
 {
-  NGCORE_API extern std::ostream* testout; // NOLINT
+   extern std::ostream* testout; // NOLINT
   
   namespace level
   {
@@ -49,7 +49,7 @@ namespace ngcore
 
   class Logger
   {
-    static NGCORE_API level::level_enum global_level;
+    static  level::level_enum global_level;
 
   public:
     static void SetGlobalLoggingLevel( level::level_enum level ) { global_level = level; }
@@ -58,7 +58,7 @@ namespace ngcore
 
     Logger(std::shared_ptr<spdlog::logger> l) : logger(std::move(l)) {}
 
-    void NGCORE_API log( level::level_enum level, std::string && s);
+    void  log( level::level_enum level, std::string && s);
 
 #ifdef NETGEN_USE_SPDLOG
     template<typename ... Args>
@@ -119,12 +119,12 @@ namespace ngcore
 
 
 
-  NGCORE_API std::shared_ptr<Logger> GetLogger(const std::string& name);
-  NGCORE_API void SetLoggingLevel(level::level_enum level, const std::string& name);
-  NGCORE_API void AddFileSink(const std::string& filename, level::level_enum level, const std::string& logger);
-  NGCORE_API void AddConsoleSink(level::level_enum level, const std::string& logger);
-  NGCORE_API void ClearLoggingSinks(const std::string& logger);
-  NGCORE_API void FlushOnLoggingLevel(level::level_enum level, const std::string& logger);
+   std::shared_ptr<Logger> GetLogger(const std::string& name);
+   void SetLoggingLevel(level::level_enum level, const std::string& name);
+   void AddFileSink(const std::string& filename, level::level_enum level, const std::string& logger);
+   void AddConsoleSink(level::level_enum level, const std::string& logger);
+   void ClearLoggingSinks(const std::string& logger);
+   void FlushOnLoggingLevel(level::level_enum level, const std::string& logger);
 } // namespace ngcore
 
 #endif // NETGEN_CORE_LOGGING_HPP

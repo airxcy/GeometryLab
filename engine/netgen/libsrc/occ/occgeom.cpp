@@ -2088,7 +2088,7 @@ namespace netgen
 		 << ", min len = " << resthminedgelen << endl;
    }
 
-  DLL_HEADER extern OCCParameters occparam;
+   extern OCCParameters occparam;
   OCCParameters occparam;
 
 

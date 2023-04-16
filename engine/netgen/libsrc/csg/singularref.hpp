@@ -23,7 +23,7 @@ namespace netgen
      All elements in subdomain domnr will get a boundary layer
      on faces sharing the solid sol
   */
-  class DLL_HEADER SingularFace 
+  class  SingularFace 
   {
   public:
     int domnr;
@@ -40,7 +40,7 @@ namespace netgen
 
 
   ///
-  class DLL_HEADER SingularEdge
+  class  SingularEdge
   {
   public:
     double beta;
@@ -63,7 +63,7 @@ namespace netgen
 
 
   ///
-  class DLL_HEADER SingularPoint
+  class  SingularPoint
   {
   public:
     double beta;

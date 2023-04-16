@@ -41,7 +41,7 @@ namespace ngcore
     // int nnodes;
   };
 
-  NGCORE_API extern class TaskManager * task_manager;
+   extern class TaskManager * task_manager;
   
   class TaskManager
   {
@@ -54,44 +54,44 @@ namespace ngcore
       atomic<int> participate{0};
     };
     
-    NGCORE_API static const function<void(TaskInfo&)> * func;
-    NGCORE_API static const function<void()> * startup_function;
-    NGCORE_API static const function<void()> * cleanup_function;
-    NGCORE_API static atomic<int> ntasks;
-    NGCORE_API static Exception * ex;
+     static const function<void(TaskInfo&)> * func;
+     static const function<void()> * startup_function;
+     static const function<void()> * cleanup_function;
+     static atomic<int> ntasks;
+     static Exception * ex;
 
-    NGCORE_API static atomic<int> jobnr;
+     static atomic<int> jobnr;
 
     static atomic<int> complete[8];   // max nodes
     static atomic<int> done;
     static atomic<int> active_workers;
     static atomic<int> workers_on_node[8];   // max nodes
     // Array<atomic<int>*> sync;
-    NGCORE_API static int sleep_usecs;
-    NGCORE_API static bool sleep;
+     static int sleep_usecs;
+     static bool sleep;
 
     static NodeData *nodedata[8];
 
     static int num_nodes;
-    NGCORE_API static int num_threads;
-    NGCORE_API static int max_threads;
+     static int num_threads;
+     static int max_threads;
 
 
 
 #ifdef WIN32 // no exported thread_local in dlls on Windows
     static thread_local int thread_id;
 #else
-    NGCORE_API static thread_local int thread_id;
+     static thread_local int thread_id;
 #endif
-    NGCORE_API static bool use_paje_trace;
+     static bool use_paje_trace;
   public:
     
-    NGCORE_API TaskManager();
-    NGCORE_API ~TaskManager();
+     TaskManager();
+     ~TaskManager();
 
 
-    NGCORE_API void StartWorkers();
-    NGCORE_API void StopWorkers();
+     void StartWorkers();
+     void StopWorkers();
 
     void SuspendWorkers(int asleep_usecs = 1000 )
       {
@@ -100,12 +100,12 @@ namespace ngcore
       }
     void ResumeWorkers() { sleep = false; }
 
-    NGCORE_API static void SetNumThreads(int amax_threads);
+     static void SetNumThreads(int amax_threads);
     static int GetMaxThreads() { return max_threads; }
     // static int GetNumThreads() { return task_manager ? task_manager->num_threads : 1; }
     static int GetNumThreads() { return num_threads; }
 #ifdef WIN32
-    NGCORE_API static int GetThreadId();
+     static int GetThreadId();
 #else
     static int GetThreadId() { return thread_id; }
 #endif
@@ -113,9 +113,9 @@ namespace ngcore
 
     static void SetPajeTrace (bool use)  { use_paje_trace = use; }
     
-    NGCORE_API static bool ProcessTask();
+     static bool ProcessTask();
 
-    NGCORE_API static void CreateJob (const function<void(TaskInfo&)> & afunc, 
+     static void CreateJob (const function<void(TaskInfo&)> & afunc, 
                     int antasks = task_manager->GetNumThreads());
 
     static void SetStartupFunction (const function<void()> & func) { startup_function = &func; }
@@ -124,9 +124,9 @@ namespace ngcore
     static void SetCleanupFunction () { cleanup_function = nullptr; }    
 
     void Done() { done = true; }
-    NGCORE_API void Loop(int thread_num);
+     void Loop(int thread_num);
 
-    NGCORE_API static std::list<std::tuple<std::string,double>> Timing ();
+     static std::list<std::tuple<std::string,double>> Timing ();
   };
 
 
@@ -137,11 +137,11 @@ namespace ngcore
 
 
   
-  NGCORE_API void RunWithTaskManager (function<void()> alg);
+   void RunWithTaskManager (function<void()> alg);
 
   // For Python context manager
-  NGCORE_API int  EnterTaskManager ();
-  NGCORE_API void ExitTaskManager (int num_threads);
+   int  EnterTaskManager ();
+   void ExitTaskManager (int num_threads);
 
   class RegionTaskManager
   {

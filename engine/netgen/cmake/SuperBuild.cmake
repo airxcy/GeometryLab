@@ -1,6 +1,6 @@
 include (ExternalProject)
 
-option( BUILD_ZLIB "Build and link static version of zlib (useful for pip binaries)" OFF )
+option( BUILD_ZLIB "Build and link static version of zlib (useful for pip binaries)" ON )
 option( BUILD_OCC "Build and link static version of occ (useful for pip binaries)" OFF )
 set_property (DIRECTORY PROPERTY EP_PREFIX dependencies)
 
@@ -63,7 +63,7 @@ endif()
 set (DEPS_DOWNLOAD_URL "https://github.com/NGSolve/ngsolve_dependencies/releases/download/v1.0.0" CACHE STRING INTERNAL)
 set (OCC_DOWNLOAD_URL_WIN "${DEPS_DOWNLOAD_URL}/occ75_win64.zip" CACHE STRING INTERNAL)
 set (TCLTK_DOWNLOAD_URL_WIN "${DEPS_DOWNLOAD_URL}/tcltk_win64.zip" CACHE STRING INTERNAL)
-set (ZLIB_DOWNLOAD_URL_WIN "${DEPS_DOWNLOAD_URL}/zlib_win64.zip" CACHE STRING INTERNAL)
+set (ZLIB_DOWNLOAD_URL_WIN "D:/projects/GeometryLab/engine/netgen/zlib/v1.2.11.zip" CACHE STRING INTERNAL)
 set (CGNS_DOWNLOAD_URL_WIN "${DEPS_DOWNLOAD_URL}/cgns_win64.zip" CACHE STRING INTERNAL)
 set (CGNS_DOWNLOAD_URL_MAC "${DEPS_DOWNLOAD_URL}/cgns_mac.zip" CACHE STRING INTERNAL)
 
@@ -108,7 +108,6 @@ if(BUILD_OCC)
   list(APPEND NETGEN_DEPENDENCIES project_occ)
   set(OpenCascade_ROOT ${OCC_DIR})
 else(BUILD_OCC)
-    message("}}}}}}}}}}}}-----------------" ${OpenCASCADE_DIR})
     if(WIN32 AND NOT OCC_INCLUDE_DIR AND NOT OpenCASCADE_DIR)
         # we can download prebuilt occ binaries for windows
         ExternalProject_Add(win_download_occ
@@ -131,14 +130,13 @@ if(BUILD_ZLIB)
   set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/dependencies/zlib)
   ExternalProject_Add(project_zlib
     ${SUBPROJECT_ARGS}
-    URL https://github.com/madler/zlib/archive/refs/tags/v1.2.11.zip
-    URL_MD5 9d6a627693163bbbf3f26403a3a0b0b1
-    DOWNLOAD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external_dependencies
+    SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/external_dependencies/zlib
     CMAKE_ARGS
          -DCMAKE_INSTALL_PREFIX=${ZLIB_DIR}
          ${SUBPROJECT_CMAKE_ARGS}
     UPDATE_COMMAND "" # Disable update
     BUILD_IN_SOURCE 1
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory . ${ZLIB_DIR}
     )
 
   list(APPEND NETGEN_DEPENDENCIES project_zlib)

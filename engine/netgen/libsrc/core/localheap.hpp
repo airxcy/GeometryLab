@@ -39,7 +39,7 @@ static Allocator global_alloc;
    Exception on heap overflow.
    Thrown by allocation on LocalHeap.
 */
-class NGCORE_API LocalHeapOverflow : public Exception
+class  LocalHeapOverflow : public Exception
 {
 public:
   LocalHeapOverflow (size_t size);
@@ -73,7 +73,7 @@ public:
 
 public:
   /// Allocate one block of size asize.
-  NGCORE_API LocalHeap (size_t asize, 
+   LocalHeap (size_t asize, 
                             const char * aname = "noname",
                             bool mult_by_threads = false);
 
@@ -204,7 +204,7 @@ public:
   private: 
     ///
 #ifndef __CUDA_ARCH__
-    [[noreturn]] NGCORE_API void ThrowException(); 
+    [[noreturn]]  void ThrowException(); 
 #else
     NETGEN_INLINE void ThrowException() { ; }
 #endif
@@ -220,7 +220,7 @@ public:
     NETGEN_INLINE size_t Available () const throw () { return (totsize - (p-data)); }
 
     /// Split free memory on heap into pieces for each thread
-    NGCORE_API LocalHeap Split () const;
+     LocalHeap Split () const;
 
     /// Split free memory on heap into pieces
     NETGEN_INLINE LocalHeap Split (int partnr, int nparts) const

@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -16,16 +16,22 @@
 
 
 #include "GlfwOcctView.h"
+#include "igl/writeSTL.h"
 
-namespace nglib {
-#include <nglib.h>
-}
+
 
 #ifndef OCCGEOMETRY
 #define OCCGEOMETRY
 #endif // !OCCGEOMETRY
+
+
 #include <occgeom.hpp>
 #include <meshing.hpp>
+namespace nglib {
+#include <nglib.h>
+}
+
+
 //#include <ngexception.hpp>
 
 
@@ -52,14 +58,15 @@ void occTri2Eigen(TopoDS_Shape& shape)
 {
     Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
     int counter = 0;
+    BRepMesh_IncrementalMesh meshGen(shape, 0.001);
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    std::vector< std::vector<double> > vertices;
+    std::vector< std::vector<int> > mesh;
+    std::vector< glm::vec3> clrmp;
     for (TopExp_Explorer exp(shape, TopAbs_FACE); exp.More(); exp.Next())
     {
-        BRepMesh_IncrementalMesh meshGen(shape, 0.001);
-        Eigen::MatrixXd V;
-        Eigen::MatrixXi F;
-        std::vector< std::vector<double> > vertices;
-        std::vector< std::vector<int> > mesh;
-        std::vector< glm::vec3> clrmp;
+
 
         const TopoDS_Face& face = TopoDS::Face(exp.Current());
         TopLoc_Location loc;
@@ -84,22 +91,28 @@ void occTri2Eigen(TopoDS_Shape& shape)
             mesh.push_back(tri);
             clrmp.push_back(c);
         }
-        auto model = polyscope::registerSurfaceMesh(std::to_string(counter), vertices, mesh);
-        model->setTransparency(0.6);
-        model->setEdgeWidth(1);
-        model->setSmoothShade(true);
-        auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
-        auto Q = model->addFaceColorQuantity("face", clrmp);
-        Q->setEnabled(true);
+
         counter++;
         
     }
+
+    auto model = polyscope::registerSurfaceMesh("OCC", vertices, mesh);
+    model->setTransparency(0.6);
+    model->setEdgeWidth(1);
+    model->setSmoothShade(true);
 }
 
+namespace netgen
+{
+    extern MeshingParameters mparam;
+    extern OCCParameters occparam;
+    inline void NOOP_Deleter(void*) { ; }
+}
+using namespace nglib;
 
 void ng2Eigen(TopoDS_Shape& shape)
 {
-    std::cout << "here" << std::endl;
+    
     
     Bnd_Box aabb;
     BRepBndLib::Add(shape, aabb, false);
@@ -108,19 +121,19 @@ void ng2Eigen(TopoDS_Shape& shape)
     
     
     
-    //netgen::MeshingParameters& mp=netgen::mparam;
+    netgen::MeshingParameters& mp=netgen::mparam;
     
-    
+    std::cout << diag << std::endl;
     // Parameters definition.
-    //mp.minh = 0.0;
-    //mp.maxh = 0.01 * diag;
-    //mp.uselocalh = true;
-    //mp.secondorder = false;
-    //mp.grading = 1.0;
+    mp.minh = 0.0;
+    mp.maxh =  0.004* diag;
+    mp.uselocalh = true;
+    mp.secondorder = false;
+    mp.grading = 0.99;
    
     nglib::Ng_Init();
     
-    /*
+    Ng_OCC_Geometry;
     netgen::OCCGeometry occgeo;
     occgeo.shape = shape;
     occgeo.changed = 1;
@@ -130,51 +143,86 @@ void ng2Eigen(TopoDS_Shape& shape)
     
     // Resulting mesh.
     netgen::Mesh mesh;
-
+    netgen::OCCParameters& op = netgen::occparam;
+    
     // Mesh building
-    netgen::OCCSetLocalMeshSize(occgeo, mesh,mp,netgen::OCCParameters());
-
-
-
-    const int nbNodes = (int)mesh.GetNP();
-    const int nbTriangles = (int)mesh.GetNSE(); // We expect that mesh contains only triangles.
-
+    netgen::OCCSetLocalMeshSize(occgeo, mesh,mp,op);
+    mesh.SetGeometry(std::shared_ptr<netgen::NetgenGeometry>(&occgeo,&netgen::NOOP_Deleter ));
+    occgeo.FindEdges(mesh, mp);
+    occgeo.MeshSurface(mesh, mp);
+    
+    //occgeo.OptimizeSurface(mesh, mp);
+    //Ng_OCC_Geometry* og = (Ng_OCC_Geometry*)&occgeo;
+    Ng_Mesh* me = (Ng_Mesh*) & mesh;
+    Ng_Meshing_Parameters* nmp = (Ng_Meshing_Parameters *)&mp;
+    //Ng_Result result = Ng_OCC_GenerateSurfaceMesh(og, me, nmp);
     
 
-    Handle(Poly_Triangulation) result = new Poly_Triangulation(nbNodes, nbTriangles, false);
-    Eigen::MatrixXd V;
-    Eigen::MatrixXi F;
+    
+    
+    
+    const int nbTriangles = (int)mesh.GetNSE(); // We expect that mesh contains only triangles.
+    
+
+
+
+    mesh.CalcLocalH(mp.grading);
+
+    MeshVolume(mp, mesh);
+    //RemoveIllegalElements(mesh);
+    //OptimizeVolume(mp, mesh);
+    const int nbNodes = (int)mesh.GetNP();
+    const int nTetra = (int)mesh.GetNE(); 
+
+    std::cout << nbNodes << "----------------------------------------" << nTetra << std::endl;
+
+    //Handle(Poly_Triangulation) result = new Poly_Triangulation(nbNodes, nbTriangles, false);
+    
+    Eigen::MatrixXd V(nbNodes,3);
+    Eigen::MatrixXi F(nTetra*4,3);
+    
     std::vector< std::vector<double> > vertices;
     std::vector< std::vector<int> > trimesh;
     std::vector< glm::vec3> clrmp;
     for (int i = 1; i <= nbNodes; ++i)
     {
         const netgen::MeshPoint& point = mesh.Point(netgen::PointIndex(i));
-        vertices.push_back({ point[0], point[1], point[2] });
+        //std::cout <<i<< ": " << point[0] << " " << point[1] << " " << point[2] << std::endl;
+        V.row(i-1)= Eigen::RowVector3d( point[0], point[1], point[2] );
     }
-
-    for (int i = 1; i <= nbTriangles; ++i)
+    int counter = 0;
+    for (int i = 1; i <= nTetra; ++i)
     {
-        const netgen::Element2d& elem = mesh.SurfaceElement(netgen::ElementIndex(i));
+        const netgen::Element& elem = mesh.VolumeElement(i);
         {
-            trimesh.push_back({ elem[0], elem[1], elem[2] });
+            //double val=(V.row(elem[0] - 1) + V.row(elem[1] - 1) + V.row(elem[2] - 1) + V.row(elem[3] - 1))* Eigen::Vector3d(1, 1, 1);
+            //if (val < 0)
+            {
+                //std::cout << i << ": " << elem[0] << " " << elem[1] << " " << elem[2] << std::endl;
+                F.row(counter * 4 + 0) = Eigen::RowVector3i(elem[0] - 1, elem[1] - 1, elem[2] - 1);
+                F.row(counter * 4 + 1) = Eigen::RowVector3i(elem[1] - 1, elem[2] - 1, elem[3] - 1);
+                F.row(counter * 4 + 2) = Eigen::RowVector3i(elem[2] - 1, elem[3] - 1, elem[0] - 1);
+                F.row(counter * 4 + 3) = Eigen::RowVector3i(elem[3] - 1, elem[0] - 1, elem[1] - 1);
+                counter++;
+            }
         }
     }
 
-    auto model = polyscope::registerSurfaceMesh("netgen", vertices, trimesh);
+    igl::writeSTL("out.stl", V, F);
+    auto model = polyscope::registerSurfaceMesh("netgen", V, F);
     model->setTransparency(0.6);
     model->setEdgeWidth(1);
     model->setSmoothShade(true);
-    auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
-    auto Q = model->addFaceColorQuantity("face", clrmp);
-    Q->setEnabled(true);
-    */
+    //auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
+    //auto Q = model->addFaceColorQuantity("face", clrmp);
+    //Q->setEnabled(true);
+    
 }
 int main (const int, const char**)
 {
   //init();
     
-    polyscope::options::programName = "Triangle";
+    polyscope::options::programName = "Nine Cube";
     polyscope::options::groundPlaneMode = polyscope::GroundPlaneMode::None;
     polyscope::view::style = polyscope::view::NavigateStyle::Free;
     polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };
@@ -193,11 +241,12 @@ int main (const int, const char**)
       //tree->Next();
       TopoDS_Shape shape = tree.Value();
       //std::cout << shape.NbChildren() << std::endl;
-      //occTri2Eigen(shape);
+      
       
       ng2Eigen(shape);
+      occTri2Eigen(shape);
       /*
-    //anApp.addShape(shape);
+      //anApp.addShape(shape);
       polyscope::state::userCallback = [&]()
       {
           ImGui::GetStyle().AntiAliasedLines = false;
@@ -214,9 +263,9 @@ int main (const int, const char**)
           ImGui::PopStyleColor();
           ImGui::End();
       };
-
-      polyscope::show();
       */
+      polyscope::show();
+      
   return 0;
 }
 

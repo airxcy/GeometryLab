@@ -1,5 +1,5 @@
-#ifndef NETGEN_CORE_NGCORE_API_HPP
-#define NETGEN_CORE_NGCORE_API_HPP
+#ifndef NETGEN_CORE__HPP
+#define NETGEN_CORE__HPP
 
 #ifdef WIN32
 
@@ -34,18 +34,11 @@
 #endif // WIN32
 
 
-#ifdef WIN32
-        #define NGCORE_API_EXPORT __declspec(dllexport)
-        #define NGCORE_API_IMPORT __declspec(dllimport)
-#else
-        #define NGCORE_API_EXPORT __attribute__((visibility("default")))
-        #define NGCORE_API_IMPORT __attribute__((visibility("default")))
-#endif
 
 #ifdef NGCORE_EXPORTS
-        #define NGCORE_API NGCORE_API_EXPORT
+        #define  NGCORE_API_EXPORT
 #else
-        #define NGCORE_API NGCORE_API_IMPORT
+        #define  NGCORE_API_IMPORT
 #endif
 
 // Set __host__ __device__ for all inline functions
@@ -147,4 +140,4 @@ inline void operator delete[]( void* ptr, std::size_t sz, std::align_val_t al ) 
 #endif // __MAC_OS_X_VERSION_MIN_REQUIRED
 #endif // __MAC_OS_X_VERSION_MIN_REQUIRED < 101300
 
-#endif // NETGEN_CORE_NGCORE_API_HPP
+#endif // NETGEN_CORE__HPP

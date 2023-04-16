@@ -48,30 +48,30 @@ class Meshing2
 
 public:
   ///
-  DLL_HEADER Meshing2 (const NetgenGeometry& geo,
+   Meshing2 (const NetgenGeometry& geo,
                        const MeshingParameters & mp,
                        const Box<3> & aboundingbox);
 
   ///
-  DLL_HEADER virtual ~Meshing2 ();
+   virtual ~Meshing2 ();
 
   /// Load rules, either from file, or compiled rules
   void LoadRules (const char * filename, bool quad);
 
   /// 
-  DLL_HEADER MESHING2_RESULT GenerateMesh (Mesh & mesh, const MeshingParameters & mp, double gh, int facenr, int layer=1);
+   MESHING2_RESULT GenerateMesh (Mesh & mesh, const MeshingParameters & mp, double gh, int facenr, int layer=1);
 
-  DLL_HEADER void Delaunay (Mesh & mesh, int domainnr, const MeshingParameters & mp);
-  DLL_HEADER void BlockFillLocalH (Mesh & mesh, const MeshingParameters & mp);
+   void Delaunay (Mesh & mesh, int domainnr, const MeshingParameters & mp);
+   void BlockFillLocalH (Mesh & mesh, const MeshingParameters & mp);
 
 
   ///
-  DLL_HEADER int AddPoint (const Point3d & p, PointIndex globind, MultiPointGeomInfo * mgi = NULL,
+   int AddPoint (const Point3d & p, PointIndex globind, MultiPointGeomInfo * mgi = NULL,
 		 bool pointonsurface = true);
-  DLL_HEADER PointIndex GetGlobalIndex(int pi) const;
+   PointIndex GetGlobalIndex(int pi) const;
 
   ///
-  DLL_HEADER void AddBoundaryElement (INDEX i1, INDEX i2,
+   void AddBoundaryElement (INDEX i1, INDEX i2,
 			   const PointGeomInfo & gi1, const PointGeomInfo & gi2);
   
   ///
