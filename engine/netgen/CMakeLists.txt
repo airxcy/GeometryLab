@@ -3,13 +3,14 @@ project(NetGen)
 cmake_minimum_required(VERSION 3.13)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_DEBUG_POSTFIX d)
 set(NETGEN_VERSION_GIT v6.2.2302-21-g9180f9b9)
 message("CMAKE_SOURCE_DIR:" ${CMAKE_SOURCE_DIR} )
 set(ENGINE_DIR D:/projects/GeometryLab/engine)
 set(INSTALL_DIR ${ENGINE_DIR}/netgen)
 set(CMAKE_INSTALL_PREFIX ${ENGINE_DIR}/netgen)
 # add_definitions(-DCMAKE_GENERATOR_PLATFORM=x64)
- set(CMAKE_ARGS " -A x64 ")
+ set(CMAKE_ARGS " -A x64 ") 
 # add_definitions(-DNG_INSTALL_DIR=${CMAKE_INSTALL_PREFIX})
 # add_definitions(-DNG_INSTALL_DIR_BIN=${CMAKE_INSTALL_PREFIX}/bin)
 # add_definitions(-DNG_INSTALL_DIR_PYTHON=${CMAKE_INSTALL_PREFIX})
@@ -50,7 +51,7 @@ set(NG_INSTALL_DIR D:/projects/GeometryLab/engine/netgen)
 add_library(nglib ${NGLIB_LIBRARY_TYPE})
 
 #######################################################################
-set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/dependencies/zlib)
+
 ExternalProject_Add(project_zlib
   ${SUBPROJECT_ARGS}
   SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/external_dependencies/zlib
@@ -58,21 +59,23 @@ ExternalProject_Add(project_zlib
       -DCMAKE_INSTALL_PREFIX=${ZLIB_DIR}
       ${SUBPROJECT_CMAKE_ARGS}
   UPDATE_COMMAND "" # Disable update
-  BUILD_IN_SOURCE 1
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory . ${ZLIB_DIR}
+  # BUILD_IN_SOURCE 1
+  # INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory . ${ZLIB_DIR}
   )
 
 list(APPEND NETGEN_DEPENDENCIES project_zlib)
 list(APPEND NETGEN_CMAKE_PREFIX_PATH ${ZLIB_DIR})
+
 if(WIN32)
   # force linking the static library
-  set(ZLIB_INCLUDE_DIRS ${ZLIB_DIR})
-  set(ZLIB_LIBRARIES ${ZLIB_DIR}/Release/zlibstatic.lib)
+  set(ZLIB_INCLUDE_DIRS ${ZLIB_DIR}/include)
+  set(ZLIB_LIBRARIES  zlibstatic)
 endif(WIN32)
 
+target_link_directories(nglib PRIVATE ${ZLIB_DIR}/lib)
 target_include_directories(nglib PRIVATE ${ZLIB_INCLUDE_DIRS})
 target_link_libraries(nglib PRIVATE ${ZLIB_LIBRARIES})
-
+message("+++++++" ${ZLIB_DIR}/include)
 
 
 #######################################################################

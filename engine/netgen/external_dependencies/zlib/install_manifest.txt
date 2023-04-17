@@ -1,7 +1,0 @@
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/lib/zlib.lib
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/bin/zlib.dll
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/lib/zlibstatic.lib
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/include/zconf.h
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/include/zlib.h
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/share/man/man3/zlib.3
-D:/projects/GeometryLab/build/src/occSTEP/NETGENLIB/dependencies/zlib/share/pkgconfig/zlib.pc

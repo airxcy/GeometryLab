@@ -40,11 +40,6 @@ else()
   message (STATUS "OpenCASCADE_LIBRARY_DIR=${OpenCASCADE_LIBRARY_DIR}")
   INCLUDE_DIRECTORIES(${OpenCASCADE_INCLUDE_DIR})
 endif()
-
-
-message("-----------------" ${OpenCASCADE_DIR})
-add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
-
 SET(OpenCASCADE_LIBS 
   TKernel
   TKMath
@@ -66,15 +61,16 @@ SET(OpenCASCADE_LIBS
   TKLCAF
 )
 
-
-#file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
-
-
+set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/NETGENLIB/dependencies/zlib)
+add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
 file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/bin/*.dll")
 add_custom_target(copy_dll ALL
     COMMAND ${CMAKE_COMMAND} -E copy
         ${ENGINE_DIR}/freetype/bin/freetype.dll
         $<CONFIG>/freetype.dll
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${ZLIB_DIR}/lib/
+        $<CONFIG>/
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         NETGENLIB/$<CONFIG>/
         $<CONFIG>/
@@ -87,15 +83,11 @@ add_custom_target(copy_dll ALL
     COMMENT "Copying"
 )
 
-
-# configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll COPYONLY)
-# configure_file(${ENGINE_DIR}/netgen/bin/ngcore.dll D:/projects/GeometryLab/build/src/occSTEP/Release/ngcore.dll COPYONLY)
-# configure_file(${ENGINE_DIR}/netgen/bin/nglib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/nglib.dll COPYONLY)
-# configure_file(${ENGINE_DIR}/netgen/bin/zlib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/zlib.dll COPYONLY)
-# execute_process(COMMAND ${OpenCASCADE_BINARY_DIR} copy "${ENGINE_DIR}/freetype/bin/freetype.dll" ${OpenCASCADE_BINARY_DIR})
+message("------------" ${ZLIB_DIR}/lib)
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
-link_directories(${ENGINE_DIR}/netgen/lib)
+link_directories(${ZLIB_DIR}/lib)
+#file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
 add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
   ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include 
