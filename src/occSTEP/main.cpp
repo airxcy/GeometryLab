@@ -126,11 +126,10 @@ void ng2Eigen(TopoDS_Shape& shape)
     std::cout << diag << std::endl;
     // Parameters definition.
     mp.minh = 0.0;
-    mp.maxh =  0.004* diag;
+    mp.maxh =  diag;
     mp.uselocalh = true;
     mp.secondorder = false;
-    mp.grading = 0.99;
-   
+    mp.grading = 0.01;
     nglib::Ng_Init();
     
     Ng_OCC_Geometry;
