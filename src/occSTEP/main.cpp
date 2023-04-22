@@ -18,6 +18,8 @@
 
 #include "GlfwOcctView.h"
 #include "igl/writeSTL.h"
+#include "igl/boundary_loop.h"
+#include "EigenMeshD.h"
 
 
 
@@ -58,50 +60,89 @@ void errorCallback(int error, const char* description)
     // Do nothing
 }
 
+typedef std::pair<glm::vec3, double  > glmE;
+std::vector< glmE > minE;
 
 
 void occTri2Eigen(TopoDS_Shape& shape)
 {
     Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
     int counter = 0;
-    BRepMesh_IncrementalMesh meshGen(shape, 0.001);
+    BRepMesh_IncrementalMesh meshGen(shape, 0.01);
 
-    Eigen::MatrixXd V;
-    Eigen::MatrixXi F;
-    std::vector< std::vector<double> > vertices;
-    std::vector< std::vector<int> > mesh;
-    std::vector< glm::vec3> clrmp;
+    std::vector<EigenMeshD> fmeshlist;
     for (TopExp_Explorer exp(shape, TopAbs_FACE); exp.More(); exp.Next())
     {
         const TopoDS_Face& face = TopoDS::Face(exp.Current());
         TopLoc_Location loc;
         Handle(Poly_Triangulation) faceTris = BRep_Tool::Triangulation(face, loc);
-        
         std::unordered_map<int, int> nodesMap;
-        for (int iNode = 1; iNode <= faceTris->NbNodes(); ++iNode)
+        EigenMeshD m;
+        m.V = Eigen::MatrixXd(faceTris->NbNodes(), 3);
+        m.F = Eigen::MatrixXi(faceTris->NbTriangles(), 3);
+
+        int v1, v2;
+        for (int iNode = 0; iNode < faceTris->NbNodes(); ++iNode)
         {
-            gp_Pnt P = faceTris->Node(iNode);
-            std::vector<double> vtx = { P.X(),P.Y(), P.Z() };
-            const int cohNodeIndex = vertices.size();
-            vertices.push_back(vtx);
-            nodesMap.insert({ iNode, cohNodeIndex });
+            gp_Pnt P = faceTris->Node(iNode+1);
+            m.V.row(iNode) = Eigen::RowVector3d(P.X(), P.Y(), P.Z());
         }
-        auto c = polyscope::getNextUniqueColor();
-        for (int iTri = 1; iTri <= faceTris->NbTriangles(); ++iTri)
+        double minl = 100;
+        for (int iTri = 0; iTri < faceTris->NbTriangles(); ++iTri)
         {
-            int iNodes[3];
-            faceTris->Triangle(iTri).Get(iNodes[0], iNodes[1], iNodes[2]);
-            int iCohNodes[3] = { nodesMap.at(iNodes[0]),nodesMap.at(iNodes[1]),nodesMap.at(iNodes[2]) };
-            std::vector<int> tri = { iCohNodes[0], iCohNodes[1], iCohNodes[2] };
-            mesh.push_back(tri);
-            clrmp.push_back(c);
+            int c[3];
+            faceTris->Triangle(iTri+1).Get(c[0], c[1], c[2]);
+            c[0] = c[0] - 1;
+            c[1] = c[1] - 1;
+            c[2] = c[2] - 1;
+            double l1=(m.V.row(c[0]) - m.V.row(c[1])).norm();
+            double l2= (m.V.row(c[1]) - m.V.row(c[2])).norm();
+            double l3= (m.V.row(c[2]) - m.V.row(c[0])).norm();
+            if (l1 < minl) { minl = l1; v1 = c[0]; v2 = c[1]; }
+            if (l2 < minl) {
+                minl = l2; v1 = c[1]; v2 = c[2];
+            }
+            if (l3 < minl) { minl = l3; v1 = c[2]; v2 = c[0]; }
+            m.F.row(iTri) = Eigen::RowVector3i(c[0], c[1], c[2] );
         }
-        counter++;
+        auto model = polyscope::registerSurfaceMesh(std::to_string(fmeshlist.size()), m.V, m.F);
+        //Eigen::RowVector3d cent = V.colwise().mean();
+        std::vector< glm::vec3 > e;
+        e.push_back({ m.V(v1,0),m.V(v1,1) ,m.V(v1,2) });
+        e.push_back({ m.V(v2,0),m.V(v2,1) ,m.V(v2,2) });
+        glm::vec3 midp = e[0] + e[1];
+        midp /= 2;
+        minE.push_back(glmE(midp, minl));
+
+        std::vector < std::vector<glm::vec3> > ee;ee.push_back(e);
+        m.updateTplgy();
+        std::vector<std::vector< int > > bndlist;
+        igl::boundary_loop(m.F, bndlist);
+        //m.seedBndLoop(bnd, bnd[0], bnd[1]);
+        auto clr = polyscope::getNextUniqueColor();
+
+        for(auto& bnd: bndlist)
+            for (int i = 0; i < bnd.size(); i++)
+            {
+                //bnde.row(i) << bnd[i], bnd[(i + 1) % bnd.size()];
+                //auto gQ = model->addSurfaceGraphQuantity("minE", ee);
+                Eigen::MatrixXd bndV = m.V({ bnd[i],bnd[(i + 1) % bnd.size()]}, {0,1,2});
+                Eigen::RowVector2i bnde(0, 1);
+                auto gQ = model->addSurfaceGraphQuantity(std::to_string(i).c_str(), bndV, bnde);
+                double val = (i + 0.1) / bnd.size();
+                gQ->setColor(glm::vec3(val,1-val,0));
+                gQ->setEnabled(true);
+                gQ->setRadius(0.3, false);
+            }
+        fmeshlist.push_back(m);
+        model->setTransparency(0.6);
+        model->setEdgeWidth(1);
+        model->setSmoothShade(true);
+        model->setSurfaceColor(clr);
+
+
     }
-    auto model = polyscope::registerSurfaceMesh("OCC", vertices, mesh);
-    model->setTransparency(0.6);
-    model->setEdgeWidth(1);
-    model->setSmoothShade(true);
+    
 }
 
 namespace netgen
@@ -137,7 +178,7 @@ void ng2Eigen(TopoDS_Shape& shape)
     mp.maxh =  diag;
     mp.uselocalh = true;
     mp.secondorder = false;
-    mp.grading = 0.1;
+    mp.grading = 0.01;
     nglib::Ng_Init();
     
     Ng_OCC_Geometry;
@@ -231,6 +272,7 @@ void ng2Eigen(TopoDS_Shape& shape)
 
     
 }
+
 int main (const int, const char**)
 {
   //init();
@@ -256,27 +298,32 @@ int main (const int, const char**)
       //std::cout << shape.NbChildren() << std::endl;
       
       
-      //ng2Eigen(shape);
-      occTri2Eigen(shape);
-      /*
-      //anApp.addShape(shape);
+      ng2Eigen(shape);
+      //occTri2Eigen(shape);
+      
       polyscope::state::userCallback = [&]()
       {
           ImGui::GetStyle().AntiAliasedLines = false;
 
           auto viewsz = ImGui::GetMainViewport()->Size;
-          ImGui::SetNextWindowPos({ viewsz[0] - 80, 0});
-          ImGui::Begin("main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
-          if (ImGui::Button("classify"))
+          auto view = polyscope::view::getCameraViewMatrix();
+          auto proj = polyscope::view::getCameraPerspectiveMatrix();
+          for (int i =0;i< minE.size();i++)
           {
-
-
+              auto sname= std::to_string(i);
+              auto s = polyscope::getSurfaceMesh(sname);
+              if (s->isEnabled())
+              {
+                  glm::vec3 v = glm::project(minE[i].first, glm::mat4(1.0), proj * view, glm::vec4(0, 0, viewsz.x, viewsz.y));
+                  ImGui::SetNextWindowPos({ v[0],  viewsz.y - v[1] });
+                  ImGui::Begin(sname.c_str(), nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
+                  ImGui::Text("%.4e", minE[i].second);
+                  ImGui::End();
+              }
           }
-          ImGui::PopStyleColor();
-          ImGui::End();
+
       };
-      */
+      
       polyscope::show();
       
   return 0;
