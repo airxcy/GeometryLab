@@ -8,7 +8,6 @@
 //#include <imgui_impl_glfw.h>
 //#include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
-#include "igl/readOBJ.h"
 
 void errorCallback(int error, const char* description){}
 int main (const int, const char**)
@@ -28,17 +27,26 @@ int main (const int, const char**)
     //demo.tetralization();
     //occTri2Eigen(shape);
     EigenMeshD egm;
-    egm.loadOBJ("D:/data/shuttle.obj");
+    egm.loadSTL("D:/projects/GeometryLab/data/Gear_Spur_16T.stl");
     auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
-    
+    plym->setSurfaceColor({ 0,1,0 });
+    plym->setTransparency(0.6);
+    plym->setEdgeWidth(1);
     NetGenDemo demo;
     demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
     std::cout << "fromEigen" << std::endl;
     demo.fromEigen(egm);
-    EigenMeshD egm2;
-    demo.toEigen(egm2.V, egm2.F);
-    auto surfVis1 = polyscope::registerSurfaceMesh("SurfaceElements1", egm2.V, egm2.F);
-    surfVis1->setSurfaceColor({ 0,1,0 });
+    auto bb = plym->boundingBox();
+    double diag = (std::get<0>(bb) - std::get<1>(bb)).length();
+    std::cout << diag << std::endl;
+    netgen::MeshingParameters& mp = demo.meshParam();
+    mp.maxh = diag;
+    mp.grading = 0.1;
+
+    //EigenMeshD egm2;
+    //demo.toEigen(egm2.V, egm2.F);
+    //auto surfVis1 = polyscope::registerSurfaceMesh("SurfaceElements1", egm2.V, egm2.F);
+    //surfVis1->setSurfaceColor({ 0,1,0 });
     demo.tetralization();
     
 

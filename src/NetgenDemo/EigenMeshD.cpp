@@ -12,6 +12,9 @@
 #include "geometrycentral/surface/vertex_position_geometry.h"
 #include "geometrycentral/surface/tufted_laplacian.h"
 
+
+#include "igl/readSTL.h"
+#include "igl/remove_duplicate_vertices.h"
 #include "igl/readOBJ.h"
 #include "igl/cotmatrix.h"
 #include "igl/massmatrix.h"
@@ -45,6 +48,18 @@ void EigenMeshD::loadOBJ(std::string fpath)
 	{
 		F.row(i) << stdF[i][0], stdF[i][1], stdF[i][2];
 	}
+	//auto plym = polyscope::registerSurfaceMesh("eigen", stdV, stdF);
+}
+	
+
+void EigenMeshD::loadSTL(std::string fpath)
+{
+	Eigen::MatrixXd N, SV;
+	Eigen::MatrixXi SVI,SVJ,SF;
+	igl::readSTL(fpath, V,F,N);
+	igl::remove_duplicate_vertices(V,F, 1e-7, SV, SVI, SVJ, SF);
+	V = SV;
+	F=SF;
 	//auto plym = polyscope::registerSurfaceMesh("eigen", stdV, stdF);
 }
 

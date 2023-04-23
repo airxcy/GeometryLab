@@ -56,6 +56,14 @@ void NetGenDemo::occ2Surface(TopoDS_Shape& shape)
 
 void NetGenDemo::fromEigen(EigenMeshD& egm)
 {
+    // Parameters definition.
+    netgen::MeshingParameters& mp = netgen::mparam;
+    mp.minh = 0.0;
+
+    mp.uselocalh = true;
+    mp.secondorder = false;
+    nglib::Ng_Init();
+
     for(int i=0;i<egm.V.rows();i++)
         mesh.AddPoint(netgen::Point3d(egm.V(i,0), egm.V(i, 1), egm.V(i, 2)));
 
@@ -115,24 +123,14 @@ void NetGenDemo::tetralization()
         counter++;
     }
     auto volumeVis = polyscope::registerSurfaceMesh("netgen", V, F);
-    volumeVis->setTransparency(0.6);
     volumeVis->setEdgeWidth(1);
     volumeVis->setSmoothShade(true);
+    volumeVis->setSurfaceColor({ 1,0,0 });
     //auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
     //auto Q = model->addFaceColorQuantity("face", clrmp);
     //Q->setEnabled(true);
 
-
-    auto& ope = mesh.SurfaceElements();
-    Eigen::MatrixXi F2(ope.Size(), 3);
-    for (int i = 0; i < ope.Size(); i++)
-    {
-        netgen::Element2d& elem = ope[i];
-        F2.row(i) = Eigen::RowVector3i(elem[0] - 1, elem[1] - 1, elem[2] - 1);
-    }
-    auto surfVis = polyscope::registerSurfaceMesh("SurfaceElements", V, F2);
-    surfVis->setSurfaceColor({ 1,0,0 });
-    std::cout << "surface elem : " << ope.Size() << " nbNodes:" << nbNodes << " nTetra:" << nTetra << std::endl;
+    std::cout << " nbNodes:" << nbNodes << " nTetra:" << nTetra << std::endl;
 
     //igl::writeSTL("out.stl", V, F);
 }
