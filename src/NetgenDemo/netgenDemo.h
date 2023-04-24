@@ -32,7 +32,8 @@ public:
     void tetralization();
     void fromEigen(EigenMeshD& egm);
     void toEigen(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1);
-    
+    void VisVolumeWhole();
+    void VisVolumeSep();
 };
 
 

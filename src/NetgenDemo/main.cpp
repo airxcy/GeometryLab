@@ -3,6 +3,7 @@
 #include "netgenDemo.h"
 #include "polyscope/polyscope.h"
 #include "polyscope/surface_mesh.h"
+#include "tetgenWrapper.h"
 
 #include <imgui.h>
 //#include <imgui_impl_glfw.h>
@@ -27,29 +28,38 @@ int main (const int, const char**)
     //demo.tetralization();
     //occTri2Eigen(shape);
     EigenMeshD egm;
-    egm.loadSTL("D:/projects/GeometryLab/data/Gear_Spur_16T.stl");
+    egm.loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj");
+    //egm.loadOBJ("D:/projects/GeometryLab/data/cube.obj");
     auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
     plym->setSurfaceColor({ 0,1,0 });
     plym->setTransparency(0.6);
     plym->setEdgeWidth(1);
+    TetgenWrapper tet;
+    tet.fromEigen(egm);
+    tet.run();
+    tet.Vis();
+    /*
     NetGenDemo demo;
+    netgen::MeshingParameters& mp = demo.meshParam();
+    //mp.maxh = diag;
+    mp.grading = 0.1;
+    mp.optsteps3d = 0;
+    mp.blockfill = false;
+    mp.uselocalh = false;
+    mp.delaunay = false;
+    mp.delaunay2d = false;
+    mp.checkoverlap = false;
+    mp.checkchartboundary = false;
+    mp.checkchartboundary = false;
+    nglib::Ng_Init();
     demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
-    std::cout << "fromEigen" << std::endl;
     demo.fromEigen(egm);
     auto bb = plym->boundingBox();
     double diag = (std::get<0>(bb) - std::get<1>(bb)).length();
     std::cout << diag << std::endl;
-    netgen::MeshingParameters& mp = demo.meshParam();
-    mp.maxh = diag;
-    mp.grading = 0.1;
-
-    //EigenMeshD egm2;
-    //demo.toEigen(egm2.V, egm2.F);
-    //auto surfVis1 = polyscope::registerSurfaceMesh("SurfaceElements1", egm2.V, egm2.F);
-    //surfVis1->setSurfaceColor({ 0,1,0 });
     demo.tetralization();
-    
-
+    demo.VisVolumeSep();
+    */
       
       polyscope::state::userCallback = [&]()
       {

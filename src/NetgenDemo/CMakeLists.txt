@@ -82,7 +82,7 @@ add_custom_target(copy_dll ALL
         $<CONFIG>/
     COMMENT "Copying"
 )
-
+add_subdirectory(${ENGINE_DIR}/tetgen LIBTETGEN)
 message("------------" ${ZLIB_DIR}/lib)
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
@@ -92,5 +92,5 @@ add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
   ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include 
   ${ENGINE_DIR}/netgen/libsrc ${ENGINE_DIR}/netgen/libsrc/include ${ENGINE_DIR}/netgen/nglib)
-target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES} ngcore nglib)
+target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES} ngcore nglib tet)
 add_dependencies(${PROJECT_NAME} copy_dll)

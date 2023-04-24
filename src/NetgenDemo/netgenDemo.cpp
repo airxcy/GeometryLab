@@ -58,11 +58,11 @@ void NetGenDemo::fromEigen(EigenMeshD& egm)
 {
     // Parameters definition.
     netgen::MeshingParameters& mp = netgen::mparam;
-    mp.minh = 0.0;
+    //mp.minh = 0.0;
 
-    mp.uselocalh = true;
-    mp.secondorder = false;
-    nglib::Ng_Init();
+    //mp.uselocalh = true;
+    //mp.secondorder = false;
+    
 
     for(int i=0;i<egm.V.rows();i++)
         mesh.AddPoint(netgen::Point3d(egm.V(i,0), egm.V(i, 1), egm.V(i, 2)));
@@ -100,8 +100,44 @@ void NetGenDemo::tetralization()
     MeshVolume(mp, mesh);
     //RemoveIllegalElements(mesh);
     //OptimizeVolume(mp, mesh);
+}
+
+void NetGenDemo::VisVolumeSep()
+{
     const int nbNodes = (int)mesh.GetNP();
     const int nTetra = (int)mesh.GetNE();
+    std::cout << " nbNodes:" << nbNodes << " nTetra:" << nTetra << std::endl;
+    int vi = 0;
+    for (int i = 0; i < nTetra; i++)
+    {
+        Eigen::MatrixXd V(4, 3);
+        Eigen::MatrixXi F(4, 3);
+        const netgen::Element& elem = mesh.VolumeElement(i+1);
+        std::cout <<":" << mesh.Points().Size() << std::endl;
+        netgen::DenseMatrix m(3,4);
+        elem.GetPointMatrix(mesh.Points(), m);
+        std::cout << mesh.Points().Size()<<":" << m.Width() << "," << m.Height() << std::endl;
+        for (int j = 0; j < 4; ++j)
+        {
+            //const netgen::MeshPoint& point = mesh.Point(netgen::PointIndex(vi++));
+            V.row(j) << m(0,j), m( 1,j), m(2,j);
+        }
+        for (int j = 0; j < 4; j++)
+        {
+            F.row(j) << tetvcoding[j][0], tetvcoding[j][1], tetvcoding[j][2];
+        }
+        auto volumeVis = polyscope::registerSurfaceMesh(std::to_string(i), V, F);
+        volumeVis->setEdgeWidth(1);
+        volumeVis->setSurfaceColor(polyscope::getNextUniqueColor());
+        volumeVis->setTransparency(0.6);
+    }
+}
+
+void NetGenDemo::VisVolumeWhole()
+{
+    const int nbNodes = (int)mesh.GetNP();
+    const int nTetra = (int)mesh.GetNE();
+    std::cout << " nbNodes:" << nbNodes << " nTetra:" << nTetra << std::endl;
     Eigen::MatrixXd V(nbNodes, 3);
     Eigen::MatrixXi F(nTetra * 4, 3);
     for (int i = 1; i <= nbNodes; ++i)
@@ -109,28 +145,13 @@ void NetGenDemo::tetralization()
         const netgen::MeshPoint& point = mesh.Point(netgen::PointIndex(i));
         V.row(i - 1) = Eigen::RowVector3d(point[0], point[1], point[2]);
     }
-    int counter = 0;
-    //char* v2vMat = new char[nbNodes * nbNodes
-    //mesh.FindOpenElements();
-    //auto& ope=mesh.OpenElements();
     for (int i = 1; i <= nTetra; ++i)
     {
         const netgen::Element& elem = mesh.VolumeElement(i);
         for (int j = 0; j < 4; j++)
-        {
-            F.row(counter * 4 + j) = Eigen::RowVector3i(elem[tetvcoding[j][0]] - 1, elem[tetvcoding[j][1]] - 1, elem[tetvcoding[j][2]] - 1);
-        }
-        counter++;
+            F.row((i - 1) * 4 + j) = Eigen::RowVector3i(elem[tetvcoding[j][0]] - 1, elem[tetvcoding[j][1]] - 1, elem[tetvcoding[j][2]] - 1);
     }
     auto volumeVis = polyscope::registerSurfaceMesh("netgen", V, F);
     volumeVis->setEdgeWidth(1);
-    volumeVis->setSmoothShade(true);
     volumeVis->setSurfaceColor({ 1,0,0 });
-    //auto nQ = model->addFaceVectorQuantity("normals", model->faceNormals);
-    //auto Q = model->addFaceColorQuantity("face", clrmp);
-    //Q->setEnabled(true);
-
-    std::cout << " nbNodes:" << nbNodes << " nTetra:" << nTetra << std::endl;
-
-    //igl::writeSTL("out.stl", V, F);
 }
