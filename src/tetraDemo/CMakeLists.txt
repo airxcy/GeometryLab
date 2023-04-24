@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(occSTEP)
+project(tetraDemo)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -87,8 +87,8 @@ message("------------" ${ZLIB_DIR}/lib)
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
 link_directories(${ZLIB_DIR}/lib)
-#file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
-add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
+file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
+add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} ${IMGUIZMO_SOURCES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
   ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include 
   ${ENGINE_DIR}/netgen/libsrc ${ENGINE_DIR}/netgen/libsrc/include ${ENGINE_DIR}/netgen/nglib)

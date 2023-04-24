@@ -56,6 +56,11 @@ void EigenMeshD::loadSTL(std::string fpath)
 	//auto plym = polyscope::registerSurfaceMesh("eigen", stdV, stdF);
 }
 
+void EigenMeshD::addTF(int* tf)
+{
+	 
+}
+
 void EigenMeshD::map_v2v() {
 	int nV = V.rows();
 	v2v.resize(nV);

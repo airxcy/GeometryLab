@@ -9,9 +9,8 @@ class TetgenWrapper
 public:
 
 	void fromEigen(EigenMeshD& egm);
-	bool toSTD();
+	bool toEigen(EigenMeshD& egm);
 	void run();
-	void Vis();
 
 	char tetvcoding[4][3] =
 	{
@@ -24,8 +23,6 @@ public:
 	tetgenbehavior tetparam;
 	tetgenio in,out;
 
-	std::vector<std::vector<REAL > > V;
-	std::vector<std::vector<int> > T;
-	std::vector<std::vector<int> > F;
+
 };
 #endif // !TETGEN_WRAPPER

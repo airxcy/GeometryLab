@@ -308,7 +308,7 @@ public:
   std::vector<std::string> addSurfaceMeshRules(std::vector<std::string> initRules, bool withMesh = true,
                                                bool withSurfaceShade = true);
 
-private:
+//private:
   // Visualization settings
   PersistentValue<bool> shadeSmooth;
   PersistentValue<glm::vec3> surfaceColor;
