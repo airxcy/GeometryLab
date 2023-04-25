@@ -40,10 +40,11 @@ int main (const int, const char**)
     EigenMeshD egm;
     egm.loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj");
     //egm.loadOBJ("D:/projects/GeometryLab/data/cube.obj");
-    //auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
-    //plym->setSurfaceColor({ 0,1,0 });
-    //plym->setTransparency(0.6);
-    //plym->setEdgeWidth(1);
+    auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
+    plym->setSurfaceColor({ 0,1,0 });
+    plym->setTransparency(0.3);
+    plym->setEdgeWidth(1);
+    plym->setEdgeColor({ 0.2,0.5,0.8 });
     TetgenWrapper tet;
     tet.fromEigen(egm);
     tet.run();
@@ -53,6 +54,8 @@ int main (const int, const char**)
     //auto pctet = polyscope::registerPointCloud("V", egt.V);
     auto pstet= polyscope::registerSurfaceMesh("tetgen", egt.sV, egt.sF);
     pstet->setEdgeWidth(1);
+    pstet->setSurfaceColor({ 1,1,0 });
+    pstet->setEdgeColor({0.8,0.5,0.2});
     /*
     NetGenDemo demo;
     netgen::MeshingParameters& mp = demo.meshParam();
@@ -106,7 +109,7 @@ int main (const int, const char**)
         
         //ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(proj), gizmoMatrix,1);
         std::set<int> selset;
-        if (ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), mCurrentGizmoOperation, ImGuizmo::WORLD, gizmomat.data()))
+        if (ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), mCurrentGizmoOperation, ImGuizmo::LOCAL, gizmomat.data()))
         {
             float matrixTranslation[3], matrixRotation[3], matrixScale[3];
             ImGuizmo::DecomposeMatrixToComponents(gizmomat.data(), matrixTranslation, matrixRotation, matrixScale);
