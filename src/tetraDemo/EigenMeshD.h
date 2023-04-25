@@ -17,6 +17,7 @@ public:
 	Eigen::MatrixXi F;
 	Eigen::MatrixXi T;
 	Eigen::MatrixXi TF;
+	Eigen::MatrixXd B;
 
 	std::vector<std::vector<double > > stdV;
 	std::vector<std::vector<double > > stdTC;

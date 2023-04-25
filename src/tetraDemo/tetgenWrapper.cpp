@@ -1,6 +1,7 @@
 #include "tetgenWrapper.h"
 #include "igl/matrix_to_list.h"
-
+#include "igl/list_to_matrix.h"
+#include "igl/barycenter.h"
 #include "polyscope/surface_mesh.h"
 
 
@@ -58,8 +59,6 @@ void TetgenWrapper::fromEigen(EigenMeshD& egm)
     
 }
 
-
-
 bool TetgenWrapper::toEigen(EigenMeshD& egm)
 {
     using namespace std;
@@ -89,6 +88,12 @@ bool TetgenWrapper::toEigen(EigenMeshD& egm)
             fi++;
         }
     }
+    igl::list_to_matrix(egm.sV, egm.V);
+    igl::list_to_matrix(egm.sF, egm.F);
+    igl::list_to_matrix(egm.sT, egm.T);
+    igl::barycenter(egm.V, egm.T, egm.B);
+    //egm.B = egm.B.rowwise().homogeneous();
+    //std::cout << egm.B.rows()<<","<<egm.B.cols() << std::endl;
     return true;
 }
 

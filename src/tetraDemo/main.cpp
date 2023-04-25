@@ -8,13 +8,18 @@
 
 
 #include <imgui.h>
-
+#include <Eigen/Dense>
 #include "imguizmo/ImGuizmo.h"
 
 //#include <imgui_impl_glfw.h>
 //#include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
-
+ImGuizmo::OPERATION mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+static const float identityMatrix[16] =
+{ 1.f, 0.f, 0.f, 0.f,
+    0.f, 1.f, 0.f, 0.f,
+    0.f, 0.f, 1.f, 0.f,
+    0.f, 0.f, 0.f, 1.f };
 void errorCallback(int error, const char* description){}
 int main (const int, const char**)
 {
@@ -35,10 +40,10 @@ int main (const int, const char**)
     EigenMeshD egm;
     egm.loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj");
     //egm.loadOBJ("D:/projects/GeometryLab/data/cube.obj");
-    auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
-    plym->setSurfaceColor({ 0,1,0 });
-    plym->setTransparency(0.6);
-    plym->setEdgeWidth(1);
+    //auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
+    //plym->setSurfaceColor({ 0,1,0 });
+    //plym->setTransparency(0.6);
+    //plym->setEdgeWidth(1);
     TetgenWrapper tet;
     tet.fromEigen(egm);
     tet.run();
@@ -47,6 +52,7 @@ int main (const int, const char**)
     
     //auto pctet = polyscope::registerPointCloud("V", egt.V);
     auto pstet= polyscope::registerSurfaceMesh("tetgen", egt.sV, egt.sF);
+    pstet->setEdgeWidth(1);
     /*
     NetGenDemo demo;
     netgen::MeshingParameters& mp = demo.meshParam();
@@ -71,9 +77,7 @@ int main (const int, const char**)
     */
     int starti = 0;
     ImGui::GetStyle().AntiAliasedLines = false;
-    float gizmoMatrix[16];
-    for (int i = 0; i < 4; i++)
-        gizmoMatrix[i * 4 + i] = 1;
+    Eigen::Matrix4f gizmomat=Eigen::Matrix4f::Identity();
     polyscope::state::userCallback = [&]()
     {
           
@@ -84,12 +88,52 @@ int main (const int, const char**)
         auto proj = polyscope::view::getCameraPerspectiveMatrix();
         glm::mat4 projT = glm::transpose(proj);
         auto pos = polyscope::view::getCameraWorldPosition();
-        ImGui::SetNextWindowPos({ 0,0 });
+        ImGui::SetNextWindowPos(ImVec2(viewsz.x - 210 , 0), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(200, 0), ImGuiCond_Once);
+        
+        ImGui::Begin("gizmoControl",NULL, ImGuiWindowFlags_None);
+        if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+            mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+        if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+            mCurrentGizmoOperation = ImGuizmo::ROTATE;
+        if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+            mCurrentGizmoOperation = ImGuizmo::SCALE;
+        ImGui::End();
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::BeginFrame();
         ImGuizmo::Enable(true);
         ImGuizmo::SetRect(0, 0, viewsz.x, viewsz.y);
-        ImGuizmo::Manipulate(glm::value_ptr(viewT), glm::value_ptr(projT), ImGuizmo::TRANSLATE, ImGuizmo::WORLD, gizmoMatrix);
+        
+        //ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(proj), gizmoMatrix,1);
+        std::set<int> selset;
+        if (ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), mCurrentGizmoOperation, ImGuizmo::WORLD, gizmomat.data()))
+        {
+            float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+            ImGuizmo::DecomposeMatrixToComponents(gizmomat.data(), matrixTranslation, matrixRotation, matrixScale);
+            Eigen::RowVector3d p((double)matrixTranslation[0], (double)matrixTranslation[1], (double)matrixTranslation[2]);
+            Eigen::Vector3d n= gizmomat.col(1).topRows(3).normalized().cast<double>();
+            Eigen::VectorXd d = (egt.B.rowwise() -p)*n;
+            for (int i = 0; i < egt.nT; i++)
+            {
+                if (d(i)> 0)
+                    selset.insert(egt.sTF[i].begin(), egt.sTF[i].end());
+            }
+        }
+        ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), gizmomat.data(), 10.f);
+        ImGui::End();
+
+        if (selset.size() > 0)
+        {
+            std::vector<std::vector<size_t> > newfaces;
+            for (int fi : selset)
+                newfaces.push_back(egt.sF[fi]);
+            pstet->faces = newfaces;
+            pstet->updateObjectSpaceBounds();
+            pstet->computeCounts();
+            pstet->geometryChanged();
+        }
+        //EditTransform(glm::value_ptr(view), glm::value_ptr(proj), gizmoMatrix, mCurrentGizmoOperation);
+        //polyscope::draw();
         //std::set<int> selset;
         //for (int i = starti; i < egt.nT; i += 2)
         //    selset.insert(egt.sTF[i].begin(), egt.sTF[i].end());
@@ -101,6 +145,7 @@ int main (const int, const char**)
         //pstet->computeCounts();
         //pstet->geometryChanged();
         //starti = 1 - starti;
+        
         /*
         auto viewsz = ImGui::GetMainViewport()->Size;
         auto view = polyscope::view::getCameraViewMatrix();

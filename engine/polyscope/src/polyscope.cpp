@@ -625,11 +625,11 @@ void buildUserGuiAndInvokeCallback() {
   if (state::userCallback) {
 
     if (options::buildGui && options::openImGuiWindowForUserCallback) {
-      ImGui::PushID("user_callback");
-      ImGui::SetNextWindowPos(ImVec2(view::windowWidth - (rightWindowsWidth + imguiStackMargin), imguiStackMargin));
-      ImGui::SetNextWindowSize(ImVec2(rightWindowsWidth, 0.));
+      //ImGui::PushID("user_callback");
+      //ImGui::SetNextWindowPos(ImVec2(view::windowWidth - (rightWindowsWidth + imguiStackMargin), imguiStackMargin));
+      //ImGui::SetNextWindowSize(ImVec2(rightWindowsWidth, 0.));
 
-      ImGui::Begin("Command UI", nullptr);
+      //ImGui::Begin("Command UI", nullptr);
     }
 
     state::userCallback();
@@ -637,8 +637,8 @@ void buildUserGuiAndInvokeCallback() {
     if (options::buildGui && options::openImGuiWindowForUserCallback) {
       rightWindowsWidth = ImGui::GetWindowWidth();
       lastWindowHeightUser = imguiStackMargin + ImGui::GetWindowHeight();
-      ImGui::End();
-      ImGui::PopID();
+      //ImGui::End();
+      //ImGui::PopID();
     } else {
       lastWindowHeightUser = imguiStackMargin;
     }
