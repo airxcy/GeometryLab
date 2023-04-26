@@ -36,15 +36,15 @@ int main (const int, const char**)
     ps1->setSmoothShade(true);
     ps1->setEdgeWidth(1);
     GenusN torusN;
-    torusN.paramFromG1(example);
+    torusN.paramFromG2(example);
     torusN.buildMesh();
     auto pc1 = polyscope::registerPointCloud("DoubleTorus", torusN.V);
     auto cQ=pc1->addColorQuantity("clr", torusN.clrs);
     cQ->setEnabled(true);
     //std::vector<std::vector<double> > vgraph;
     //igl::matrix_to_list(torusN.V, vgraph);
-    //auto qG = misc->addSurfaceGraphQuantity("g", std::vector< std::vector<std::vector<double> > >({ vgraph }));
-    //qG->setEnabled(true);
+    auto qG = misc->addSurfaceGraphQuantity("g", torusN.innerBnd );
+    qG->setEnabled(true);
     //std::cout << "visual" << std::endl;
     //Eigen::MatrixXd points(torusN.nHole*torusN.nANG, 3);
     //std::vector<glm::vec3> pcclr;
