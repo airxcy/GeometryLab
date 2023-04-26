@@ -1,4 +1,4 @@
-﻿#include "EigenMeshD.h"
+﻿#include "GenusN.h"
 
 #include "polyscope/polyscope.h"
 #include "polyscope/surface_mesh.h"
@@ -9,6 +9,8 @@
 #include <Eigen/Core>
 #include <GLFW/glfw3.h>
 #include "imguizmo/ImGuizmo.h"
+
+#include "igl/matrix_to_list.h"
 
 
 ImGuizmo::OPERATION mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -27,46 +29,44 @@ int main (const int, const char**)
     polyscope::init();
     glfwSetErrorCallback(errorCallback);
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
-    EigenMeshD dbTorus;
-    dbTorus.loadOBJ("D:/projects/GeometryLab/data/double-torus.obj");
-    auto psTorus=polyscope::registerSurfaceMesh("DoubleTorus", dbTorus.V, dbTorus.F);
-    psTorus->setTransparency(0.5);
-    psTorus->setSmoothShade(true);
-    psTorus->setEdgeWidth(1);
-
-    Eigen::RowVector3d maxv = dbTorus.V.colwise().maxCoeff();
-    Eigen::RowVector3d minv = dbTorus.V.colwise().minCoeff();
-    std::cout << minv << "||" << maxv << std::endl;
-    double R = (maxv(0)-minv(0)) / 2;
-    double r = R  / 4;
-    double Rr = R - r;
-    Eigen::RowVector3d leftC(0,0,maxv(2)-R), rightC(0, 0, minv(2) + R);
-    Eigen::MatrixXd joints(2, 3);
-    std::vector<glm::vec3> pcclr(joints.rows());
-    joints<<leftC,rightC;
-    pcclr[0] = { 1,0,0 };
-    pcclr[1] = { 0,1,0 };
-    int Nring = 40;
-    joints.conservativeResize(2 + Nring * 2, 3);
-    Eigen::MatrixXi skel(Nring * 2,2);
-    for(int i=0;i<Nring;i++)
-    {
-        double ang = i * 2.0 * M_PI / Nring;
-        joints.row(2+i)<<cos(ang) * Rr, 0, sin(ang) * Rr+leftC(2);
-        skel(i, 0) = 2 + i;
-        skel(i, 1) = 2 + (i + 1) % Nring;
-        joints.row(2+Nring+i)<< cos(ang) * Rr, 0, sin(ang)* Rr+rightC(2);
-        skel(Nring+i, 0) = 2 + Nring + i;
-        skel(Nring+i, 1) = 2 + Nring + (i + 1) % Nring;
-        pcclr.push_back({ 0,0,1 });
-        pcclr.push_back({ 0,0,1 });
-    }
-    auto pc=polyscope::registerPointCloud("centers", joints);
-
-    auto cQ = pc->addColorQuantity("clr", pcclr);
+    XMesh example;
+    example.loadOBJ("D:/projects/GeometryLab/data/double-torus.obj");
+    auto ps1 = polyscope::registerSurfaceMesh("DoubleTorus", example.V, example.F);
+    ps1->setTransparency(0.5);
+    ps1->setSmoothShade(true);
+    ps1->setEdgeWidth(1);
+    GenusN torusN;
+    torusN.paramFromG1(example);
+    torusN.buildMesh();
+    auto pc1 = polyscope::registerPointCloud("DoubleTorus", torusN.V);
+    auto cQ=pc1->addColorQuantity("clr", torusN.clrs);
     cQ->setEnabled(true);
-    auto gQ=misc->addSurfaceGraphQuantity("skel", joints, skel);
-    gQ->setEnabled(true);
+    //std::vector<std::vector<double> > vgraph;
+    //igl::matrix_to_list(torusN.V, vgraph);
+    //auto qG = misc->addSurfaceGraphQuantity("g", std::vector< std::vector<std::vector<double> > >({ vgraph }));
+    //qG->setEnabled(true);
+    //std::cout << "visual" << std::endl;
+    //Eigen::MatrixXd points(torusN.nHole*torusN.nANG, 3);
+    //std::vector<glm::vec3> pcclr;
+    //Eigen::MatrixXi circleG(torusN.nHole * torusN.nANG, 2);
+    //double dANG = 2.0 * M_PI / torusN.nANG;
+    //for (int i = 0; i < torusN.nHole; i++)
+    //{
+    //    double ang = 0;
+    //    for (int j = 0; j < torusN.nANG; j++)
+    //    {
+    //        ang += dANG;
+    //        points.row(pcclr.size()) = Eigen::RowVector3d(cos(ang) * torusN.R, 0, sin(ang) * torusN.R) + torusN.centers.row(i);
+    //        circleG(pcclr.size(), 0) = j;
+    //        circleG(pcclr.size(), 1) = (j + 1) % torusN.nANG;
+    //        pcclr.push_back({ 0,0,1 });
+    //    }
+    //}
+    //auto pc=polyscope::registerPointCloud("centers", points);
+    //auto cQ = pc->addColorQuantity("clr", pcclr);
+    //cQ->setEnabled(true);
+    //auto gQ=misc->addSurfaceGraphQuantity("skel", points, circleG);
+    //gQ->setEnabled(true);
 
     Eigen::Matrix4f gizmomat = Eigen::Matrix4f::Identity();
     polyscope::state::userCallback = [&]()
