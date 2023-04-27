@@ -32,7 +32,6 @@ void GenusN::buildMesh()
     double angBorder1 = M_PI*2.0/genus;
     int range2 = nANG/genus/2 + range1;
     double angBorder2 = 0;
-    std::cout << range1 << "," << range2 << std::endl;
     double dMid = cDist / (nANG / 4);
     V.resize(genus * nANG *nang,3);
     clrs.resize(V.rows(), 3);
