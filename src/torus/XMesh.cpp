@@ -25,6 +25,12 @@ void XMesh::loadOBJ(std::string fpath)
 		std::cout << "is water tight" << std::endl;
 }
 
+void XMesh::clear()
+{
+	V.resize(0, 0);
+	F.resize(0, 0);
+}
+
 
 
 void XMesh::map_v2f() {

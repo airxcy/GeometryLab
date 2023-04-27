@@ -19,7 +19,8 @@ public:
 	std::vector< std::vector< std::vector<double>  > > innerBnd;
 
 	void paramFromG2(XMesh& dbTorus);
-	void buildMesh();
+	void buildMesh(int G);
+	void clear();
 	Eigen::MatrixXd clrs;
 
 };	

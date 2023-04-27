@@ -19,7 +19,7 @@ public:
 	std::vector< std::vector<int> > components;
 
 	void loadOBJ(std::string fpath);
-
+	void clear();
 	void map_v2v();
 	void map_v2f();
 	void updateTplgy();

@@ -36,15 +36,16 @@ int main (const int, const char**)
     ps1->setSmoothShade(true);
     ps1->setEdgeWidth(1);
     GenusN torusN;
+    int G=2;
     torusN.paramFromG2(example);
-    torusN.buildMesh();
-    auto pc1 = polyscope::registerPointCloud("DoubleTorus", torusN.V);
+    torusN.buildMesh(G);
+    auto pc1 = polyscope::registerPointCloud("genus", torusN.V);
     auto cQ=pc1->addColorQuantity("clr", torusN.clrs);
     cQ->setEnabled(true);
     //std::vector<std::vector<double> > vgraph;
     //igl::matrix_to_list(torusN.V, vgraph);
-    auto qG = misc->addSurfaceGraphQuantity("g", torusN.innerBnd );
-    qG->setEnabled(true);
+    //auto qG = misc->addSurfaceGraphQuantity("g", torusN.innerBnd );
+    //qG->setEnabled(true);
     //std::cout << "visual" << std::endl;
     //Eigen::MatrixXd points(torusN.nHole*torusN.nANG, 3);
     //std::vector<glm::vec3> pcclr;
@@ -89,6 +90,16 @@ int main (const int, const char**)
             mCurrentGizmoOperation = ImGuizmo::ROTATE;
         if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
             mCurrentGizmoOperation = ImGuizmo::SCALE;
+        if (ImGui::SliderInt("genus",&G,1,10))
+        {
+
+            torusN.clear();
+            torusN.buildMesh(G);
+            pc1->remove();
+            pc1=polyscope::registerPointCloud("genus", torusN.V);
+            pc1->addColorQuantity("clr", torusN.clrs);
+
+        }
         ImGui::End();
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::BeginFrame();
