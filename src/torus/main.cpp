@@ -25,9 +25,10 @@ int main (const int, const char**)
     polyscope::options::programName = "Nine Cube";
     polyscope::options::groundPlaneMode = polyscope::GroundPlaneMode::None;
     polyscope::view::style = polyscope::view::NavigateStyle::Free;
-    polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };    
+    polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f }; 
     polyscope::init();
     glfwSetErrorCallback(errorCallback);
+    
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
     XMesh example;
     example.loadOBJ("D:/projects/GeometryLab/data/double-torus.obj");
@@ -39,13 +40,24 @@ int main (const int, const char**)
     int G=2;
     torusN.paramFromG2(example);
     torusN.buildMesh(G);
+    auto ps = polyscope::registerSurfaceMesh("mesh", torusN.V, torusN.F);
+    ps->setEdgeWidth(1);
     auto pc1 = polyscope::registerPointCloud("genus", torusN.V);
     auto cQ=pc1->addColorQuantity("clr", torusN.clrs);
     cQ->setEnabled(true);
     //std::vector<std::vector<double> > vgraph;
     //igl::matrix_to_list(torusN.V, vgraph);
-    //auto qG = misc->addSurfaceGraphQuantity("g", torusN.innerBnd );
-    //qG->setEnabled(true);
+    std::vector < std::vector< glm::vec3 > > innerBnd;
+    for (int i = 0; i < torusN.innerBndIdx.size(); i++)
+    {
+        std::vector<glm::vec3> bnd;
+        for (int vi: torusN.innerBndIdx[i])
+            bnd.push_back({ torusN.V(vi,0),torusN.V(vi,1),torusN.V(vi,2) });
+        innerBnd.push_back(bnd);
+    }
+    auto qG = misc->addSurfaceGraphQuantity("g", innerBnd);
+    qG->setEnabled(true);
+    qG->setColor({ 0,0,1 });
     //std::cout << "visual" << std::endl;
     //Eigen::MatrixXd points(torusN.nHole*torusN.nANG, 3);
     //std::vector<glm::vec3> pcclr;
@@ -99,6 +111,20 @@ int main (const int, const char**)
             pc1=polyscope::registerPointCloud("genus", torusN.V);
             pc1->addColorQuantity("clr", torusN.clrs);
 
+            innerBnd.clear();
+            for (int i = 0; i < torusN.innerBndIdx.size(); i++)
+            {
+                std::vector<glm::vec3> bnd;
+                for (int vi : torusN.innerBndIdx[i])
+                    bnd.push_back({ torusN.V(vi,0),torusN.V(vi,1),torusN.V(vi,2) });
+                innerBnd.push_back(bnd);
+            }
+            auto qG = misc->addSurfaceGraphQuantity("g", innerBnd);
+            qG->setEnabled(true);
+            qG->setColor({ 0,0,1 });
+            ps->remove();
+            ps = polyscope::registerSurfaceMesh("mesh", torusN.V, torusN.F);
+            ps->setEdgeWidth(1);
         }
         ImGui::End();
         ImGuizmo::SetOrthographic(false);
