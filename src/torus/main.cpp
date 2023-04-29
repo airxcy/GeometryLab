@@ -3,6 +3,7 @@
 #include "polyscope/polyscope.h"
 #include "polyscope/surface_mesh.h"
 #include "polyscope/point_cloud.h"
+#include "polyscope/types.h"
 
 
 #include <imgui.h>
@@ -10,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include "imguizmo/ImGuizmo.h"
 
+#include "igl/boundary_loop.h"
 #include "igl/matrix_to_list.h"
 
 
@@ -20,6 +22,40 @@ static const float identityMatrix[16] =
     0.f, 0.f, 1.f, 0.f,
     0.f, 0.f, 0.f, 1.f };
 void errorCallback(int error, const char* description){}
+
+std::pair<polyscope::SurfaceMesh*, polyscope::PointCloud* > addGenus(GenusN& m)
+{
+    //std::vector< std::vector<int> >bnd;
+    //igl::boundary_loop(m.F, bnd);
+    //if (bnd.size() == 0)
+    //    std::cout << "is water tight" << std::endl;
+    auto pc1 = polyscope::registerPointCloud("genus", m.V);
+    auto cQ = pc1->addColorQuantity("clr", m.clrs);
+    pc1->setPointRadius(0.002);
+    cQ->setEnabled(true);
+
+    auto ps=polyscope::registerSurfaceMesh("mesh", m.V, m.F);
+    
+    ps->setEdgeWidth(1);
+    ps->setSurfaceColor({ 1,0.5,0 });
+    ps->setBackFaceColor({ 0.5,0.5,0.5 });
+    ps->setBackFacePolicy(polyscope::BackFacePolicy::Custom);
+    //ps->setTransparency(0.5);
+    std::vector < std::vector< glm::vec3 > > innerBnd;
+    for (int i = 0; i < m.innerBndIdx.size(); i++)
+    {
+        std::vector<glm::vec3> bnd;
+        for (int vi : m.innerBndIdx[i])
+            bnd.push_back({ m.V(vi,0),m.V(vi,1),m.V(vi,2) });
+        innerBnd.push_back(bnd);
+    }
+    auto qG = ps->addSurfaceGraphQuantity("g", innerBnd);
+    qG->setEnabled(true);
+    qG->setColor({ 0,0,1 });
+
+
+    return { ps ,pc1};
+}
 int main (const int, const char**)
 {
     polyscope::options::programName = "Nine Cube";
@@ -32,55 +68,16 @@ int main (const int, const char**)
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
     XMesh example;
     example.loadOBJ("D:/projects/GeometryLab/data/double-torus.obj");
-    auto ps1 = polyscope::registerSurfaceMesh("DoubleTorus", example.V, example.F);
-    ps1->setTransparency(0.5);
-    ps1->setSmoothShade(true);
-    ps1->setEdgeWidth(1);
+    //auto ps1 = polyscope::registerSurfaceMesh("DoubleTorus", example.V, example.F);
+    //ps1->setTransform({ 0,0,1,0,0,1,0,0,-1,0,0,0,0,0,0,1 });
+    //ps1->setTransparency(0.5);
+    //ps1->setSmoothShade(true);
+    //ps1->setEdgeWidth(1);
     GenusN torusN;
     int G=2;
     torusN.paramFromG2(example);
     torusN.buildMesh(G);
-    auto ps = polyscope::registerSurfaceMesh("mesh", torusN.V, torusN.F);
-    ps->setEdgeWidth(1);
-    auto pc1 = polyscope::registerPointCloud("genus", torusN.V);
-    auto cQ=pc1->addColorQuantity("clr", torusN.clrs);
-    cQ->setEnabled(true);
-    //std::vector<std::vector<double> > vgraph;
-    //igl::matrix_to_list(torusN.V, vgraph);
-    std::vector < std::vector< glm::vec3 > > innerBnd;
-    for (int i = 0; i < torusN.innerBndIdx.size(); i++)
-    {
-        std::vector<glm::vec3> bnd;
-        for (int vi: torusN.innerBndIdx[i])
-            bnd.push_back({ torusN.V(vi,0),torusN.V(vi,1),torusN.V(vi,2) });
-        innerBnd.push_back(bnd);
-    }
-    auto qG = misc->addSurfaceGraphQuantity("g", innerBnd);
-    qG->setEnabled(true);
-    qG->setColor({ 0,0,1 });
-    //std::cout << "visual" << std::endl;
-    //Eigen::MatrixXd points(torusN.nHole*torusN.nANG, 3);
-    //std::vector<glm::vec3> pcclr;
-    //Eigen::MatrixXi circleG(torusN.nHole * torusN.nANG, 2);
-    //double dANG = 2.0 * M_PI / torusN.nANG;
-    //for (int i = 0; i < torusN.nHole; i++)
-    //{
-    //    double ang = 0;
-    //    for (int j = 0; j < torusN.nANG; j++)
-    //    {
-    //        ang += dANG;
-    //        points.row(pcclr.size()) = Eigen::RowVector3d(cos(ang) * torusN.R, 0, sin(ang) * torusN.R) + torusN.centers.row(i);
-    //        circleG(pcclr.size(), 0) = j;
-    //        circleG(pcclr.size(), 1) = (j + 1) % torusN.nANG;
-    //        pcclr.push_back({ 0,0,1 });
-    //    }
-    //}
-    //auto pc=polyscope::registerPointCloud("centers", points);
-    //auto cQ = pc->addColorQuantity("clr", pcclr);
-    //cQ->setEnabled(true);
-    //auto gQ=misc->addSurfaceGraphQuantity("skel", points, circleG);
-    //gQ->setEnabled(true);
-
+    auto psG = addGenus(torusN);
     Eigen::Matrix4f gizmomat = Eigen::Matrix4f::Identity();
     polyscope::state::userCallback = [&]()
     {
@@ -107,26 +104,11 @@ int main (const int, const char**)
 
             torusN.clear();
             torusN.buildMesh(G);
-            pc1->remove();
-            pc1=polyscope::registerPointCloud("genus", torusN.V);
-            pc1->addColorQuantity("clr", torusN.clrs);
-
-            innerBnd.clear();
-            for (int i = 0; i < torusN.innerBndIdx.size(); i++)
-            {
-                std::vector<glm::vec3> bnd;
-                for (int vi : torusN.innerBndIdx[i])
-                    bnd.push_back({ torusN.V(vi,0),torusN.V(vi,1),torusN.V(vi,2) });
-                innerBnd.push_back(bnd);
-            }
-            auto qG = misc->addSurfaceGraphQuantity("g", innerBnd);
-            qG->setEnabled(true);
-            qG->setColor({ 0,0,1 });
-            ps->remove();
-            ps = polyscope::registerSurfaceMesh("mesh", torusN.V, torusN.F);
-            ps->setEdgeWidth(1);
+            psG.first->remove();
+            psG.second->remove();
+            psG = addGenus(torusN);
         }
-        ImGui::End();
+        //ImGui::End();
         ImGuizmo::SetOrthographic(false);
         ImGuizmo::BeginFrame();
         ImGuizmo::Enable(true);

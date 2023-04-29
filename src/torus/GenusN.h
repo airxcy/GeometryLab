@@ -17,9 +17,10 @@ public:
 	int nang = 32;
 
 	std::vector< std::vector< glm::vec3  > > innerBnd;
-	std::vector < std::vector< int> > innerBndIdx;
+	std::vector< std::vector< int>  > innerBndIdx;
 	void paramFromG2(XMesh& dbTorus);
 	void buildMesh(int G);
+	void triBnd(std::vector<int>& bnd,double area, std::vector< std::vector< int > >& addF);
 	void clear();
 	Eigen::MatrixXd clrs;
 
