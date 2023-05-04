@@ -2696,8 +2696,8 @@ namespace IMGUIZMO_NAMESPACE
       vec_t frustum[6];
       ComputeFrustumPlanes(frustum, viewProjection.m16);
       matrix_t res = *(matrix_t*)matrix * viewProjection;
-
-      for (float f = -gridSize; f <= gridSize; f += 1.f)
+      float stepside = gridSize / 100;
+      for (float f = -gridSize; f <= gridSize; f += stepside)
       {
          for (int dir = 0; dir < 2; dir++)
          {

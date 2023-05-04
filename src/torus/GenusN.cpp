@@ -2,8 +2,17 @@
 #include <eigen/Geometry>
 #include <igl/canonical_quaternions.h>
 #include <igl/list_to_matrix.h>
-#include <igl/face_areas.h>
-#include <igl/doublearea.h>
+#include <igl/per_vertex_normals.h>
+
+#include "igl/cotmatrix.h"
+#include "igl/massmatrix.h"
+#include "igl/invert_diag.h"
+#include "igl/min_quad_with_fixed.h"
+#include "igl/doublearea.h"
+#include "igl/grad.h"
+#include "igl/barycenter.h"
+
+
 #define REAL double
 #define VOID int
 //#include <igl/triangle/triangulate.h>
@@ -16,6 +25,7 @@ void GenusN::clear()
     XMesh::clear();
     clrs.resize(0, 0);
 }
+
 
 void GenusN::paramFromG2(XMesh& dbTorus)
 {
@@ -31,43 +41,40 @@ void GenusN::paramFromG2(XMesh& dbTorus)
     cDist = (centers(0, 2) - centers(1, 2))/2;
     
 }
-
-void GenusN::buildMesh(int G)
+void GenusN::buildV()
 {
-    genus = G;
-    nANG =  (64/genus)*genus;
+    nANG = (64 / genus) * genus;
     nang = 32;
     /** outer circle part **/
-    double DistDAng = 2.0 * M_PI / genus;
-    double DistAng = 0;
-    cDist = (R + r) * sqrt(2 / (1 - cos(DistDAng)));
-    double dANG = 2.0 * M_PI / nANG;
-    double dang = 2.0 * M_PI / nang;
-    double startANG = 0;
-    int halfrange = nang / 2;
-    int range1= nANG / genus;
-    double angBorder1 = M_PI*2.0/genus;
-    int range2 = nANG/genus/2 + nANG/2;
-    double angBorder2 = 0;
-    double dMid = cDist*sqrt((1-cos(DistDAng))/2)/(nANG / 2 -  nANG / genus / 2);
-    V.resize(genus * nANG *nang,3);
-    clrs.resize(V.rows(), 3);
+    dANG = 2.0 * M_PI / nANG;
+    dang = 2.0 * M_PI / nang;
+    startANG = 0;
+    halfrange = nang / 2;
+    range1 = nANG / genus;
+    angBorder1 = M_PI * 2.0 / genus;
+    range2 = nANG / genus / 2 + nANG / 2;
+    angBorder2 = 0;
+    dMid = cDist * sqrt((1 - cos(DistDAng)) / 2) / (nANG / 2 - nANG / genus / 2);
+    if (!V.size())
+    {
+        V.resize(genus * nANG * nang, 3);
+        clrs.resize(V.rows(), 3);
+    }
     int counter = 0;
 
-    innerBnd.resize(1);
-    innerBnd[0].resize((nANG* genus - nANG)*2 );
+
     for (int i = 0; i < genus; i++)
     {
         double initANG = DistAng - DistDAng / 2;
         double ANG = initANG;
         Eigen::RowVector3d C0(cos(DistAng) * cDist, 0, sin(DistAng) * cDist);
-        
+
         for (int j = 0; j < nANG; j++)
         {
-            
-            Eigen::RowVector3d C1 = C0+Eigen::RowVector3d(cos(ANG) * R, 0, sin(ANG) * R);
-            Eigen::Quaterniond v0(0, cos(ANG)*r, 0, sin(ANG)*r);
-            Eigen::RowVector3d ax= Eigen::RowVector3d(-sin(ANG) , 0, cos(ANG) );
+
+            Eigen::RowVector3d C1 = C0 + Eigen::RowVector3d(cos(ANG) * R, 0, sin(ANG) * R);
+            Eigen::Quaterniond v0(0, cos(ANG) * r, 0, sin(ANG) * r);
+            Eigen::RowVector3d ax = Eigen::RowVector3d(-sin(ANG), 0, cos(ANG));
             Eigen::Quaterniond v00 = v0;
             Eigen::RowVector3d C11 = C1;
             Eigen::RowVector3d axx = ax;
@@ -75,7 +82,7 @@ void GenusN::buildMesh(int G)
             {
                 v00 = Eigen::Quaterniond(0, cos(initANG + angBorder2) * r, 0, sin(initANG + angBorder2) * r);
                 axx = Eigen::RowVector3d(-sin(initANG + angBorder2), 0, cos(initANG + angBorder2));
-                C11 = C0 + Eigen::RowVector3d(cos(initANG + angBorder2) * R, 0, sin(initANG + angBorder2) * R) - axx * dMid * (nANG-j);
+                C11 = C0 + Eigen::RowVector3d(cos(initANG + angBorder2) * R, 0, sin(initANG + angBorder2) * R) - axx * dMid * (nANG - j);
             }
             else if (j > range1)
             {
@@ -97,9 +104,9 @@ void GenusN::buildMesh(int G)
                 Eigen::Quaterniond v = q1 * v0 * q2;
                 Eigen::RowVector3d C2 = C1 + Eigen::RowVector3d(v.x(), v.y(), v.z());
 
-                if (j > range1 && k <=  halfrange)
+                if (j > range1 && k <= halfrange)
                 {
-                    
+
                     qw = qcos, qx = qsin * axx(0), qy = 0, qz = qsin * axx(2);
                     q1 = Eigen::Quaterniond(qw, qx, qy, qz);
                     q2 = Eigen::Quaterniond(qw, -qx, -qy, -qz);
@@ -107,14 +114,14 @@ void GenusN::buildMesh(int G)
                     C2 = C11 + Eigen::RowVector3d(v.x(), v.y(), v.z());
                     //clrs.row(counter) << clrval, 1 - clrval, 0;
                     //V.row(counter++) = C2;
-                    
+
 
                 }
 
                 clrs.row(counter) << clrval, 1 - clrval, 0;
                 V.row(counter++) = C2;
                 if (k == 0) v1 = { C2(0), C2(1), C2(2) };
-                if (k == nang-1) v2 = { C2(0), C2(1), C2(2) };
+                if (k == nang - 1) v2 = { C2(0), C2(1), C2(2) };
                 ang += dang;
             }
             //int i1 = range1 + 1;
@@ -129,13 +136,22 @@ void GenusN::buildMesh(int G)
             //    innerBnd[0][(nANG - range1) * 2 * i + range2-j ] = v1;
             //    innerBnd[0][(nANG - range1) * 2 * i + j-i1 + (i2 - i1)] = v2;
             //}
-            
+
             ANG += dANG;
         }
         DistAng += DistDAng;
     }
-    counter = 0;
+}
+void GenusN::buildMesh(int G)
+{
+    genus = G;
+    DistDAng = 2.0 * M_PI / genus;
+    DistAng = 0;
+    cDist = (R) * sqrt(2 / (1 - cos(DistDAng)))+r;
+    buildV();
+    int counter = 0;
     stdF.clear();
+    std::vector<int> stdb;
     for (int i = 0; i < genus; i++)
     {
         
@@ -153,6 +169,12 @@ void GenusN::buildMesh(int G)
                 //if (!(j > range1&&(k1==0||k==halfrange)) && !(k < halfrange && j==range2))
                 stdF.push_back({ v1,v2,v3 });
                 stdF.push_back({ v3,v4,v1 });
+
+                stdb.push_back(v1);
+                stdb.push_back(v2);
+                stdb.push_back(v3);
+                stdb.push_back(v4);
+
             }
         }
         for (int j = range1+1; j <nANG ; j++)
@@ -169,6 +191,7 @@ void GenusN::buildMesh(int G)
                 int v4 = i * nANG * nang + j1 * nang + k;
                 stdF.push_back({ v1,v2,v3 });
                 stdF.push_back({ v3,v4,v1 });
+
             }
 
             for (int k = halfrange+1; k < nang-1; k++)
@@ -182,6 +205,13 @@ void GenusN::buildMesh(int G)
                 int v4 = i * nANG * nang + j1 * nang + k;
                 stdF.push_back({ v1,v2,v3 });
                 stdF.push_back({ v3,v4,v1 });
+                if (k>=halfrange+3&&k<=nang-4)
+                {
+                    stdb.push_back(v1);
+                    stdb.push_back(v2);
+                    stdb.push_back(v3);
+                    stdb.push_back(v4);
+                }
             }
         }
         for (int k = 0; k < halfrange; k++)
@@ -253,7 +283,6 @@ void GenusN::buildMesh(int G)
         V.row(r1 + i) << V(r0 + i,0) , r, V(r0 + i, 2);
         clrs.row(r1 + i ) << 0, 1, 1;
     }
-    std::cout << r0 <<","<< r1 << std::endl;
     int f1 = F.rows();
     F.conservativeResize(F.rows() + addF.size(), 3);
     for (int i = 0; i < addF.size(); i++)
@@ -270,6 +299,14 @@ void GenusN::buildMesh(int G)
         }
     }
 
+
+    boundryPos = V;
+    boundryIdx.resize(V.rows());
+    boundryIdx.setConstant(0);
+    for (int i : stdb)
+        boundryIdx[i] = 1;
+    deformedV = V;
+    setUpLaplacian();
 }
 
 void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector< int > >& addF)
@@ -277,7 +314,7 @@ void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
     
     using namespace std;
     using namespace Eigen;
-    string flags = "q30a"+std::to_string(area)+"Y";
+    string flags = "q30a"+std::to_string(area) + "Y";
     Eigen::VectorXi VM, EM, VM2, EM2;
     // Prepare the flags
     string full_flags = flags + "pz" + (EM.size() || VM.size() ? "" : "B");
@@ -380,5 +417,77 @@ void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
     free(out.segmentlist);
     free(out.segmentmarkerlist);
     free(out.pointmarkerlist);
-    
+
 }
+
+void GenusN::HarmonicShape()
+{
+    calLaplacion(2);
+    setUpB(2);
+    setUpBc();
+    solveHarmonic(2);
+    V = deformedV;
+    setUpLaplacian();
+}
+
+void GenusN::setUpLaplacian()
+{
+    igl::cotmatrix(V, F, L);
+
+    // Alternative construction of same Laplacian
+    Eigen::SparseMatrix<double> G, K;
+    // Gradient/Divergence
+    igl::grad(V, F, G);
+    // Diagonal per-triangle "mass matrix"
+    Eigen::VectorXd dblA;
+    igl::doublearea(V, F, dblA);
+    // Place areas along diagonal #dim times
+    const auto& T = 1. * (dblA.replicate(3, 1) * 0.5).asDiagonal();
+    // Laplacian K built as discrete divergence of gradient or equivalently
+    // discrete Dirichelet energy Hessian
+    K = -G.transpose() * T * G;
+    std::cout << "|K-L|: " << (K - L).norm() << std::endl;
+
+    // Use original normals as pseudo-colors
+    igl::per_vertex_normals(V, F, N);
+    Eigen::MatrixXd C = N.rowwise().normalized().array() * 0.5 + 0.5;
+
+    // Initialize smoothing with base mesh
+    //U = V;
+    
+
+}
+void GenusN::LaplacianSmooth()
+{
+    using namespace Eigen;
+    SparseMatrix<double> M;
+    igl::massmatrix(V, F, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
+    // Solve (M-delta*L) U = M*U
+    const auto& S = (M - 0.001 * L);
+    Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
+    assert(solver.info() == Eigen::Success);
+    deformedV = solver.solve(M * V).eval();
+    // Compute centroid and subtract (also important for numerics)
+    VectorXd dblA;
+    igl::doublearea(deformedV, F, dblA);
+    double area = 0.5 * dblA.sum();
+    MatrixXd BC;
+    igl::barycenter(deformedV, F, BC);
+    RowVector3d centroid(0, 0, 0);
+    for (int i = 0; i < BC.rows(); i++)
+    {
+        centroid += 0.5 * dblA(i) / area * BC.row(i);
+    }
+    deformedV.rowwise() -= centroid;
+    //// Normalize to unit surface area (important for numerics)
+    //deformedV.array() /= sqrt(area);
+    //for (int i = 0; i < boundryIdx.size(); i++)
+    //    if (!boundryIdx(i))
+    //    {
+    //        deformedV.row(i) -= centroid;
+    //        deformedV.row(i) /= sqrt(area);
+    //    }
+    V = deformedV;
+}
+
+

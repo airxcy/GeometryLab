@@ -15,12 +15,30 @@ public:
 
 	int nANG= 64;
 	int nang = 32;
-
-	std::vector< std::vector< glm::vec3  > > innerBnd;
+	double DistDAng;
+	double DistAng ;
+	double dANG ;
+	double dang ;
+	double startANG ;
+	int halfrange ;
+	int range1 ;
+	double angBorder1 ;
+	int range2;
+	double angBorder2 ;
+	double dMid;
 	std::vector< std::vector< int>  > innerBndIdx;
+	
+
+	Eigen::MatrixXd N;
+	Eigen::SparseMatrix<double> L;
+
 	void paramFromG2(XMesh& dbTorus);
+	void buildV();
 	void buildMesh(int G);
 	void triBnd(std::vector<int>& bnd,double area, std::vector< std::vector< int > >& addF);
+	void HarmonicShape();
+	void setUpLaplacian();
+	void LaplacianSmooth();
 	void clear();
 	Eigen::MatrixXd clrs;
 

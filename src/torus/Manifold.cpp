@@ -91,6 +91,7 @@ void Manifold::setUpB(int k)
 	if (mq_data[k - 1] == nullptr)
 		mq_data[k - 1] = new igl::min_quad_with_fixed_data<double>();
 	igl::min_quad_with_fixed_precompute(QmatData[k - 1], b, Eigen::SparseMatrix<double>(), true, *mq_data[k - 1]);
+
 	//POP_NS::eigenext::MinQuadWithFixedPrecompute(QmatData[k - 1], b, Eigen::SparseMatrix<double>(), true, mq_data[k - 1]);
 }
 

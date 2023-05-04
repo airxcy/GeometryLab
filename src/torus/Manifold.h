@@ -8,7 +8,7 @@
 //#include "Model/Shell/TopoMeshDef.hh"
 //#include "BaseCore/EigenExt/MinQuadWithFixed.h"
 #include "igl/min_quad_with_fixed.h"
-
+#define MAX_HARMONIC_DEGREE 4
 
 class Manifold: public XMesh
 {
@@ -16,11 +16,16 @@ public:
 	Eigen::MatrixXd deformedV;
 	Eigen::VectorXi boundryIdx;
 	Eigen::MatrixXd boundryPos;
-	std::array < Eigen::SparseMatrix<double>,3 > LCotVec, MassVec, QmatData;
+	std::array < Eigen::SparseMatrix<double>, MAX_HARMONIC_DEGREE > LCotVec, MassVec, QmatData;
 	Eigen::MatrixXd bc;
 	Eigen::VectorXi b;
-	std::array <  igl::min_quad_with_fixed_data<double>* , 3> mq_data;
+	std::array <  igl::min_quad_with_fixed_data<double>* , MAX_HARMONIC_DEGREE> mq_data;
 	//std::array < POP_NS::eigenext::MinQuadWithFixedData<double> ,3> mq_data;
+	Manifold()
+	{
+		for (int i = 0; i < mq_data.size(); i++)
+			mq_data[i] = nullptr;
+	}
 	void calLaplacion(int k);
 	void removeBIdx(std::vector<int>& indices);
 	void setUpB(int k);

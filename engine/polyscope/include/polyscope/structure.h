@@ -97,7 +97,7 @@ public:
   Structure* setIgnoreSlicePlane(std::string name, bool newValue);
   bool getIgnoreSlicePlane(std::string name);
 
-protected:
+//protected:
   // = State
   PersistentValue<bool> enabled;
   PersistentValue<glm::mat4> objectTransform; // rigid transform
