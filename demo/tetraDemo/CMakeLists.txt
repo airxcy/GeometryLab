@@ -84,12 +84,15 @@ add_custom_target(copy_dll ALL
 )
 add_subdirectory(${ENGINE_DIR}/tetgen LIBTETGEN)
 message("------------" ${ZLIB_DIR}/lib)
-file(GLOB SRC *.cpp)
-file(GLOB INCLUDES *.h)
+
+file(GLOB SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)
+file(GLOB INCLUDES ${CMAKE_SOURCE_DIR}/src/*.h)
+file(GLOB DEMO_SRC *.cpp)
+file(GLOB DEMO_INCLUDES *.h)
 link_directories(${ZLIB_DIR}/lib)
 file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
-add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} ${IMGUIZMO_SOURCES} )
-target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
+add_executable(${PROJECT_NAME}  ${DEMO_SRC} ${DEMO_INCLUDES} ${SRC} ${INCLUDES} ${IMGUIZMO_SOURCES} )
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/src ${ENGINE_DIR} ${EIGEN_DIR} 
   ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include 
   ${ENGINE_DIR}/netgen/libsrc ${ENGINE_DIR}/netgen/libsrc/include ${ENGINE_DIR}/netgen/nglib)
 target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OpenCASCADE_LIBS} ${OPENGL_LIBRARIES} ngcore nglib tet)

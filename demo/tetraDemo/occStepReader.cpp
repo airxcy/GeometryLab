@@ -34,6 +34,7 @@ void occStepReader::read(const char* fpath)
 
 void occStepReader::occTri2Eigen()
 {
+    /*
     Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
     int counter = 0;
     BRepMesh_IncrementalMesh meshGen(shape, 0.01);
@@ -44,7 +45,7 @@ void occStepReader::occTri2Eigen()
         TopLoc_Location loc;
         Handle(Poly_Triangulation) faceTris = BRep_Tool::Triangulation(face, loc);
         std::unordered_map<int, int> nodesMap;
-        EigenMeshD m;
+        TetMesh m;
         m.V = Eigen::MatrixXd(faceTris->NbNodes(), 3);
         m.F = Eigen::MatrixXi(faceTris->NbTriangles(), 3);
 
@@ -113,4 +114,5 @@ void occStepReader::occTri2Eigen()
 
 
     }
+    */
 }

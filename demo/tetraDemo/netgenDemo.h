@@ -1,12 +1,13 @@
 #ifndef NETGEN_DEMO
 #define NETGEN_DEMO
 #include "TopoDS_Shape.hxx"
-#include "EigenMeshD.h"
+#include "VolumeMesh.h"
 #ifndef OCCGEOMETRY
 #define OCCGEOMETRY
 #endif // !OCCGEOMETRY
 #include <occgeom.hpp>
 #include <meshing.hpp>
+#include <Eigen/Dense>
 namespace nglib {
 #include <nglib.h>
 }
@@ -30,7 +31,7 @@ public:
     netgen::MeshingParameters& meshParam();
     void occ2Surface(TopoDS_Shape& shape);
     void tetralization();
-    void fromEigen(EigenMeshD& egm);
+    void fromEigen(VolumeMesh& egm);
     void toEigen(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1);
     void VisVolumeWhole();
     void VisVolumeSep();

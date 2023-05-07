@@ -2,6 +2,7 @@
 #define MANIFOLD_H
 #include "XMesh.h"
 
+#include <eigen/Dense>
 #include <Eigen/Sparse>
 #include <Eigen/Geometry>
 
@@ -13,6 +14,8 @@
 class Manifold: public XMesh
 {
 public:
+	Eigen::MatrixXd eigenV;
+	Eigen::MatrixXi eigenF;
 	Eigen::MatrixXd deformedV;
 	Eigen::VectorXi boundryIdx;
 	Eigen::MatrixXd boundryPos;

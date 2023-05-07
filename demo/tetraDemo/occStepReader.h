@@ -1,7 +1,7 @@
 #ifndef OOC_STEP_READER
 #define OOC_STEP_READER
 
-#include "EigenMeshD.h"
+#include "VolumeMesh.h"
 #include "TopoDS_Shape.hxx"
 #include  <utility>
 #include <glm/vec3.hpp>
@@ -11,7 +11,7 @@ typedef std::pair<glm::vec3, double  > glmE;
 class occStepReader
 {
 public:
-    std::vector<EigenMeshD> fmeshlist;
+    std::vector<VolumeMesh> fmeshlist;
     std::vector< glmE > minE;
     TopoDS_Shape shape;
     void read(const char* fpath);

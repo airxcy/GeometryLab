@@ -1,81 +1,34 @@
-#include "EigenMeshD.h"
+#include "GraphMesh.h"
 #include <queue>
-#include "igl/readSTL.h"
-#include "igl/remove_duplicate_vertices.h"
-#include "igl/readOBJ.h"
-#include "igl/polygon_mesh_to_triangle_mesh.h"
-#include "igl/boundary_loop.h"
-#include "polyscope/surface_mesh.h"
+#include <map>
 
-void EigenMeshD::map_v2f() {
-	v2f = std::vector< std::vector<int> >(V.rows());
+void GraphMesh::map_v2f() {
+	v2f = std::vector< std::vector<int> >(V.size(), std::vector<int>(F.size()));
 	for (int c = 0; c < 3; c++)
 	{
-		for (int r = 0; r < F.rows(); r++)
+		for (int r = 0; r < F.size(); r++)
 		{
-			int vidx = F(r, c);
+			int vidx = F[r][c];
 			v2f[vidx].push_back(r);
 		}
 	}
 }
 
-void EigenMeshD::loadOBJ(std::string fpath)
-{
-	igl::readOBJ(fpath, stdV, stdF);
-	
-	V.resize(stdV.size(), 3);
-	
-	std::cout << fpath <<":" << V.rows() << "," << F.rows() << std::endl;
-	for (int i = 0; i < stdV.size(); i++)
-		V.row(i) << stdV[i][0], stdV[i][1], stdV[i][2];
-
-	igl::polygon_mesh_to_triangle_mesh(stdF, F);
-	std::vector<int> bnd;
-	igl::boundary_loop(F, bnd);
-	if (bnd.size() == 0)
-		std::cout << "is water tight" << std::endl;
-	/*
-	F.resize(stdF.size(), 3);
-	for (int i = 0; i < stdF.size(); i++)
-	{
-		F.row(i) << stdF[i][0], stdF[i][1], stdF[i][2];
-	}
-	*/
-	//auto plym = polyscope::registerSurfaceMesh("eigen", stdV, stdF);
-}
-	
-
-void EigenMeshD::loadSTL(std::string fpath)
-{
-	Eigen::MatrixXd N, SV;
-	Eigen::MatrixXi SVI,SVJ,SF;
-	igl::readSTL(fpath, V,F,N);
-	igl::remove_duplicate_vertices(V,F, 1e-7, SV, SVI, SVJ, SF);
-	V = SV;
-	F=SF;
-	//auto plym = polyscope::registerSurfaceMesh("eigen", stdV, stdF);
-}
-
-void EigenMeshD::addTF(int* tf)
-{
-	 
-}
-
-void EigenMeshD::map_v2v() {
-	int nV = V.rows();
-	v2v.resize(nV);
+void GraphMesh::map_v2v() {
+	int nV = V.size();
+	v2v.resize(nV, std::vector<int>(nV));
 	connM = new unsigned char[nV * nV];
-	memset(connM,0, nV * nV * sizeof(unsigned char));
+	memset(connM, 0, nV * nV * sizeof(unsigned char));
 	//e2f= new unsigned int[nV*nV];
 	//memset(e2f, 0, nV * nV*sizeof(unsigned int)); 
-	for (int fi = 0; fi < F.rows(); fi++)
+	for (int fi = 0; fi < F.size(); fi++)
 	{
 		for (int k = 0; k < 3; k++)
 		{
-			int vi0 = F(fi, k);
-			int vi1 = F(fi, (k + 1) % 3);
+			int vi0 = F[fi][k];
+			int vi1 = F[fi][ (k + 1) % 3];
 			//e2f[vi0*nV+ vi1] = fi+1;
-			if (!connM[vi0* nV+ vi1])
+			if (!connM[vi0 * nV + vi1])
 			{
 				connM[vi0 * nV + vi1] = 1;
 				connM[vi1 * nV + vi0] = 1;
@@ -87,15 +40,14 @@ void EigenMeshD::map_v2v() {
 }
 
 
-void EigenMeshD::updateTplgy()
+void GraphMesh::updateTplgy()
 {
-
 	map_v2v();
-	map_v2f();	
+	map_v2f();
 }
 
 
-void EigenMeshD::bfs_components()
+void GraphMesh::bfs_components()
 {
 	std::vector<int> board(v2v.size(), 1);
 	int sumv = board.size();
@@ -144,9 +96,8 @@ void EigenMeshD::bfs_components()
 }
 
 
-void EigenMeshD::seedBndLoop(std::vector<int>& bnd, int seed,int seed2)
+void GraphMesh::seedBndLoop(std::vector<int>& bnd, int seed, int seed2)
 {
-	bnd.clear();
 	bnd.push_back(seed);
 	int vid = seed2;
 	int preid = seed;
@@ -162,12 +113,12 @@ void EigenMeshD::seedBndLoop(std::vector<int>& bnd, int seed,int seed2)
 		std::vector<int> zeros(nlist.size(), 0);
 		for (int fid : flist)
 		{
-			Eigen::RowVector3i f = F.row(fid);
+			auto& f = F[fid];
 			for (int i = 0; i < 3; i++)
 			{
-				if (f(i) != vid)
+				if (f[i] != vid)
 				{
-					zeros[nmap[f(i)]]++;
+					zeros[nmap[f[i]]]++;
 				}
 			}
 		}

@@ -4,7 +4,7 @@
 //#include "BaseCore/EigenExt/InvertDiag.h"
 //#include "BaseCore/EigenExt/MinQuadWithFixed.h"
 
-#include <queue>
+//#include <queue>
 
 #include "geometrycentral/surface/halfedge_factories.h"
 #include "geometrycentral/surface/simple_polygon_mesh.h"
@@ -19,15 +19,15 @@
 
 void Manifold::calLaplacion(int k)
 {
-	deformedV.resize(V.rows(), V.cols());
+	deformedV.resize(eigenV.rows(), eigenV.cols());
 	Eigen::SparseMatrix<double>& LCot = LCotVec[k-1];
 	Eigen::SparseMatrix<double>& Mass = MassVec[k-1];
 	Eigen::SparseMatrix<double>& Q = QmatData[k-1];
-	igl::cotmatrix(V, F, LCot);
+	igl::cotmatrix(eigenV, eigenF, LCot);
 //	POP_NS::eigenext::CotMatrix(V, F, LCot);
 	if (k > 1)
 	{
-		igl::massmatrix(V, F, igl::MASSMATRIX_TYPE_DEFAULT, Mass);
+		igl::massmatrix(eigenV, eigenF, igl::MASSMATRIX_TYPE_DEFAULT, Mass);
 		//POP_NS::eigenext::MassMatrix(V, F, POP_NS::eigenext::MASSMATRIX_TYPE_DEFAULT, Mass);
 		
 		using namespace geometrycentral;
@@ -36,10 +36,10 @@ void Manifold::calLaplacion(int k)
 		std::unique_ptr<SurfaceMesh> mesh;
 		std::unique_ptr<VertexPositionGeometry> geometry;
 		SimplePolygonMesh inputMesh;
-		for (int i = 0; i < V.rows(); i++)
-			inputMesh.vertexCoordinates.push_back(geometrycentral::Vector3({ V(i,0) , V(i, 1), V(i, 2) }));
-		for (int i = 0; i < F.rows(); i++)
-			inputMesh.polygons.push_back(std::vector<size_t>({ (size_t)F(i,0),(size_t)F(i,1),(size_t)F(i,2) }));
+		for (int i = 0; i < eigenV.rows(); i++)
+			inputMesh.vertexCoordinates.push_back(geometrycentral::Vector3({ eigenV(i,0) , eigenV(i, 1), eigenV(i, 2) }));
+		for (int i = 0; i < eigenF.rows(); i++)
+			inputMesh.polygons.push_back(std::vector<size_t>({ (size_t)eigenF(i,0),(size_t)eigenF(i,1),(size_t)eigenF(i,2) }));
 		std::tie(mesh, geometry) = makeGeneralHalfedgeAndGeometry(inputMesh.polygons, inputMesh.vertexCoordinates);
 		std::tie(LCot, Mass) = buildTuftedLaplacian(*mesh, *geometry, mollifyFactor);
 		
@@ -75,7 +75,7 @@ void Manifold::removeBIdx(std::vector<int>& indices)
 
 void Manifold::setUpB(int k)
 {
-	int n = V.rows();
+	int n = eigenV.rows();
 	int counter = 0;
 	b.resize(n);
 	b.setConstant(0);
@@ -97,9 +97,9 @@ void Manifold::setUpB(int k)
 
 void Manifold::setUpBc()
 {
-	int n = V.rows();
+	int n = eigenV.rows();
 	int counter = 0;
-	bc.resize(b.rows(), V.cols());
+	bc.resize(b.rows(), eigenV.cols());
 	bc.setConstant(0);
 	for (int i = 0; i < b.rows(); i++)
 			bc.row(i) = boundryPos.row(b(i));
@@ -107,7 +107,7 @@ void Manifold::setUpBc()
 
 bool Manifold::solveHarmonic(int k)
 {
-	int n = V.rows();
+	int n = eigenV.rows();
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorXS;
 	const VectorXS B = VectorXS::Zero(n, 1);
 	for (int w = 0; w < bc.cols(); w++)

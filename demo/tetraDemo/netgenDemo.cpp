@@ -54,7 +54,7 @@ void NetGenDemo::occ2Surface(TopoDS_Shape& shape)
     
 }
 
-void NetGenDemo::fromEigen(EigenMeshD& egm)
+void NetGenDemo::fromEigen(VolumeMesh& egm)
 {
     // Parameters definition.
     netgen::MeshingParameters& mp = netgen::mparam;
@@ -64,12 +64,12 @@ void NetGenDemo::fromEigen(EigenMeshD& egm)
     //mp.secondorder = false;
     
 
-    for(int i=0;i<egm.V.rows();i++)
-        mesh.AddPoint(netgen::Point3d(egm.V(i,0), egm.V(i, 1), egm.V(i, 2)));
+    for(int i=0;i<egm.V.size();i++)
+        mesh.AddPoint(netgen::Point3d(egm.V[i][0], egm.V[i][1], egm.V[i][2]));
 
-    for (int i = 0; i < egm.F.rows(); i++)
+    for (int i = 0; i < egm.F.size(); i++)
     {
-        netgen::Element2d f(egm.F(i, 0) + 1, egm.F(i, 1) + 1, egm.F(i, 2) + 1);
+        netgen::Element2d f(egm.F[i][0] + 1, egm.F[i][1] + 1, egm.F[i][2] + 1);
         f.SetIndex(1);
         mesh.AddSurfaceElement(f);
     }

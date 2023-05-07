@@ -1,4 +1,9 @@
 ﻿
+#include "MeshIO.h"
+#include "igl/matrix_to_list.h"
+#include "igl/list_to_matrix.h"
+#include "igl/barycenter.h"
+
 #include "occStepReader.h"
 #include "netgenDemo.h"
 #include "polyscope/polyscope.h"
@@ -11,6 +16,7 @@
 #include <Eigen/Dense>
 #include "imguizmo/ImGuizmo.h"
 
+
 //#include <imgui_impl_glfw.h>
 //#include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +27,18 @@ static const float identityMatrix[16] =
     0.f, 0.f, 1.f, 0.f,
     0.f, 0.f, 0.f, 1.f };
 void errorCallback(int error, const char* description){}
+
+void computeCellCentroids(VolumeMesh& egm, Eigen::MatrixXd& cellCentroids)
+{
+    Eigen::MatrixXd eV;
+    Eigen::MatrixX<size_t> eT;
+    igl::list_to_matrix(egm.V, eV);
+    igl::list_to_matrix(egm.T, eT);
+    igl::barycenter(eV, eT, cellCentroids);
+    std::cout << "cellCentroids:" << eT.rows() << std::endl;
+}
+
+
 int main (const int, const char**)
 {
     polyscope::options::programName = "Nine Cube";
@@ -37,8 +55,8 @@ int main (const int, const char**)
     //demo.occ2Surface(occStep.shape);
     //demo.tetralization();
     //occTri2Eigen(shape);
-    EigenMeshD egm;
-    egm.loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj");
+    VolumeMesh egm;
+    loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm);
     //egm.loadOBJ("D:/projects/GeometryLab/data/cube.obj");
     auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
     plym->setSurfaceColor({ 0,1,0 });
@@ -48,14 +66,17 @@ int main (const int, const char**)
     TetgenWrapper tet;
     tet.fromEigen(egm);
     tet.run();
-    EigenMeshD egt;
+    VolumeMesh egt;
     tet.toEigen(egt);
-    
+    Eigen::MatrixXd cellCentroids;
+    computeCellCentroids(egt,cellCentroids);
+
     //auto pctet = polyscope::registerPointCloud("V", egt.V);
-    auto pstet= polyscope::registerSurfaceMesh("tetgen", egt.sV, egt.sF);
+    auto pstet= polyscope::registerSurfaceMesh("tetgen", egt.V, egt.F);
     pstet->setEdgeWidth(1);
     pstet->setSurfaceColor({ 1,1,0 });
     pstet->setEdgeColor({0.8,0.5,0.2});
+
     /*
     NetGenDemo demo;
     netgen::MeshingParameters& mp = demo.meshParam();
@@ -115,11 +136,11 @@ int main (const int, const char**)
             ImGuizmo::DecomposeMatrixToComponents(gizmomat.data(), matrixTranslation, matrixRotation, matrixScale);
             Eigen::RowVector3d p((double)matrixTranslation[0], (double)matrixTranslation[1], (double)matrixTranslation[2]);
             Eigen::Vector3d n= gizmomat.col(1).topRows(3).normalized().cast<double>();
-            Eigen::VectorXd d = (egt.B.rowwise() -p)*n;
+            Eigen::VectorXd d = (cellCentroids.rowwise() -p)*n;
             for (int i = 0; i < egt.nT; i++)
             {
-                if (d(i)> 0)
-                    selset.insert(egt.sTF[i].begin(), egt.sTF[i].end());
+                if (d(i) > 0)
+                    selset.insert(egt.TF[i].begin(), egt.TF[i].end());
             }
         }
         ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), gizmomat.data(), 10.f);
@@ -129,7 +150,7 @@ int main (const int, const char**)
         {
             std::vector<std::vector<size_t> > newfaces;
             for (int fi : selset)
-                newfaces.push_back(egt.sF[fi]);
+                newfaces.push_back(egt.F[fi]);
             pstet->faces = newfaces;
             pstet->updateObjectSpaceBounds();
             pstet->computeCounts();
