@@ -2,7 +2,7 @@
 #define GRAPHMESH_H
 #include "XMesh.h"
 
-class GraphMesh : public XMesh
+class GraphMesh : public XMesh<double,int>
 {
 
 	std::vector< std::vector<int> > v2f, v2v;

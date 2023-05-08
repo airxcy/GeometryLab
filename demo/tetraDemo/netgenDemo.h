@@ -31,7 +31,7 @@ public:
     netgen::MeshingParameters& meshParam();
     void occ2Surface(TopoDS_Shape& shape);
     void tetralization();
-    void fromEigen(VolumeMesh& egm);
+    void fromEigen(VolumeMesh<double,int>& egm);
     void toEigen(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1);
     void VisVolumeWhole();
     void VisVolumeSep();

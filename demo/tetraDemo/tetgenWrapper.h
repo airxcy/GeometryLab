@@ -2,16 +2,11 @@
 #define TETGEN_WRAPPER
 #include "tetgen/tetgen.h"
 #include "VolumeMesh.h"
-#include <string>
-
+typedef VolumeMesh<REAL, int> TetMesh;
+typedef XMesh<REAL, int> TriMesh;
 class TetgenWrapper
 {
 public:
-
-	void fromEigen(VolumeMesh& egm);
-	bool toEigen(VolumeMesh& egm);
-	void run();
-
 	char tetvcoding[4][3] =
 	{
 		{1,2,3},
@@ -19,8 +14,15 @@ public:
 		{0,1,3},
 		{1,0,2}
 	};
+	VolumeMesh<REAL,int> mesh;
+	std::vector< std::vector<REAL> > steinerVertex;
 
 	tetgenbehavior tetparam;
-	tetgenio in,out;
+	tetgenio in, out;
+
+	void initSurfaceMesh(TriMesh& egm);
+	bool translateOutput();
+	void run();
+
 };
 #endif // !TETGEN_WRAPPER

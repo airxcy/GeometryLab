@@ -28,55 +28,87 @@ static const float identityMatrix[16] =
     0.f, 0.f, 0.f, 1.f };
 void errorCallback(int error, const char* description){}
 
-void computeCellCentroids(VolumeMesh& egm, Eigen::MatrixXd& cellCentroids)
+void computeCellCentroids(TetMesh& egm, Eigen::MatrixXd& cellCentroids)
 {
     Eigen::MatrixXd eV;
-    Eigen::MatrixX<size_t> eT;
+    Eigen::MatrixX<int>  eT;
     igl::list_to_matrix(egm.V, eV);
     igl::list_to_matrix(egm.T, eT);
     igl::barycenter(eV, eT, cellCentroids);
     std::cout << "cellCentroids:" << eT.rows() << std::endl;
 }
 
-
+void addPlane(Eigen::MatrixXf m,TriMesh& mesh)
+{
+    using namespace Eigen;
+    //Vector3f xax = m.col(0);
+    //Vector3f yax = m.col(1);
+    //Vector3f yax = m.col(2);
+    
+    float x = 0, y = 0, z = 0;
+    int i0 = mesh.V.size();
+    for (int i = 0; i < 100; i++)
+    {
+        x += 0.001;
+        y = 0;
+        for (int j = 0; j < 100; j++)
+        {
+            y += 0.001;
+            Vector4f p(x,y,0,1);
+            Vector4f p1=m*p;
+            mesh.V.push_back({ p1(0),p1(1),p1(2) });
+        }
+    }
+    
+    for (int i = 0; i < 99; i++)
+    {
+        for (int j = 0; j < 99; j++)
+        {
+            int v1 = i0 + i*100+j;
+            int v2 = i0 + (i+1)*100 + j;
+            int v3 = i0 + (i + 1) * 100 + j+1;
+            int v4 = i0 + i * 100 + j + 1;
+            mesh.F.push_back({ v1,v2,v3 });
+            mesh.F.push_back({ v3,v4,v1 });
+        }
+    }
+}
 int main (const int, const char**)
 {
-    polyscope::options::programName = "Nine Cube";
+    polyscope::options::programName = "TetraDemo";
     polyscope::options::groundPlaneMode = polyscope::GroundPlaneMode::None;
     polyscope::view::style = polyscope::view::NavigateStyle::Free;
     polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };    
     polyscope::init();
     glfwSetErrorCallback(errorCallback);
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
-    
     //occStepReader occStep;
     //occStep.read("D:/data/test_model_step203.stp");
     //occStep.occTri2Eigen();
     //demo.occ2Surface(occStep.shape);
     //demo.tetralization();
     //occTri2Eigen(shape);
-    VolumeMesh egm;
+    TriMesh egm;
     loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm);
-    //egm.loadOBJ("D:/projects/GeometryLab/data/cube.obj");
+    Eigen::Matrix4f planem=Eigen::Matrix4f::Identity();
+    planem.col(3) << 0.1, 0, 0, 1;
+    addPlane(planem, egm);
     auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
     plym->setSurfaceColor({ 0,1,0 });
     plym->setTransparency(0.3);
     plym->setEdgeWidth(1);
     plym->setEdgeColor({ 0.2,0.5,0.8 });
     TetgenWrapper tet;
-    tet.fromEigen(egm);
+    tet.initSurfaceMesh(egm);
     tet.run();
-    VolumeMesh egt;
-    tet.toEigen(egt);
     Eigen::MatrixXd cellCentroids;
-    computeCellCentroids(egt,cellCentroids);
-
-    //auto pctet = polyscope::registerPointCloud("V", egt.V);
-    auto pstet= polyscope::registerSurfaceMesh("tetgen", egt.V, egt.F);
+    computeCellCentroids(tet.mesh,cellCentroids);
+    auto pstet= polyscope::registerSurfaceMesh("tetgen", tet.mesh.V, tet.mesh.F);
     pstet->setEdgeWidth(1);
     pstet->setSurfaceColor({ 1,1,0 });
     pstet->setEdgeColor({0.8,0.5,0.2});
-
+    auto steinerPC = polyscope::registerPointCloud("steiner", tet.steinerVertex);
+    steinerPC->setPointColor({ 1,0,0 });
     /*
     NetGenDemo demo;
     netgen::MeshingParameters& mp = demo.meshParam();
@@ -99,7 +131,6 @@ int main (const int, const char**)
     demo.tetralization();
     demo.VisVolumeSep();
     */
-    int starti = 0;
     ImGui::GetStyle().AntiAliasedLines = false;
     Eigen::Matrix4f gizmomat=Eigen::Matrix4f::Identity();
     polyscope::state::userCallback = [&]()
@@ -127,8 +158,6 @@ int main (const int, const char**)
         ImGuizmo::BeginFrame();
         ImGuizmo::Enable(true);
         ImGuizmo::SetRect(0, 0, viewsz.x, viewsz.y);
-        
-        //ImGuizmo::DrawCubes(glm::value_ptr(view), glm::value_ptr(proj), gizmoMatrix,1);
         std::set<int> selset;
         if (ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj), mCurrentGizmoOperation, ImGuizmo::LOCAL, gizmomat.data()))
         {
@@ -137,10 +166,10 @@ int main (const int, const char**)
             Eigen::RowVector3d p((double)matrixTranslation[0], (double)matrixTranslation[1], (double)matrixTranslation[2]);
             Eigen::Vector3d n= gizmomat.col(1).topRows(3).normalized().cast<double>();
             Eigen::VectorXd d = (cellCentroids.rowwise() -p)*n;
-            for (int i = 0; i < egt.nT; i++)
+            for (int i = 0; i < tet.mesh.nT; i++)
             {
                 if (d(i) > 0)
-                    selset.insert(egt.TF[i].begin(), egt.TF[i].end());
+                    selset.insert(tet.mesh.TF[i].begin(), tet.mesh.TF[i].end());
             }
         }
         ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), gizmomat.data(), 10.f);
@@ -150,44 +179,12 @@ int main (const int, const char**)
         {
             std::vector<std::vector<size_t> > newfaces;
             for (int fi : selset)
-                newfaces.push_back(egt.F[fi]);
+                newfaces.push_back({ (size_t)tet.mesh.F[fi][0],(size_t)tet.mesh.F[fi][1] ,(size_t)tet.mesh.F[fi][2] });
             pstet->faces = newfaces;
             pstet->updateObjectSpaceBounds();
             pstet->computeCounts();
             pstet->geometryChanged();
         }
-        //EditTransform(glm::value_ptr(view), glm::value_ptr(proj), gizmoMatrix, mCurrentGizmoOperation);
-        //polyscope::draw();
-        //std::set<int> selset;
-        //for (int i = starti; i < egt.nT; i += 2)
-        //    selset.insert(egt.sTF[i].begin(), egt.sTF[i].end());
-        //std::vector<std::vector<size_t> > newfaces;
-        //for (int fi : selset)
-        //    newfaces.push_back(egt.sF[fi]);
-        //pstet->faces = newfaces;
-        //pstet->updateObjectSpaceBounds();
-        //pstet->computeCounts();
-        //pstet->geometryChanged();
-        //starti = 1 - starti;
-        
-        /*
-        auto viewsz = ImGui::GetMainViewport()->Size;
-        auto view = polyscope::view::getCameraViewMatrix();
-        auto proj = polyscope::view::getCameraPerspectiveMatrix();
-        for (int i =0;i< occStep.minE.size();i++)
-        {
-            auto sname= std::to_string(i);
-            auto s = polyscope::getSurfaceMesh(sname);
-            if (s->isEnabled())
-            {
-                glm::vec3 v = glm::project(occStep.minE[i].first, glm::mat4(1.0), proj * view, glm::vec4(0, 0, viewsz.x, viewsz.y));
-                ImGui::SetNextWindowPos({ v[0],  viewsz.y - v[1] });
-                ImGui::Begin(sname.c_str(), nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground);
-                ImGui::Text("%.4e", occStep.minE[i].second);
-                ImGui::End();
-            }
-        }
-        */
     };
       
       polyscope::show();

@@ -11,7 +11,7 @@
 #include "igl/min_quad_with_fixed.h"
 #define MAX_HARMONIC_DEGREE 4
 
-class Manifold: public XMesh
+class Manifold: public XMesh<double,int>
 {
 public:
 	Eigen::MatrixXd eigenV;

@@ -54,7 +54,7 @@ void NetGenDemo::occ2Surface(TopoDS_Shape& shape)
     
 }
 
-void NetGenDemo::fromEigen(VolumeMesh& egm)
+void NetGenDemo::fromEigen(VolumeMesh<double,int>& egm)
 {
     // Parameters definition.
     netgen::MeshingParameters& mp = netgen::mparam;

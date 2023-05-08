@@ -3,7 +3,7 @@
 #include <map>
 
 void GraphMesh::map_v2f() {
-	v2f = std::vector< std::vector<int> >(V.size(), std::vector<int>(F.size()));
+	v2f = std::vector< std::vector<int> >(V.size(), std::vector<int>(F.size()) );
 	for (int c = 0; c < 3; c++)
 	{
 		for (int r = 0; r < F.size(); r++)

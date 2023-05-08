@@ -3,7 +3,12 @@
 #include <string>
 #include "XMesh.h"
 
-void loadOBJ(std::string fpath,XMesh* m);
-void loadSTL(std::string fpath,XMesh* m);
+template<class T_REAL,class T_IDX>
+void loadOBJ(std::string fpath,XMesh<T_REAL,T_IDX>* m);
+
+template<class T_REAL, class T_IDX>
+void loadSTL(std::string fpath,XMesh<T_REAL, T_IDX>* m);
+
+
 
 #endif

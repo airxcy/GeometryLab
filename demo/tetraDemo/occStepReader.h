@@ -7,11 +7,10 @@
 #include <glm/vec3.hpp>
 
 typedef std::pair<glm::vec3, double  > glmE;
-
 class occStepReader
 {
 public:
-    std::vector<VolumeMesh> fmeshlist;
+    std::vector<VolumeMesh<double,int> > fmeshlist;
     std::vector< glmE > minE;
     TopoDS_Shape shape;
     void read(const char* fpath);
