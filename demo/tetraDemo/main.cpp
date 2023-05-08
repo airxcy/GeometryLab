@@ -92,7 +92,7 @@ int main (const int, const char**)
     loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm);
     Eigen::Matrix4f planem=Eigen::Matrix4f::Identity();
     planem.col(3) << 0.1, 0, 0, 1;
-    addPlane(planem, egm);
+    //addPlane(planem, egm);
     auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
     plym->setSurfaceColor({ 0,1,0 });
     plym->setTransparency(0.3);
