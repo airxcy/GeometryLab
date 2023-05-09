@@ -9,8 +9,6 @@ add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
 
 
 #file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
-
-
 file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/lib/*.lib")
 add_custom_target(copy_dll ALL
     COMMAND ${CMAKE_COMMAND} -E copy
