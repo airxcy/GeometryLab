@@ -1,43 +1,32 @@
 cmake_minimum_required(VERSION 3.1)
-project(testNg)
+project(view2d)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+message("CMAKE_MODULE_PATH" ${CMAKE_MODULE_PATH})
+set(CMAKE_BUILD_TYPE Release)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-set(CMAKE_PREFIX_PATH ${ENGINE_DIR}/occ/cmake)
-find_package (OpenCASCADE REQUIRED)
-add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
 
+add_subdirectory("${ENGINE_DIR}/glfw" glfw)
+add_subdirectory("${ENGINE_DIR}/glad" glad)
+add_subdirectory("${ENGINE_DIR}/imgui" imgui)
+add_subdirectory(${ENGINE_DIR}/stb STB)
+add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
 
-#file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp engine/ImGuizmo/*.h)
-file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/lib/*.lib")
-add_custom_target(copy_dll ALL
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${ENGINE_DIR}/freetype/bin/freetype.dll
-        Release/freetype.dll
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        NETGENLIB/Release/
-        Release/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        NETGENLIB/libsrc/core/Release/
-        Release/
-    # COMMAND ${CMAKE_COMMAND} -E copy
-    #     ${occdll}
-    #     Release/
-    COMMENT "Copying"
+#file(GLOB SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)
+#file(GLOB INCLUDES ${CMAKE_SOURCE_DIR}/src/*.h)
+file(GLOB DEMO_SRC *.cpp)
+file(GLOB DEMO_INCLUDES *.h)
+add_executable(${PROJECT_NAME}  
+${DEMO_SRC} ${DEMO_INCLUDES} 
+#   ${SRC} ${INCLUDES} 
+#${IMGUIZMO_SOURCES} 
 )
-
-
-#set(CMAKE_EXE_LINKER_FLAGS "-static")
-# configure_file(${ENGINE_DIR}/freetype/bin/freetype.dll ${OpenCASCADE_BINARY_DIR}/freetype.dll COPYONLY)
-# configure_file(${ENGINE_DIR}/netgen/bin/ngcore.dll D:/projects/GeometryLab/build/src/occSTEP/Release/ngcore.dll COPYONLY)
-# configure_file(${ENGINE_DIR}/netgen/bin/nglib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/nglib.dll COPYONLY)
-# configure_file(${ENGINE_DIR}/netgen/bin/zlib.dll D:/projects/GeometryLab/build/src/occSTEP/Release/zlib.dll COPYONLY)
-# execute_process(COMMAND ${OpenCASCADE_BINARY_DIR} copy "${ENGINE_DIR}/freetype/bin/freetype.dll" ${OpenCASCADE_BINARY_DIR})
-file(GLOB SRC *.cpp)
-file(GLOB INCLUDES *.h)
-link_directories(${ENGINE_DIR}/netgen/lib)
-add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} )
-target_include_directories(${PROJECT_NAME} PUBLIC
-  ${ENGINE_DIR}/netgen/libsrc ${ENGINE_DIR}/netgen/libsrc/include ${ENGINE_DIR}/netgen/nglib)
-target_link_libraries(${PROJECT_NAME} nglib)
-add_dependencies(${PROJECT_NAME} copy_dll)
+target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR}  ${EIGEN_DIR} 
+${ENGINE_DIR}/polyscope/include)
+target_link_libraries(${PROJECT_NAME} polyscope ${OPENGL_LIBRARIES})
