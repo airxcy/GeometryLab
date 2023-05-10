@@ -8,8 +8,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 typedef polyscope::SurfaceMesh PS_Mesh;
+void errorCallback(int error, const char* description) {}
 void psinit()
 {	
+	
 	glfwInit();
 	auto vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	std::cout << "Video mode width: " + vidmode->width << std::endl;;
@@ -21,6 +23,7 @@ void psinit()
 	polyscope::options::groundPlaneMode = polyscope::GroundPlaneMode::None;
 	polyscope::view::bgColor = { 0.1, 0.0, 0.2, 1.0f };
 	polyscope::init();
+	glfwSetErrorCallback(errorCallback);
 	Eigen::MatrixXd V(5, 2);
 	V << 0, 0,
 		0, 1,
@@ -61,19 +64,19 @@ public:
 
 void hyperbolicSpiral(Curve2D& spiral)
 {
-	double phi = M_PI, r = 4000 / phi;
-	while (spiral.N < 4000)
+	double phi = M_PI, r = 2000 / phi;
+	while (spiral.N < 1000)
 	{
 		spiral.addP(r * cos(phi), r * sin(phi),r);
 		phi += 0.01 * M_PI;
-		r = 4000 / phi;
+		r = 2000 / phi;
 	}
 }
 
 void archimedeanSpiral(Curve2D& spiral)
 {
 	double phi = M_PI, r = 10* phi;
-	while (spiral.N < 4000)
+	while (spiral.N < 1000)
 	{
 		spiral.addP(r * cos(phi), r * sin(phi),r);
 		phi += 0.01 * M_PI;
@@ -83,7 +86,7 @@ void archimedeanSpiral(Curve2D& spiral)
 
 void Circle(Curve2D& spiral)
 {
-	double phi = 0, r = 1000;
+	double phi = 0, r = 500;
 	while (phi<M_PI*2)
 	{
 		spiral.addP(r * cos(phi), r * sin(phi),r);
@@ -193,9 +196,11 @@ int main(int* argc, char** argv)
 		if(showOriginal)
 		for (int i = 0; i < spiral.N-1; i++)
 		{
+			float val = float(i) / spiral.N;
 			auto p1 = spiral(i);
 			auto p2 = spiral(i + 1);
-			draw_list->AddLine(ImVec2(p1[0]+ ORG.x,p1[1]+ ORG.y), ImVec2(p2[0] + ORG.x, p2[1] + ORG.y), IM_COL32(0, 200, 0, 255), 1+ spiral.R[i]/500);
+			
+			draw_list->AddLine(ImVec2(p1[0]+ ORG.x,p1[1]+ ORG.y), ImVec2(p2[0] + ORG.x, p2[1] + ORG.y), ImColor(val,1-val,0.0), 1);
 			
 		}
 		
@@ -204,7 +209,7 @@ int main(int* argc, char** argv)
 		{
 			auto p1 = polyline(i);
 			auto p2 = polyline(i + 1);
-			draw_list->AddLine(ImVec2(p1[0] + ORG.x, p1[1] + ORG.y), ImVec2(p2[0] + ORG.x, p2[1] + ORG.y), IM_COL32(200, 0, 0, 255), 1+ polyline.R[i] / 500);
+			draw_list->AddLine(ImVec2(p1[0] + ORG.x, p1[1] + ORG.y), ImVec2(p2[0] + ORG.x, p2[1] + ORG.y), IM_COL32(255, 255, 255, 255), 1);
 		}
 
 		ImGui::End();
