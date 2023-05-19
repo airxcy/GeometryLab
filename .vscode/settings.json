@@ -95,6 +95,7 @@
         "xutility": "cpp",
         "*.ipp": "cpp",
         "*.lxx": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "*.pxx": "c"
     }
 }

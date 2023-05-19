@@ -12,9 +12,12 @@ void TetgenWrapper::initSurfaceMesh(TriMesh& egm)
 
     in.numberofpoints = V.size();
     in.pointlist = new REAL[in.numberofpoints * 3];
+    in.pointmarkerlist = new int[in.numberofpoints];
     // loop over points
+    int VmarkerID.size()+1;
     for (int i = 0; i < (int)V.size(); i++)
     {
+        in.pointmarkerlist[i] = 1;
         in.pointlist[i * 3 + 0] = V[i][0];
         in.pointlist[i * 3 + 1] = V[i][1];
         in.pointlist[i * 3 + 2] = V[i][2];
@@ -28,7 +31,7 @@ void TetgenWrapper::initSurfaceMesh(TriMesh& egm)
     // loop over face
     for (int i = 0; i < (int)F.size(); i++)
     {
-        in.facetmarkerlist[i] = i;
+        //in.facetmarkerlist[i] = 1;
         tetgenio::facet* f = &in.facetlist[i];
         f->numberofpolygons = 1;
         f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
