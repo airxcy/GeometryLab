@@ -220,6 +220,7 @@ void TetgenWrapper::translateOutput()
     {
         int* tmpv = out.tetrahedronlist + i * 4;
         int r = (int)round(out.tetrahedronattributelist[i]);
+        out.
         for (int j = 0; j < 4; j++)
             m_mesh.T[i][j] = out.tetrahedronlist[i * 4 + j];
         for (int j = 0; j < 4; j++)
