@@ -99,11 +99,12 @@ int main (const int, const char**)
     plym->setEdgeWidth(1);
     plym->setEdgeColor({ 0.2,0.5,0.8 });
     TetgenWrapper tet;
-    tet.initSurfaceMesh(egm);
+    tet.addSurface(egm);
+    tet.convertInput();
     tet.run();
     Eigen::MatrixXd cellCentroids;
-    computeCellCentroids(tet.mesh,cellCentroids);
-    auto pstet= polyscope::registerSurfaceMesh("tetgen", tet.mesh.V, tet.mesh.F);
+    computeCellCentroids(tet.m_mesh,cellCentroids);
+    auto pstet= polyscope::registerSurfaceMesh("tetgen", tet.m_mesh.V, tet.m_mesh.F);
     pstet->setEdgeWidth(1);
     pstet->setSurfaceColor({ 1,1,0 });
     pstet->setEdgeColor({0.8,0.5,0.2});
@@ -166,10 +167,10 @@ int main (const int, const char**)
             Eigen::RowVector3d p((double)matrixTranslation[0], (double)matrixTranslation[1], (double)matrixTranslation[2]);
             Eigen::Vector3d n= gizmomat.col(1).topRows(3).normalized().cast<double>();
             Eigen::VectorXd d = (cellCentroids.rowwise() -p)*n;
-            for (int i = 0; i < tet.mesh.nT; i++)
+            for (int i = 0; i < tet.m_mesh.nT; i++)
             {
                 if (d(i) > 0)
-                    selset.insert(tet.mesh.TF[i].begin(), tet.mesh.TF[i].end());
+                    selset.insert(tet.m_mesh.TF[i].begin(), tet.m_mesh.TF[i].end());
             }
         }
         ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), gizmomat.data(), 10.f);
@@ -179,7 +180,7 @@ int main (const int, const char**)
         {
             std::vector<std::vector<size_t> > newfaces;
             for (int fi : selset)
-                newfaces.push_back({ (size_t)tet.mesh.F[fi][0],(size_t)tet.mesh.F[fi][1] ,(size_t)tet.mesh.F[fi][2] });
+                newfaces.push_back({ (size_t)tet.m_mesh.F[fi][0],(size_t)tet.m_mesh.F[fi][1] ,(size_t)tet.m_mesh.F[fi][2] });
             pstet->faces = newfaces;
             pstet->updateObjectSpaceBounds();
             pstet->computeCounts();

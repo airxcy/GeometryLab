@@ -27,7 +27,10 @@ public:
 	tetgenio in, out;
 
 	void initSurfaceMesh(TriMesh& egm);
-	bool translateOutput();
+	void addSurface(TriMesh& surface,int fmarker=0, int vmarker=0);
+	void freeMemory();
+	void convertInput();
+	void translateOutput();
 	void run();
 
 };
