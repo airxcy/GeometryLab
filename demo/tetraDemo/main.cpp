@@ -38,41 +38,64 @@ void computeCellCentroids(TetMesh& egm, Eigen::MatrixXd& cellCentroids)
     std::cout << "cellCentroids:" << eT.rows() << std::endl;
 }
 
-void addPlane(Eigen::MatrixXf m,TriMesh& mesh)
+void addCube(TetgenWrapper& tet, Eigen::MatrixXd& m,std::vector<int>& nDiv)
 {
     using namespace Eigen;
     //Vector3f xax = m.col(0);
     //Vector3f yax = m.col(1);
     //Vector3f yax = m.col(2);
-    
-    float x = 0, y = 0, z = 0;
-    int i0 = mesh.V.size();
-    for (int i = 0; i < 100; i++)
+    int NX = nDiv[0];
+    int NY = nDiv[1];
+    int NZ = nDiv[2];
+    RowVector3d p0 = m.row(0);
+    RowVector3d axx = m.row(1) /NX;
+    RowVector3d axy = m.row(2) /NY;
+    RowVector3d axz = m.row(3) /NZ;
+    //axx /= NX;
+    //axy /= NY;
+    //axz /= NZ;
+    TriMesh mesh;
+    double x = m(0,0), y = m(0,1), z = (0,2);
+
+    for (int i = 0; i < NX; i++)
     {
-        x += 0.001;
-        y = 0;
-        for (int j = 0; j < 100; j++)
+        RowVector3d pi = p0 + axx * i;
+        for (int j = 0; j < NY; j++)
         {
-            y += 0.001;
-            Vector4f p(x,y,0,1);
-            Vector4f p1=m*p;
-            mesh.V.push_back({ p1(0),p1(1),p1(2) });
+            RowVector3d pj = pi + axy * j;
+            for (int k = 0; k < NZ; k++)
+            {
+                RowVector3d pk = pj + axz * k;
+            }
         }
     }
     
-    for (int i = 0; i < 99; i++)
+    for (int i = 0; i < NX-1; i++)
     {
-        for (int j = 0; j < 99; j++)
+        for (int j = 0; j < NY-1; j++)
         {
-            int v1 = i0 + i*100+j;
-            int v2 = i0 + (i+1)*100 + j;
-            int v3 = i0 + (i + 1) * 100 + j+1;
-            int v4 = i0 + i * 100 + j + 1;
+            int v1 =   i* NY +j;
+            int v2 =  (i+1)* NY + j;
+            int v3 = (i + 1) * NY + j+1;
+            int v4 = i * NY + j + 1;
             mesh.F.push_back({ v1,v2,v3 });
             mesh.F.push_back({ v3,v4,v1 });
         }
     }
+
+    tet.addSurface(mesh, 2);
 }
+
+void scale_move(TriMesh& m, double scale, double x=0, double y=0, double z=0)
+{
+    for (auto& v : m.V)
+    {
+        v[0] = v[0] * scale + x;
+        v[1] = v[1] * scale + y;
+        v[2] = v[2] * scale + z;
+    }
+}
+
 int main (const int, const char**)
 {
     polyscope::options::programName = "TetraDemo";
@@ -82,56 +105,50 @@ int main (const int, const char**)
     polyscope::init();
     glfwSetErrorCallback(errorCallback);
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
-    //occStepReader occStep;
-    //occStep.read("D:/data/test_model_step203.stp");
-    //occStep.occTri2Eigen();
-    //demo.occ2Surface(occStep.shape);
-    //demo.tetralization();
-    //occTri2Eigen(shape);
-    TriMesh egm;
-    loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm);
-    Eigen::Matrix4f planem=Eigen::Matrix4f::Identity();
-    planem.col(3) << 0.1, 0, 0, 1;
-    //addPlane(planem, egm);
-    auto plym = polyscope::registerSurfaceMesh("eigen", egm.V, egm.F);
-    plym->setSurfaceColor({ 0,1,0 });
-    plym->setTransparency(0.3);
-    plym->setEdgeWidth(1);
-    plym->setEdgeColor({ 0.2,0.5,0.8 });
+
+    TriMesh egm,egm2;
+    loadOBJ("D:/projects/GeometryLab/data/spot/spot_triangulated.obj", &egm);
+    loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm2);
+    
+    scale_move(egm,3,0,0,-1);
     TetgenWrapper tet;
-    tet.addSurface(egm);
+    tet.addSurface(egm,1);
+    tet.addSurface(egm2, 2);
     tet.convertInput();
+    
+    tet.addRegion(-0.2, 0.1, 0);
+    tet.addRegion(0, 0, 0);
     tet.run();
     Eigen::MatrixXd cellCentroids;
     computeCellCentroids(tet.m_mesh,cellCentroids);
-    auto pstet= polyscope::registerSurfaceMesh("tetgen", tet.m_mesh.V, tet.m_mesh.F);
+
+    auto plym = polyscope::registerSurfaceMesh("eigen", tet.plc_mesh.V, tet.plc_mesh.F);
+    //plym->setSurfaceColor({ 0,1,0 });
+    std::unordered_map<int , glm::vec3> clrs;
+    for (int i : tet.m_FmarkerID)
+    {
+        std::cout << "marker: " << i << std::endl;
+        clrs[i] = polyscope::getNextUniqueColor();
+    }
+    std::vector<glm::vec3> clrmap;
+    for (int i : tet.m_FMarkers)
+        clrmap.push_back(clrs[i]);
+    auto clrQ= plym->addFaceColorQuantity("boundary Marker", clrmap);
+    clrQ->setEnabled(true);
+    plym->setTransparency(0.3);
+    plym->setEdgeWidth(1);
+
+
+
+    auto pstet = polyscope::registerSurfaceMesh("tetgen", tet.m_mesh.V, tet.m_mesh.F);
     pstet->setEdgeWidth(1);
     pstet->setSurfaceColor({ 1,1,0 });
-    pstet->setEdgeColor({0.8,0.5,0.2});
-    auto steinerPC = polyscope::registerPointCloud("steiner", tet.steinerVertex);
-    steinerPC->setPointColor({ 1,0,0 });
-    /*
-    NetGenDemo demo;
-    netgen::MeshingParameters& mp = demo.meshParam();
-    //mp.maxh = diag;
-    mp.grading = 0.1;
-    mp.optsteps3d = 0;
-    mp.blockfill = false;
-    mp.uselocalh = false;
-    mp.delaunay = false;
-    mp.delaunay2d = false;
-    mp.checkoverlap = false;
-    mp.checkchartboundary = false;
-    mp.checkchartboundary = false;
-    nglib::Ng_Init();
-    demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
-    demo.fromEigen(egm);
-    auto bb = plym->boundingBox();
-    double diag = (std::get<0>(bb) - std::get<1>(bb)).length();
-    std::cout << diag << std::endl;
-    demo.tetralization();
-    demo.VisVolumeSep();
-    */
+    pstet->setEdgeColor({ 0.8,0.5,0.2 });
+    //auto steinerPC = polyscope::registerPointCloud("steiner", tet.steinerVertex);
+    //steinerPC->setPointColor({ 1,0,0 });
+
+
+
     ImGui::GetStyle().AntiAliasedLines = false;
     Eigen::Matrix4f gizmomat=Eigen::Matrix4f::Identity();
     polyscope::state::userCallback = [&]()
@@ -173,15 +190,21 @@ int main (const int, const char**)
                     selset.insert(tet.m_mesh.TF[i].begin(), tet.m_mesh.TF[i].end());
             }
         }
-        ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), gizmomat.data(), 10.f);
+        ImGuizmo::DrawGrid(glm::value_ptr(view), glm::value_ptr(proj), gizmomat.data(), 100.f);
         ImGui::End();
 
         if (selset.size() > 0)
         {
             std::vector<std::vector<size_t> > newfaces;
+            //std::vector<glm::vec3> cmap;
             for (int fi : selset)
+            {
                 newfaces.push_back({ (size_t)tet.m_mesh.F[fi][0],(size_t)tet.m_mesh.F[fi][1] ,(size_t)tet.m_mesh.F[fi][2] });
+                //cmap.push_back(clrs[tet.Fregionlist[fi]]);
+            }
             pstet->faces = newfaces;
+            //auto cQ=pstet->addFaceColorQuantity("region", cmap);
+            //cQ->setEnabled(true);
             pstet->updateObjectSpaceBounds();
             pstet->computeCounts();
             pstet->geometryChanged();

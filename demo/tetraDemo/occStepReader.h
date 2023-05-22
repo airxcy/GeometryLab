@@ -6,6 +6,14 @@
 #include  <utility>
 #include <glm/vec3.hpp>
 
+
+//occStepReader occStep;
+//occStep.read("D:/data/test_model_step203.stp");
+//occStep.occTri2Eigen();
+//demo.occ2Surface(occStep.shape);
+//demo.tetralization();
+//occTri2Eigen(shape);
+
 typedef std::pair<glm::vec3, double  > glmE;
 class occStepReader
 {

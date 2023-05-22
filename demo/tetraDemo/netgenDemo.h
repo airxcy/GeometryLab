@@ -13,6 +13,30 @@ namespace nglib {
 }
 
 
+/*
+NetGenDemo demo;
+netgen::MeshingParameters& mp = demo.meshParam();
+//mp.maxh = diag;
+mp.grading = 0.1;
+mp.optsteps3d = 0;
+mp.blockfill = false;
+mp.uselocalh = false;
+mp.delaunay = false;
+mp.delaunay2d = false;
+mp.checkoverlap = false;
+mp.checkchartboundary = false;
+mp.checkchartboundary = false;
+nglib::Ng_Init();
+demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
+demo.fromEigen(egm);
+auto bb = plym->boundingBox();
+double diag = (std::get<0>(bb) - std::get<1>(bb)).length();
+std::cout << diag << std::endl;
+demo.tetralization();
+demo.VisVolumeSep();
+*/
+
+
 
 using namespace nglib;
 class NetGenDemo
