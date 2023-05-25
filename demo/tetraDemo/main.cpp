@@ -1,11 +1,11 @@
-﻿
+
 #include "MeshIO.h"
 #include "igl/matrix_to_list.h"
 #include "igl/list_to_matrix.h"
 #include "igl/barycenter.h"
 
-#include "occStepReader.h"
-#include "netgenDemo.h"
+//#include "occStepReader.h"
+//#include "netgenDemo.h"
 #include "polyscope/polyscope.h"
 #include "polyscope/surface_mesh.h"
 #include "polyscope/point_cloud.h"
@@ -118,11 +118,9 @@ int main (const int, const char**)
     tet.addSurface(egm2, 2);
     tet.convertInput();
     
-    //tet.addHole(-0.2, 0.1, 0);
-    //tet.addRegion(0, 0, 0);
-    //tet.addRegion(-0.2, 0.1, 0,10);
-    //tet.addRegion(0.25, 0.1, 0,20);
-    //tet.run();
+    tet.addRegion(-0.2, 0.1, 0,10);
+    tet.addRegion(0, 0, 0,20);
+    tet.run();
     Eigen::MatrixXd cellCentroids;
     computeCellCentroids(tet.m_mesh,cellCentroids);
 

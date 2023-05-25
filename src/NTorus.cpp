@@ -1,47 +1,34 @@
-#include "GenusN.h"
-#include <eigen/Geometry>
-#include <igl/canonical_quaternions.h>
-#include <igl/list_to_matrix.h>
-#include <igl/per_vertex_normals.h>
+#include "NTorus.h"
 
-#include "igl/cotmatrix.h"
-#include "igl/massmatrix.h"
-#include "igl/invert_diag.h"
-#include "igl/min_quad_with_fixed.h"
-#include "igl/doublearea.h"
-#include "igl/grad.h"
-#include "igl/barycenter.h"
+#include <Eigen/Core>
+#include <eigen/Geometry>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+#include <igl/list_to_matrix.h>
+#include "igl/matrix_to_list.h"
+
 
 
 #define REAL double
 #define VOID int
-//#include <igl/triangle/triangulate.h>
+
 extern "C"
 {
     #include <triangle/triangle.h>
 }
-void GenusN::clear()
+
+void TorusN::clear()
 {
-    XMesh::clear();
+    V.clear();
+    F.clear();
     clrs.resize(0, 0);
 }
 
 
-void GenusN::paramFromG2(XMesh& dbTorus)
-{
-    genus = 2;
-    centers.resize(genus, 3);
-    Eigen::RowVector3d maxv = dbTorus.V.colwise().maxCoeff();
-    Eigen::RowVector3d minv = dbTorus.V.colwise().minCoeff();
-    R = (maxv(0) - minv(0)) / 2;
-    r = R / 4;
-    centers.row(0) << 0, 0, maxv(2) - R;
-    centers.row(1) << 0, 0, minv(2) + R;
-    R = R - r;
-    cDist = (centers(0, 2) - centers(1, 2))/2;
-    
-}
-void GenusN::buildV()
+
+void TorusN::buildV()
 {
     nANG = (64 / genus) * genus;
     nang = 32;
@@ -57,8 +44,8 @@ void GenusN::buildV()
     dMid = cDist * sqrt((1 - cos(DistDAng)) / 2) / (nANG / 2 - nANG / genus / 2);
     if (!V.size())
     {
-        V.resize(genus * nANG * nang, 3);
-        clrs.resize(V.rows(), 3);
+        V.resize(genus * nANG * nang, std::vector<double>(3));
+        clrs.resize(V.size(), 3);
     }
     int counter = 0;
 
@@ -71,7 +58,6 @@ void GenusN::buildV()
 
         for (int j = 0; j < nANG; j++)
         {
-
             Eigen::RowVector3d C1 = C0 + Eigen::RowVector3d(cos(ANG) * R, 0, sin(ANG) * R);
             Eigen::Quaterniond v0(0, cos(ANG) * r, 0, sin(ANG) * r);
             Eigen::RowVector3d ax = Eigen::RowVector3d(-sin(ANG), 0, cos(ANG));
@@ -92,7 +78,6 @@ void GenusN::buildV()
             }
             double ang = -M_PI / 2.0;
             double clrval = double(j) / nANG;
-            glm::vec3 v1, v2, v3, v4;
             for (int k = 0; k < nang; k++)
             {
                 double halfang = ang / 2;
@@ -112,37 +97,17 @@ void GenusN::buildV()
                     q2 = Eigen::Quaterniond(qw, -qx, -qy, -qz);
                     v = q1 * v00 * q2;
                     C2 = C11 + Eigen::RowVector3d(v.x(), v.y(), v.z());
-                    //clrs.row(counter) << clrval, 1 - clrval, 0;
-                    //V.row(counter++) = C2;
-
-
                 }
-
                 clrs.row(counter) << clrval, 1 - clrval, 0;
-                V.row(counter++) = C2;
-                if (k == 0) v1 = { C2(0), C2(1), C2(2) };
-                if (k == nang - 1) v2 = { C2(0), C2(1), C2(2) };
+                V[counter++] = { C2(0),C2(1) ,C2(2) };
                 ang += dang;
             }
-            //int i1 = range1 + 1;
-            //int i2 = range2 + 1;
-            //if (j > range2)
-            //{
-            //    innerBnd[0][(nANG - range1)*2 * i + nANG-j-1 + nANG+i2-2*i1] = v1;
-            //    innerBnd[0][(nANG - range1) * 2 * i + j - i1 + (i2-i1)] = v2;
-            //}
-            //else if (j > range1)
-            //{
-            //    innerBnd[0][(nANG - range1) * 2 * i + range2-j ] = v1;
-            //    innerBnd[0][(nANG - range1) * 2 * i + j-i1 + (i2 - i1)] = v2;
-            //}
-
             ANG += dANG;
         }
         DistAng += DistDAng;
     }
 }
-void GenusN::buildMesh(int G)
+void TorusN::buildMesh(int G)
 {
     genus = G;
     DistDAng = 2.0 * M_PI / genus;
@@ -150,8 +115,8 @@ void GenusN::buildMesh(int G)
     cDist = (R) * sqrt(2 / (1 - cos(DistDAng)))+r;
     buildV();
     int counter = 0;
-    stdF.clear();
-    std::vector<int> stdb;
+    F.clear();
+    stdb.clear();
     for (int i = 0; i < genus; i++)
     {
         
@@ -167,8 +132,8 @@ void GenusN::buildMesh(int G)
                 int v3 = i * nANG * nang + j1 * nang + k1;
                 int v4 = i * nANG * nang + j1 * nang + k;
                 //if (!(j > range1&&(k1==0||k==halfrange)) && !(k < halfrange && j==range2))
-                stdF.push_back({ v1,v2,v3 });
-                stdF.push_back({ v3,v4,v1 });
+                F.push_back({ v1,v2,v3 });
+                F.push_back({ v3,v4,v1 });
 
                 stdb.push_back(v1);
                 stdb.push_back(v2);
@@ -189,8 +154,8 @@ void GenusN::buildMesh(int G)
                 int v2 = i * nANG * nang + j0 * nang + k1;
                 int v3 = i * nANG * nang + j1 * nang + k1;
                 int v4 = i * nANG * nang + j1 * nang + k;
-                stdF.push_back({ v1,v2,v3 });
-                stdF.push_back({ v3,v4,v1 });
+                F.push_back({ v1,v2,v3 });
+                F.push_back({ v3,v4,v1 });
 
             }
 
@@ -203,8 +168,8 @@ void GenusN::buildMesh(int G)
                 int v2 = i * nANG * nang + j0 * nang + k1;
                 int v3 = i * nANG * nang + j1 * nang + k1;
                 int v4 = i * nANG * nang + j1 * nang + k;
-                stdF.push_back({ v1,v2,v3 });
-                stdF.push_back({ v3,v4,v1 });
+                F.push_back({ v1,v2,v3 });
+                F.push_back({ v3,v4,v1 });
                 if (k>=halfrange+3&&k<=nang-4)
                 {
                     stdb.push_back(v1);
@@ -225,12 +190,11 @@ void GenusN::buildMesh(int G)
             int v3 = i1 * nANG * nang + j1 * nang + k1;
             int v4 = i1 * nANG * nang + j1 * nang + k;
             //if (!(j > range1&&(k1==0||k==halfrange)) && !(k < halfrange && j==range2))
-            stdF.push_back({ v1,v2,v3 });
-            stdF.push_back({ v3,v4,v1 });
+            F.push_back({ v1,v2,v3 });
+            F.push_back({ v3,v4,v1 });
         }
 
     }
-    igl::list_to_matrix(stdF, F);
 
     innerBndIdx.clear();
     for (int sidei = 0; sidei < 2; sidei++)
@@ -266,50 +230,42 @@ void GenusN::buildMesh(int G)
     }
     
     /** middle part **/
-    int r0 = V.rows();
-    int f0 = F.rows();
+    int r0 = V.size();
+    int f0 = F.size();
     std::vector<std::vector<int> > addF;
     double area = (R * dANG) * (r * dang) / 2 * 1.1;
     triBnd(innerBndIdx[0], area, addF);
 
-    int nAddV = V.rows() - r0;
-    int nAddF = F.rows() - f0;
+    int nAddV = V.size() - r0;
+    int nAddF = F.size() - f0;
     std::vector<int>& bnd = innerBndIdx[1];
-    int r1 = V.rows();
-    V.conservativeResize(V.rows() + nAddV, 3);
-    clrs.conservativeResize(V.rows(), 3);
+    int r1 = V.size();
+    clrs.conservativeResize(r1+nAddV, 3);
     for (int i = 0; i < nAddV; i++)
     {
-        V.row(r1 + i) << V(r0 + i,0) , r, V(r0 + i, 2);
+        V.push_back({ V[r0 + i][0] , r, V[r0 + i][ 2] });
         clrs.row(r1 + i ) << 0, 1, 1;
     }
-    int f1 = F.rows();
-    F.conservativeResize(F.rows() + addF.size(), 3);
+    int f1 = F.size();
     for (int i = 0; i < addF.size(); i++)
     {
+        std::vector<int> ff(3);
         for (int j = 0; j < 3; j++)
         {
-
             int vi = addF[i][j];
             if (vi < bnd.size())
                 vi = bnd[vi];
             else
                 vi = vi - bnd.size() + r1;
-            F(f1 + i, 2-j) = vi;
+            ff[2-j] = vi;
         }
+        F.push_back(ff);
     }
 
 
-    boundryPos = V;
-    boundryIdx.resize(V.rows());
-    boundryIdx.setConstant(0);
-    for (int i : stdb)
-        boundryIdx[i] = 1;
-    deformedV = V;
-    setUpLaplacian();
 }
 
-void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector< int > >& addF)
+void TorusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector< int > >& addF)
 {
     
     using namespace std;
@@ -330,8 +286,8 @@ void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
     double* ptr = in.pointlist;
     for(int i=0;i<bnd.size();i++)
     {
-        in.pointlist[i*2] = V(bnd[i], 0);
-        in.pointlist[i * 2+1] =  V(bnd[i],2);
+        in.pointlist[i*2] = V[bnd[i]][ 0];
+        in.pointlist[i * 2+1] =  V[bnd[i]][2];
     }
     
     in.numberofpointattributes = 0;
@@ -376,20 +332,18 @@ void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
     
     // Return the mesh
     
-    int r0 = V.rows();
-    V.conservativeResize(V.rows()+out.numberofpoints- bnd.size(),3);
-    clrs.conservativeResize(V.rows(), 3);
+    int r0 = V.size();
+    V.resize(V.size()+out.numberofpoints- bnd.size(),std::vector<double>(3) );
+    clrs.conservativeResize(V.size(), 3);
     for (int i = bnd.size(); i < out.numberofpoints; i++)
     {
-        V.row(r0 + i - bnd.size()) << out.pointlist[i * 2], -r, out.pointlist[i * 2 + 1];
+        V[r0 + i - bnd.size()] = { out.pointlist[i * 2], -r, out.pointlist[i * 2 + 1] };
         clrs.row(r0 + i - bnd.size()) << 0, 0, 1;
     }
-    int f0 = F.rows();
-    F.conservativeResize(F.rows() + out.numberoftriangles, 3);
 
     for (int i = 0; i < out.numberoftriangles; i++)
     {
-        std::vector<int> f;
+        std::vector<int> f,ff;
         for (int j = 0; j < 3; j++)
         {
             
@@ -399,9 +353,10 @@ void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
                 vi = bnd[vi];
             else
                 vi = vi - bnd.size() + r0;
-            F(f0+i, j) = vi;
+            ff.push_back(vi);
         }
         addF.push_back(f);
+        F.push_back(ff);
     }
     
 
@@ -420,74 +375,27 @@ void GenusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
 
 }
 
-void GenusN::HarmonicShape()
+void TorusN::HarmonicShape()
 {
-    calLaplacion(2);
-    setUpB(2);
-    setUpBc();
-    solveHarmonic(2);
-    V = deformedV;
-    setUpLaplacian();
+    igl::list_to_matrix(V, deformer.eigenV);
+    igl::list_to_matrix(F, deformer.eigenF);
+    deformer.boundryIdx.resize(V.size());
+    deformer.boundryIdx.setConstant(0);
+    for (int i : stdb)
+        deformer.boundryIdx[i] = 1;
+    deformedV.resize(V.size(), 3);
+    deformer.calLaplacion();
+    deformer.setUpB();
+    deformer.setUpBc();
+    deformer.solveHarmonic(deformedV);
+    Lsmoother.init(deformedV, deformer.eigenF);
+    Lsmoother.deltaL(0.5);
+    igl::matrix_to_list(Lsmoother.V, V);
 }
 
-void GenusN::setUpLaplacian()
+void TorusN::LaplacianSmooth(double delta)
 {
-    igl::cotmatrix(V, F, L);
-
-    // Alternative construction of same Laplacian
-    Eigen::SparseMatrix<double> G, K;
-    // Gradient/Divergence
-    igl::grad(V, F, G);
-    // Diagonal per-triangle "mass matrix"
-    Eigen::VectorXd dblA;
-    igl::doublearea(V, F, dblA);
-    // Place areas along diagonal #dim times
-    const auto& T = 1. * (dblA.replicate(3, 1) * 0.5).asDiagonal();
-    // Laplacian K built as discrete divergence of gradient or equivalently
-    // discrete Dirichelet energy Hessian
-    K = -G.transpose() * T * G;
-    std::cout << "|K-L|: " << (K - L).norm() << std::endl;
-
-    // Use original normals as pseudo-colors
-    igl::per_vertex_normals(V, F, N);
-    Eigen::MatrixXd C = N.rowwise().normalized().array() * 0.5 + 0.5;
-
-    // Initialize smoothing with base mesh
-    //U = V;
-    
-
+    Lsmoother.deltaL(delta);
+    igl::matrix_to_list(Lsmoother.V, V);
 }
-void GenusN::LaplacianSmooth()
-{
-    using namespace Eigen;
-    SparseMatrix<double> M;
-    igl::massmatrix(V, F, igl::MASSMATRIX_TYPE_BARYCENTRIC, M);
-    // Solve (M-delta*L) U = M*U
-    const auto& S = (M - 0.001 * L);
-    Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
-    assert(solver.info() == Eigen::Success);
-    deformedV = solver.solve(M * V).eval();
-    // Compute centroid and subtract (also important for numerics)
-    VectorXd dblA;
-    igl::doublearea(deformedV, F, dblA);
-    double area = 0.5 * dblA.sum();
-    MatrixXd BC;
-    igl::barycenter(deformedV, F, BC);
-    RowVector3d centroid(0, 0, 0);
-    for (int i = 0; i < BC.rows(); i++)
-    {
-        centroid += 0.5 * dblA(i) / area * BC.row(i);
-    }
-    deformedV.rowwise() -= centroid;
-    //// Normalize to unit surface area (important for numerics)
-    //deformedV.array() /= sqrt(area);
-    //for (int i = 0; i < boundryIdx.size(); i++)
-    //    if (!boundryIdx(i))
-    //    {
-    //        deformedV.row(i) -= centroid;
-    //        deformedV.row(i) /= sqrt(area);
-    //    }
-    V = deformedV;
-}
-
 

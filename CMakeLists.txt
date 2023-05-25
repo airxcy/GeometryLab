@@ -4,7 +4,7 @@ project(GeometryLab)
 set(ENGINE_DIR ${CMAKE_SOURCE_DIR}/engine)
 set(EIGEN_DIR "${ENGINE_DIR}/eigen")
 
-
+add_subdirectory(src)
 #add_subdirectory("demo/view2d")
 add_subdirectory("demo/tetraDemo")
 #add_subdirectory("demo/torus")
