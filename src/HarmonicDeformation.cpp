@@ -18,9 +18,9 @@
 #include "igl/invert_diag.h"
 #include "igl/min_quad_with_fixed.h"
 
+
 void HarmonicDeformation::calLaplacion(int k)
 {
-	deformedV.resize(eigenV.rows(), eigenV.cols());
 	Eigen::SparseMatrix<double>& LCot = LCotVec[k-1];
 	Eigen::SparseMatrix<double>& Mass = MassVec[k-1];
 	Eigen::SparseMatrix<double>& Q = QmatData[k-1];
@@ -68,12 +68,6 @@ void HarmonicDeformation::calLaplacion(int k)
 	
 }
 
-void HarmonicDeformation::removeBIdx(std::vector<int>& indices)
-{
-	for (auto v : indices)
-		boundryIdx(v) = false;
-}
-
 void HarmonicDeformation::setUpB(int k)
 {
 	int n = eigenV.rows();
@@ -103,10 +97,10 @@ void HarmonicDeformation::setUpBc()
 	bc.resize(b.rows(), eigenV.cols());
 	bc.setConstant(0);
 	for (int i = 0; i < b.rows(); i++)
-			bc.row(i) = boundryPos.row(b(i));
+			bc.row(i) = eigenV.row(b(i));
 }
 
-bool HarmonicDeformation::solveHarmonic(int k)
+bool HarmonicDeformation::solveHarmonic(Eigen::MatrixXd& deformedV, int k)
 {
 	int n = eigenV.rows();
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorXS;

@@ -7,7 +7,9 @@ class LaplacianSmoothing
 {
 public:
 	Eigen::SparseMatrix<double> L;
-	void init();
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	void init(Eigen::MatrixXd& V, Eigen::MatrixXi& F);
 	void deltaL(double delta);
 };
 

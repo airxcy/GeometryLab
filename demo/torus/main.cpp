@@ -1,4 +1,5 @@
-﻿#include "GenusN.h"
+﻿#include "NTorus.h"
+#include "MeshIO.h"
 
 #include "polyscope/polyscope.h"
 #include "polyscope/surface_mesh.h"
@@ -11,8 +12,6 @@
 #include <GLFW/glfw3.h>
 #include "imguizmo/ImGuizmo.h"
 
-#include "igl/boundary_loop.h"
-#include "igl/matrix_to_list.h"
 
 
 ImGuizmo::OPERATION mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -23,43 +22,20 @@ static const float identityMatrix[16] =
     0.f, 0.f, 0.f, 1.f };
 void errorCallback(int error, const char* description){}
 
-void paramFromG2(XMesh<double, int>& dbTorus)
-{
-    genus = 2;
-    centers.resize(genus, 3);
-    Eigen::RowVector3d maxv = dbTorus.V.colwise().maxCoeff();
 
-    Eigen::RowVector3d minv = dbTorus.V.colwise().minCoeff();
-    R = (maxv(0) - minv(0)) / 2;
-    r = R / 4;
-    centers.row(0) << 0, 0, maxv(2) - R;
-    centers.row(1) << 0, 0, minv(2) + R;
-    R = R - r;
-    cDist = (centers(0, 2) - centers(1, 2)) / 2;
-
-}
-
-std::pair<polyscope::SurfaceMesh*,polyscope::PointCloud* > addGenus(GenusN& m)
+std::pair<polyscope::SurfaceMesh*,polyscope::PointCloud* > addGenus(TorusN& m)
 {
     //std::vector< std::vector<int> >bnd;
     //igl::boundary_loop(m.F, bnd);
     //if (bnd.size() == 0)
     //    std::cout << "is water tight" << std::endl;
-    Eigen::MatrixXd V2(m.V.rows(),3);
-    int counter = 0;
-    for (int i = 0; i < m.boundryIdx.size(); i++)
-    {
-        
-        if (m.boundryIdx(i))
-        {
-            V2.row(counter++)=m.V.row(i);
-        }
-    }
-    V2.conservativeResize(counter, 3);
-    auto pc1 = polyscope::registerPointCloud("genus", V2);
-    pc1->setPointColor({ 0,0,1 });
+    //std::vector<std::vector<float> > V2; 
+    //for (int i : m.stdb)
+    //    V2.push_back({ m.V[i][0],m.V[i][1] ,m.V[i][2] });
+    //auto pc1 = polyscope::registerPointCloud("genus", V2);
+    //pc1->setPointColor({ 0,0,1 });
     //auto cQ = pc1->addColorQuantity("clr", m.clrs);
-    pc1->setPointRadius(0.01,false);
+    //pc1->setPointRadius(0.01,false);
     //cQ->setEnabled(true);
     
     auto ps=polyscope::registerSurfaceMesh("mesh", m.V, m.F);
@@ -86,8 +62,9 @@ std::pair<polyscope::SurfaceMesh*,polyscope::PointCloud* > addGenus(GenusN& m)
     //campos *= 2;
     //polyscope::view::lookAt(campos, { 0,0,0 }, true);
 
-    return { ps ,pc1};
+    return { ps ,nullptr};
 }
+
 int main (const int, const char**)
 {
     polyscope::options::programName = "Nine Cube";
@@ -98,16 +75,33 @@ int main (const int, const char**)
     glfwSetErrorCallback(errorCallback);
     
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
-    XMesh example;
-    example.loadOBJ("D:/projects/GeometryLab/data/double-torus.obj");
+    XMesh<double,int> example;
+    loadOBJ("D:/projects/GeometryLab/data/double-torus.obj",&example);
     //auto ps1 = polyscope::registerSurfaceMesh("DoubleTorus", example.V, example.F);
     //ps1->setSurfaceColor({ 0,1,0 });
     //ps1->setTransform({ 0,0,1,0,0,1,0,0,-1,0,0,0,0,0,0,1 });
     //ps1->setTransparency(0.5);
     //ps1->setSmoothShade(true);
     //ps1->setEdgeWidth(1);
-    GenusN torusN;
-    torusN.paramFromG2(example);
+    TorusN torusN;
+    double maxv = -999, minv = 999;
+    for (auto v : example.V)
+    {
+        if (maxv < v[0])maxv = v[0];
+        if (minv > v[0])minv = v[0];
+    }
+    torusN.R = (maxv- minv) / 2;
+    torusN.r = torusN.R / 4;
+    maxv = -999, minv = 999;
+    for (auto v : example.V)
+    {
+        if (maxv < v[2])maxv = v[2];
+        if (minv > v[2])minv = v[2];
+    }
+    torusN.cDist = (maxv - minv)/2 - torusN.R- torusN.r;
+    torusN.R = torusN.R - torusN.r;
+
+
     int G = 2;
     float cDist = torusN.cDist, R = torusN.R, r = torusN.r;
     torusN.buildMesh(G);
@@ -140,7 +134,7 @@ int main (const int, const char**)
             //torusN.HarmonicShape();
             //torusN.LaplacianSmooth();
             psG.first->remove();
-            psG.second->remove();
+            //psG.second->remove();
 
             psG = addGenus(torusN);
         }
@@ -148,44 +142,32 @@ int main (const int, const char**)
         if (ImGui::SliderFloat("cDist", &cDist, 0.5, 0.8))
         {
             torusN.cDist = cDist;
-            
             torusN.buildV();
             psG.first->updateVertexPositions(torusN.V);
-            Eigen::MatrixXd V2 = torusN.V(torusN.b, { 0,1,2 });
-            psG.second->updatePointPositions(V2);
         }
         if (ImGui::SliderFloat("R", &R, 0.4, 0.5))
         {
             torusN.R = R;
             torusN.buildV();
             psG.first->updateVertexPositions(torusN.V);
-            
-            Eigen::MatrixXd V2 = torusN.V(torusN.b, { 0,1,2 });
-            psG.second->updatePointPositions(V2);
+          
         }
         if (ImGui::SliderFloat("r", &r, 0.4, 0.5))
         {
             torusN.R = r;
             torusN.buildV();
             psG.first->updateVertexPositions(torusN.V);
-            Eigen::MatrixXd V2 = torusN.V(torusN.b, { 0,1,2 });
-            psG.second->updatePointPositions(V2);
         }
         if (ImGui::Button("Harmonic Shape"))
         {
             torusN.HarmonicShape();
-            torusN.LaplacianSmooth();
             psG.first->updateVertexPositions(torusN.V);
-            Eigen::MatrixXd V2 = torusN.V(torusN.b, { 0,1,2 });
-            psG.second->updatePointPositions(V2);
         }
         ImGui::SameLine();
         if (ImGui::Button("Laplacian Smooth"))
         {
-            torusN.LaplacianSmooth();
+            torusN.LaplacianSmooth(0.5);
             psG.first->updateVertexPositions(torusN.V);
-            Eigen::MatrixXd V2 = torusN.V(torusN.b, { 0,1,2 });
-            psG.second->updatePointPositions(V2);
             //psG.first->updateObjectSpaceBounds();
             //glm::vec3 campos = std::get<1>(psG.first->objectSpaceBoundingBox);
             //campos *= 2;

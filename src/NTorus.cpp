@@ -1,29 +1,24 @@
-#include "GenusN.h"
+#include "NTorus.h"
 
 #include <Eigen/Core>
 #include <eigen/Geometry>
 
 #define _USE_MATH_DEFINES
-#include <cmath>
+#include <math.h>
 
-#include <igl/canonical_quaternions.h>
 #include <igl/list_to_matrix.h>
-#include <igl/per_vertex_normals.h>
+#include "igl/matrix_to_list.h"
 
-#include "igl/cotmatrix.h"
-#include "igl/massmatrix.h"
-#include "igl/invert_diag.h"
-#include "igl/min_quad_with_fixed.h"
-#include "igl/doublearea.h"
-#include "igl/grad.h"
-#include "igl/barycenter.h"
+
 
 #define REAL double
 #define VOID int
+
 extern "C"
 {
     #include <triangle/triangle.h>
 }
+
 void TorusN::clear()
 {
     V.clear();
@@ -121,7 +116,7 @@ void TorusN::buildMesh(int G)
     buildV();
     int counter = 0;
     F.clear();
-    std::vector<int> stdb;
+    stdb.clear();
     for (int i = 0; i < genus; i++)
     {
         
@@ -254,7 +249,7 @@ void TorusN::buildMesh(int G)
     int f1 = F.size();
     for (int i = 0; i < addF.size(); i++)
     {
-        std::vector<int> ff;
+        std::vector<int> ff(3);
         for (int j = 0; j < 3; j++)
         {
             int vi = addF[i][j];
@@ -267,13 +262,7 @@ void TorusN::buildMesh(int G)
         F.push_back(ff);
     }
 
-    igl::list_to_matrix(V, deformer.deformedV);
-    igl::list_to_matrix(V, deformer.boundryPos);
-    deformer.boundryIdx.resize(V.size());
-    deformer.boundryIdx.setConstant(0);
-    for (int i : stdb)
-        deformer.boundryIdx[i] = 1;
-    setUpLaplacian();
+
 }
 
 void TorusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector< int > >& addF)
@@ -388,12 +377,25 @@ void TorusN::triBnd(std::vector<int>& bnd,double area, std::vector< std::vector<
 
 void TorusN::HarmonicShape()
 {
-    deformer.calLaplacion(2);
-    deformer.setUpB(2);
+    igl::list_to_matrix(V, deformer.eigenV);
+    igl::list_to_matrix(F, deformer.eigenF);
+    deformer.boundryIdx.resize(V.size());
+    deformer.boundryIdx.setConstant(0);
+    for (int i : stdb)
+        deformer.boundryIdx[i] = 1;
+    deformedV.resize(V.size(), 3);
+    deformer.calLaplacion();
+    deformer.setUpB();
     deformer.setUpBc();
-    deformer.solveHarmonic(2);
-    deformer.deformedV;
-    setUpLaplacian();
+    deformer.solveHarmonic(deformedV);
+    Lsmoother.init(deformedV, deformer.eigenF);
+    Lsmoother.deltaL(0.5);
+    igl::matrix_to_list(Lsmoother.V, V);
 }
 
+void TorusN::LaplacianSmooth(double delta)
+{
+    Lsmoother.deltaL(delta);
+    igl::matrix_to_list(Lsmoother.V, V);
+}
 

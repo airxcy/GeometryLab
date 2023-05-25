@@ -1,8 +1,13 @@
 #include "LaplacianSmoothing.h"
-
-
-void LaplacianSmoothing::init()
+#include "igl/cotmatrix.h"
+#include "igl/massmatrix.h"
+#include "igl/doublearea.h"
+#include <igl/per_vertex_normals.h>
+#include "igl/grad.h"
+#include "igl/barycenter.h"
+void LaplacianSmoothing::init(Eigen::MatrixXd& aV, Eigen::MatrixXi& aF)
 {
+    V = aV, F = aF;
     igl::cotmatrix(V, F, L);
     // Alternative construction of same Laplacian
     Eigen::SparseMatrix<double> G, K;
@@ -19,6 +24,7 @@ void LaplacianSmoothing::init()
     std::cout << "|K-L|: " << (K - L).norm() << std::endl;
 
     // Use original normals as pseudo-colors
+    Eigen::MatrixXd N;
     igl::per_vertex_normals(V, F, N);
     Eigen::MatrixXd C = N.rowwise().normalized().array() * 0.5 + 0.5;
 
@@ -35,19 +41,19 @@ void LaplacianSmoothing::deltaL(double delta)
     const auto& S = (M - 0.001 * L);
     Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
     assert(solver.info() == Eigen::Success);
-    deformedV = solver.solve(M * V).eval();
+    V = solver.solve(M * V).eval();
     // Compute centroid and subtract (also important for numerics)
     VectorXd dblA;
-    igl::doublearea(deformedV, F, dblA);
+    igl::doublearea(V, F, dblA);
     double area = 0.5 * dblA.sum();
     MatrixXd BC;
-    igl::barycenter(deformedV, F, BC);
+    igl::barycenter(V, F, BC);
     RowVector3d centroid(0, 0, 0);
     for (int i = 0; i < BC.rows(); i++)
     {
-        centroid += 0.5 * dblA(i) / area * BC.row(i);
+        centroid += delta * dblA(i) / area * BC.row(i);
     }
-    deformedV.rowwise() -= centroid;
+    V.rowwise() -= centroid;
     //// Normalize to unit surface area (important for numerics)
     //deformedV.array() /= sqrt(area);
     //for (int i = 0; i < boundryIdx.size(); i++)
@@ -56,5 +62,5 @@ void LaplacianSmoothing::deltaL(double delta)
     //        deformedV.row(i) -= centroid;
     //        deformedV.row(i) /= sqrt(area);
     //    }
-    V = deformedV;
+    //V = deformedV;
 }

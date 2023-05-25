@@ -16,7 +16,7 @@ add_subdirectory("${ENGINE_DIR}/glad" glad)
 add_subdirectory("${ENGINE_DIR}/imgui" imgui)
 add_subdirectory(${ENGINE_DIR}/stb STB)
 add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src GLCORE)
+
 
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)

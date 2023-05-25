@@ -116,18 +116,22 @@ void TetgenWrapper::addHole(double x,double y,double z)
     }
 }
 
-void TetgenWrapper::addRegion(double x, double y, double z)
+void TetgenWrapper::addRegion(double x, double y, double z, double volConstrain)
 {
     regionPoints.push_back({ x,y,z });
     in.numberofregions = regionPoints.size();
-    in.regionlist = new REAL[in.numberofregions];
+    in.regionlist = new REAL[in.numberofregions * 5];
     for (int i = 0; i < regionPoints.size(); i++)
     {
-        in.regionlist[i * 3] = regionPoints[i][0];
-        in.regionlist[i * 3 + 1] = regionPoints[i][1];
-        in.regionlist[i * 3 + 2] = regionPoints[i][2];
+        in.regionlist[i * 5] = regionPoints[i][0];
+        in.regionlist[i * 5 + 1] = regionPoints[i][1];
+        in.regionlist[i * 5 + 2] = regionPoints[i][2];
+        in.regionlist[i * 5 + 3] = i;
+        in.regionlist[i * 5 + 4] = volConstrain;
     }
-    tetparam.regionattrib = 1;
+    //tetparam.regionattrib = 1;
+    tetparam.varvolume = 1;
+    tetparam.quality = 1;
 }
 
 void TetgenWrapper::freeMemory()
@@ -218,7 +222,7 @@ void TetgenWrapper::translateOutput()
     for (int i = 0; i < out.numberoftetrahedra; i++)
     {
         int* tmpv = out.tetrahedronlist + i * 4;
-        int r = (int)round(out.tetrahedronattributelist[i]);
+        //int r = (int)round(out.tetrahedronattributelist[i]);
         for (int j = 0; j < 4; j++)
             m_mesh.T[i][j] = out.tetrahedronlist[i * 4 + j];
         for (int j = 0; j < 4; j++)
@@ -228,8 +232,8 @@ void TetgenWrapper::translateOutput()
             m_mesh.TF[i][j]=fi;
             fi++;
         }
-        if(r)std::cout << r << std::endl;
-        regionlist[i]=r;
+        //if(r)std::cout << r << std::endl;
+        //regionlist[i]=r;
     }
     
     std::cout << "tetgen V:" << m_mesh.nV << ",T:" << m_mesh.nT << std::endl;

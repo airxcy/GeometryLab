@@ -16,9 +16,7 @@ class HarmonicDeformation: public XMesh<double,int>
 public:
 	Eigen::MatrixXd eigenV;
 	Eigen::MatrixXi eigenF;
-	Eigen::MatrixXd deformedV;
 	Eigen::VectorXi boundryIdx;
-	Eigen::MatrixXd boundryPos;
 	std::array < Eigen::SparseMatrix<double>, MAX_HARMONIC_DEGREE > LCotVec, MassVec, QmatData;
 	Eigen::MatrixXd bc;
 	Eigen::VectorXi b;
@@ -30,11 +28,10 @@ public:
 			mq_data[i] = nullptr;
 	}
 
-	void calLaplacion(int k);
-	void removeBIdx(std::vector<int>& indices);
-	void setUpB(int k);
+	void calLaplacion(int k=2);
+	void setUpB(int k=2);
 	void setUpBc();
-	bool solveHarmonic(int k);
+	bool solveHarmonic(Eigen::MatrixXd& deformedV, int k=2);
 
 };
 

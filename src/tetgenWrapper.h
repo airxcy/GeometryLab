@@ -37,7 +37,7 @@ public:
 	void initSurfaceMesh(TriMesh& egm);
 	void addSurface(TriMesh& surface,int fmarker=0, int vmarker=0);
 	void addHole(double x, double y, double z);
-	void addRegion(double x, double y, double z);
+	void addRegion(double x, double y, double z, double volConstrain);
 	void freeMemory();
 	void convertInput();
 	void translateOutput();
