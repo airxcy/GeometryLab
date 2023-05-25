@@ -1,5 +1,5 @@
-#ifndef MANIFOLD_H
-#define MANIFOLD_H
+#ifndef HARMONIC_DEFORMATION_H
+#define HARMONIC_DEFORMATION_H
 #include "XMesh.h"
 
 #include <eigen/Dense>
@@ -11,7 +11,7 @@
 #include "igl/min_quad_with_fixed.h"
 #define MAX_HARMONIC_DEGREE 4
 
-class Manifold: public XMesh<double,int>
+class HarmonicDeformation: public XMesh<double,int>
 {
 public:
 	Eigen::MatrixXd eigenV;
@@ -24,11 +24,12 @@ public:
 	Eigen::VectorXi b;
 	std::array <  igl::min_quad_with_fixed_data<double>* , MAX_HARMONIC_DEGREE> mq_data;
 	//std::array < POP_NS::eigenext::MinQuadWithFixedData<double> ,3> mq_data;
-	Manifold()
+	HarmonicDeformation()
 	{
 		for (int i = 0; i < mq_data.size(); i++)
 			mq_data[i] = nullptr;
 	}
+
 	void calLaplacion(int k);
 	void removeBIdx(std::vector<int>& indices);
 	void setUpB(int k);

@@ -62,7 +62,6 @@ void TetgenWrapper::addSurface(TriMesh& surface, int fmarker, int vmarker)
 
     int i0 = plc_mesh.V.size();
     std::cout << "add Surface " << fmarker << std::endl;
-    
     auto insertOrder = [](std::vector<int>& vlist, int v)
     {
         if (vlist.size() == 0)
@@ -220,7 +219,6 @@ void TetgenWrapper::translateOutput()
     {
         int* tmpv = out.tetrahedronlist + i * 4;
         int r = (int)round(out.tetrahedronattributelist[i]);
-        out.
         for (int j = 0; j < 4; j++)
             m_mesh.T[i][j] = out.tetrahedronlist[i * 4 + j];
         for (int j = 0; j < 4; j++)

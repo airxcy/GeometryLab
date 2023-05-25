@@ -11,26 +11,16 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-
-
 add_subdirectory("${ENGINE_DIR}/glfw" glfw)
 add_subdirectory("${ENGINE_DIR}/glad" glad)
 add_subdirectory("${ENGINE_DIR}/imgui" imgui)
-set(GC_EIGEN_LOCATION ${EIGEN_DIR})
-add_subdirectory(${ENGINE_DIR}/geometrycentral GEOMETRYCENTRAL)
 add_subdirectory(${ENGINE_DIR}/stb STB)
 add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
-
-
+add_subdirectory(${CMAKE_SOURCE_DIR}/src GLCORE)
 
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
-file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/*.cpp ${ENGINE_DIR}/ImGuizmo/*.h)
-
-file(GLOB TRIANGLE_SOURCES ${ENGINE_DIR}/triangle/triangle.c ${ENGINE_DIR}/triangle/triangle.h)
-#add_subdirectory(${ENGINE_DIR}/triangle TRILIB)
-add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} ${IMGUIZMO_SOURCES} ${TRIANGLE_SOURCES})
-target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRILIBRARY -DANSI_DECLARATORS  -DNO_TIMER)
-target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
-  ${ENGINE_DIR}/polyscope ${ENGINE_DIR}/geometrycentral/include ${ENGINE_DIR}/triangle)
-target_link_libraries(${PROJECT_NAME} polyscope geometry-central ${OPENGL_LIBRARIES})
+file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/ImGuizmo.cpp ${ENGINE_DIR}/ImGuizmo/ImGuizmo.h)
+add_executable(${PROJECT_NAME}  ${SRC} ${INCLUDES} ${IMGUIZMO_SOURCES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(${PROJECT_NAME} geometrylab polyscope  ${OPENGL_LIBRARIES})

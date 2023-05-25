@@ -1,4 +1,5 @@
-#include "Manifold.h"
+#include "HarmonicDeformation.h"
+
 //#include "BaseCore/EigenExt/CotMatrix.h"
 //#include "BaseCore/EigenExt/MassMatrix.h"
 //#include "BaseCore/EigenExt/InvertDiag.h"
@@ -17,7 +18,7 @@
 #include "igl/invert_diag.h"
 #include "igl/min_quad_with_fixed.h"
 
-void Manifold::calLaplacion(int k)
+void HarmonicDeformation::calLaplacion(int k)
 {
 	deformedV.resize(eigenV.rows(), eigenV.cols());
 	Eigen::SparseMatrix<double>& LCot = LCotVec[k-1];
@@ -67,13 +68,13 @@ void Manifold::calLaplacion(int k)
 	
 }
 
-void Manifold::removeBIdx(std::vector<int>& indices)
+void HarmonicDeformation::removeBIdx(std::vector<int>& indices)
 {
 	for (auto v : indices)
 		boundryIdx(v) = false;
 }
 
-void Manifold::setUpB(int k)
+void HarmonicDeformation::setUpB(int k)
 {
 	int n = eigenV.rows();
 	int counter = 0;
@@ -95,7 +96,7 @@ void Manifold::setUpB(int k)
 	//POP_NS::eigenext::MinQuadWithFixedPrecompute(QmatData[k - 1], b, Eigen::SparseMatrix<double>(), true, mq_data[k - 1]);
 }
 
-void Manifold::setUpBc()
+void HarmonicDeformation::setUpBc()
 {
 	int n = eigenV.rows();
 	int counter = 0;
@@ -105,7 +106,7 @@ void Manifold::setUpBc()
 			bc.row(i) = boundryPos.row(b(i));
 }
 
-bool Manifold::solveHarmonic(int k)
+bool HarmonicDeformation::solveHarmonic(int k)
 {
 	int n = eigenV.rows();
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorXS;

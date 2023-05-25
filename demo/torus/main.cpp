@@ -23,6 +23,22 @@ static const float identityMatrix[16] =
     0.f, 0.f, 0.f, 1.f };
 void errorCallback(int error, const char* description){}
 
+void paramFromG2(XMesh<double, int>& dbTorus)
+{
+    genus = 2;
+    centers.resize(genus, 3);
+    Eigen::RowVector3d maxv = dbTorus.V.colwise().maxCoeff();
+
+    Eigen::RowVector3d minv = dbTorus.V.colwise().minCoeff();
+    R = (maxv(0) - minv(0)) / 2;
+    r = R / 4;
+    centers.row(0) << 0, 0, maxv(2) - R;
+    centers.row(1) << 0, 0, minv(2) + R;
+    R = R - r;
+    cDist = (centers(0, 2) - centers(1, 2)) / 2;
+
+}
+
 std::pair<polyscope::SurfaceMesh*,polyscope::PointCloud* > addGenus(GenusN& m)
 {
     //std::vector< std::vector<int> >bnd;
