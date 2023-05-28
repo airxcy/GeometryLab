@@ -389,7 +389,7 @@ void TorusN::HarmonicShape()
     deformer.setUpBc();
     deformer.solveHarmonic(deformedV);
     Lsmoother.init(deformedV, deformer.eigenF);
-    Lsmoother.deltaL(0.5);
+    Lsmoother.deltaLReg(0.001);
     igl::matrix_to_list(Lsmoother.V, V);
 }
 
@@ -397,5 +397,8 @@ void TorusN::LaplacianSmooth(double delta)
 {
     Lsmoother.deltaL(delta);
     igl::matrix_to_list(Lsmoother.V, V);
+        for(auto vv:V[0])
+            std::cout << vv ;
+    std::cout<<std::endl;
 }
 

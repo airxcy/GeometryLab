@@ -116,19 +116,11 @@ void TetgenWrapper::addHole(double x,double y,double z)
     }
 }
 
-<<<<<<< HEAD:demo/tetraDemo/tetgenWrapper.cpp
-void TetgenWrapper::addRegion(double x, double y, double z,double volConstrain)
-{
-    regionPoints.push_back({ x,y,z });
-    in.numberofregions = regionPoints.size();
-    in.regionlist = new REAL[in.numberofregions*5];
-=======
 void TetgenWrapper::addRegion(double x, double y, double z, double volConstrain)
 {
     regionPoints.push_back({ x,y,z });
     in.numberofregions = regionPoints.size();
     in.regionlist = new REAL[in.numberofregions * 5];
->>>>>>> dev_lib:src/tetgenWrapper.cpp
     for (int i = 0; i < regionPoints.size(); i++)
     {
         in.regionlist[i * 5] = regionPoints[i][0];
@@ -231,10 +223,6 @@ void TetgenWrapper::translateOutput()
     {
         int* tmpv = out.tetrahedronlist + i * 4;
         //int r = (int)round(out.tetrahedronattributelist[i]);
-<<<<<<< HEAD:demo/tetraDemo/tetgenWrapper.cpp
-        
-=======
->>>>>>> dev_lib:src/tetgenWrapper.cpp
         for (int j = 0; j < 4; j++)
             m_mesh.T[i][j] = out.tetrahedronlist[i * 4 + j];
         for (int j = 0; j < 4; j++)

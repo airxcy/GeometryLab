@@ -107,12 +107,12 @@ int main (const int, const char**)
     auto  misc = polyscope::registerSurfaceMesh2D("misc", Eigen::MatrixXd(), Eigen::MatrixXi());
 
     TriMesh egm,egm2;
+    loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm2);
     loadOBJ("D:/projects/GeometryLab/data/spot/spot_triangulated.obj", &egm);
-    loadOBJ("D:/projects/GeometryLab/data/spot/spot_triangulated.obj", &egm2);
-    //loadOBJ("D:/projects/GeometryLab/data/Gear_Spur_16T.obj", &egm);
+    
     //scale_move(egm,2,0,0,-0.5);
     //scale_move(egm2, 0.1, -0.2,0.1,0);
-    //scale_move(egm,3,0,0,-1);
+    scale_move(egm,3,0,0,-1);
     TetgenWrapper tet;
     tet.addSurface(egm,1);
     tet.addSurface(egm2, 2);
