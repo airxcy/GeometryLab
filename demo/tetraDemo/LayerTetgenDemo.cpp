@@ -73,12 +73,12 @@ int main(const int, const char**)
     
     TriMesh shape;
     LaplacianSmoothing smoother;
-    //loadOBJ("D:/projects/GeometryLab/data/spot/spot_triangulated.obj", &shape);
-    newTorusN(shape);
+    loadOBJ("D:/projects/GeometryLab/data/spot/spot_triangulated.obj", &shape);
+    //newTorusN(shape);
     smoother.init(shape.V,shape.F);
     auto psG=addSurface(shape);
-    double delta = 0.00001;
-    int iterN = 100;
+    double delta = 0.0001;
+    int iterN = 10;
     polyscope::state::userCallback = [&]()
     {
 
@@ -94,6 +94,7 @@ int main(const int, const char**)
 
         if (ImGui::Button("Laplacian Smooth"))
         {
+            smoother.init(shape.V, shape.F);
             for(int i=0;i<iterN;i++)
                 smoother.deltaL(delta);
             if(iterN>=0)
