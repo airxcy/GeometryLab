@@ -114,7 +114,7 @@ int main (const int, const char**)
     //scale_move(egm2, 0.1, -0.2,0.1,0);
     scale_move(egm,3,0,0,-1);
     TetgenWrapper tet;
-    tet.addSurface(egm,1);
+    tet.addSurface(egm, 1);
     tet.addSurface(egm2, 2);
     tet.convertInput();
     
