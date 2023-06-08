@@ -30,7 +30,7 @@ void NetGenWrapper::occ2Surface(TopoDS_Shape& shape)
     mp.secondorder = false;
     mp.grading = 0.1;
     nglib::Ng_Init();
-
+    mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
     Ng_OCC_Geometry;
     netgen::OCCGeometry occgeo;
     occgeo.shape = shape;
@@ -47,16 +47,27 @@ void NetGenWrapper::occ2Surface(TopoDS_Shape& shape)
     netgen::OCCSetLocalMeshSize(occgeo, mesh, mp, op);
     mesh.SetGeometry(std::shared_ptr<netgen::NetgenGeometry>(&occgeo, &netgen::NOOP_Deleter));
     occgeo.FindEdges(mesh, mp);
-    occgeo.MeshSurface(mesh, mp);
-    //occgeo.OptimizeSurface(mesh, mp);
-    const int nbTriangles = (int)mesh.GetNSE(); // We expect that mesh contains only triangles.
     
+    occgeo.MeshSurface(mesh, mp);
+    //occgeo.GenerateMesh(out, mp);
+    occgeo.OptimizeSurface(mesh, mp);
+    const int nbTriangles = (int)mesh.GetNSE(); // We expect that mesh contains only triangles.
+    std::cout << "nbTriangles:" << nbTriangles << std::endl;
+}
+void NetGenWrapper::tetralization()
+{
+    netgen::MeshingParameters& mp = netgen::mparam;
+    
+    mesh.CalcLocalH(mp.grading);
+    MeshVolume(mp, mesh);
+    //RemoveIllegalElements(mesh);
+    //OptimizeVolume(mp, mesh);
 }
 
-void NetGenWrapper::fromEigen(VolumeMesh<double,int>& egm)
+void NetGenWrapper::fromEigen(XMesh<double,int>& egm)
 {
     // Parameters definition.
-    netgen::MeshingParameters& mp = netgen::mparam;
+    //netgen::MeshingParameters& mp = netgen::mparam;
     //mp.minh = 0.0;
 
     //mp.uselocalh = true;
@@ -73,33 +84,23 @@ void NetGenWrapper::fromEigen(VolumeMesh<double,int>& egm)
         mesh.AddSurfaceElement(f);
     }
 }
-void NetGenWrapper::toEigen(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1)
+void NetGenWrapper::toEigen(VolumeMesh<double, int>& m)
 {
-    V1.resize(mesh.GetNP(), 3);
     for (int i = 1; i <= mesh.GetNP(); ++i)
     {
         const netgen::MeshPoint& point = mesh.Point(netgen::PointIndex(i));
-        V1.row(i - 1) = Eigen::RowVector3d(point[0], point[1], point[2]);
+        m.V.push_back({ point[0], point[1], point[2] });
     }
     auto& ope1 = mesh.SurfaceElements();
-    F1.resize(ope1.Size(), 3);
     for (int i = 0; i < ope1.Size(); i++)
     {
         netgen::Element2d& elem = ope1[i];
-        F1.row(i) = Eigen::RowVector3i(elem[0] - 1, elem[1] - 1, elem[2] - 1);
+        m.F.push_back({ elem[0] - 1, elem[1] - 1, elem[2] - 1 });
     }
 }
 
 
 
-void NetGenWrapper::tetralization()
-{
-    netgen::MeshingParameters& mp = netgen::mparam;
-    mesh.CalcLocalH(mp.grading);
-    MeshVolume(mp, mesh);
-    //RemoveIllegalElements(mesh);
-    //OptimizeVolume(mp, mesh);
-}
 
 void NetGenWrapper::VisVolumeSep()
 {

@@ -32,7 +32,7 @@ void occStepReader::read(const char* fpath)
 }
 
 template<class T_REAL, class T_IDX>
-void occTri(std::vector< XMesh<T_REAL, T_IDX> >& meshlist)
+void occStepReader::occTri(std::vector< XMesh<T_REAL, T_IDX> >& meshlist)
 {
     
     Handle(Poly_CoherentTriangulation) cohTris = new Poly_CoherentTriangulation;
@@ -60,16 +60,18 @@ void occTri(std::vector< XMesh<T_REAL, T_IDX> >& meshlist)
             c[1] = c[1] - 1;
             c[2] = c[2] - 1;
             m.F.push_back({ c[0], c[1], c[2] });
-            double l1 = (m.V.row(c[0]) - m.V.row(c[1])).norm();
-            double l2 = (m.V.row(c[1]) - m.V.row(c[2])).norm();
-            double l3 = (m.V.row(c[2]) - m.V.row(c[0])).norm();
-            if (l1 < minl) { minl = l1; v1 = c[0]; v2 = c[1]; }
-            if (l2 < minl) {
-                minl = l2; v1 = c[1]; v2 = c[2];
-            }
-            if (l3 < minl) { minl = l3; v1 = c[2]; v2 = c[0]; }
+
+            //double l1 = (m.V.row(c[0]) - m.V.row(c[1])).norm();
+            //double l2 = (m.V.row(c[1]) - m.V.row(c[2])).norm();
+            //double l3 = (m.V.row(c[2]) - m.V.row(c[0])).norm();
+            //if (l1 < minl) { minl = l1; v1 = c[0]; v2 = c[1]; }
+            //if (l2 < minl) {
+            //    minl = l2; v1 = c[1]; v2 = c[2];
+            //}
+            //if (l3 < minl) { minl = l3; v1 = c[2]; v2 = c[0]; }
             
         }
         meshlist.push_back(m);
     }
 }
+template void occStepReader::occTri<double,int>(std::vector< XMesh<double, int> >& meshlist);

@@ -31,34 +31,35 @@ int main(const int, const char**)
 	occStep.read("D:/data/test_model_step203.stp");
 	std::vector< XMesh<double, int> > meshlist;
 	occStep.occTri(meshlist);
-	///demo.occ2Surface(occStep.shape);
+	
 	//demo.tetralization();
 	//occStep.occTri2Eigen(shape);
-	for (int i=0;i<meshlist.size();i++)
-	{
-		polyscope::registerSurfaceMesh(std::to_string(i), meshlist[i].V,meshlist[i].F);
-	}
-	/*
+	//for (int i=0;i<meshlist.size();i++)
+	//{
+	//	polyscope::registerSurfaceMesh(std::to_string(i), meshlist[i].V,meshlist[i].F);
+	//}
+	
 	NetGenWrapper demo;
-	netgen::MeshingParameters& mp = demo.meshParam();
-	//mp.maxh = diag;
-	mp.grading = 0.1;
-	mp.optsteps3d = 0;
-	mp.blockfill = false;
-	mp.uselocalh = false;
-	mp.delaunay = false;
-	mp.delaunay2d = false;
-	mp.checkoverlap = false;
-	mp.checkchartboundary = false;
-	mp.checkchartboundary = false;
-	nglib::Ng_Init();
-	demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
-	XMesh m;
-	demo.fromEigen(m);
-	auto bb = plym->boundingBox();
-	double diag = (std::get<0>(bb) - std::get<1>(bb)).length();
-	std::cout << diag << std::endl;
+	//netgen::MeshingParameters& mp = demo.meshParam();
+	//mp.grading = 0.1;
+	//mp.optsteps3d = 0;
+	//mp.blockfill = false;
+	//mp.uselocalh = false;
+	//mp.delaunay = false;
+	//mp.delaunay2d = false;
+	//mp.checkoverlap = false;
+	//mp.checkchartboundary = false;
+	//mp.checkchartboundary = false;
+	//nglib::Ng_Init();
+	//demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
+	demo.occ2Surface(occStep.shape);
+	
+	//for(auto& m:meshlist)
+	//	demo.fromEigen(m);
 	demo.tetralization();
-	*/
+	
+	VolumeMesh<double,int> mesh;
+	demo.toEigen(mesh);
+	polyscope::registerSurfaceMesh("netgen", mesh.V, mesh.F);
 	polyscope::show();
 }

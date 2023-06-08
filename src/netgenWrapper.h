@@ -51,12 +51,12 @@ public:
     };
 
     netgen::Mesh mesh;
-
+    std::shared_ptr<netgen::Mesh> out;
     netgen::MeshingParameters& meshParam();
     void occ2Surface(TopoDS_Shape& shape);
     void tetralization();
-    void fromEigen(VolumeMesh<double,int>& egm);
-    void toEigen(Eigen::MatrixXd& V1, Eigen::MatrixXi& F1);
+    void fromEigen(XMesh<double,int>& egm);
+    void toEigen(VolumeMesh<double, int>& egm);
     void VisVolumeWhole();
     void VisVolumeSep();
 };

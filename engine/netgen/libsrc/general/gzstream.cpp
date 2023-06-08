@@ -61,11 +61,11 @@ gzstreambuf* gzstreambuf::open( const filesystem::path & name, int open_mode) {
     *fmodeptr++ = 'b';
     *fmodeptr = '\0';
 #ifdef WIN32
-    file = gzopen_w( name.c_str(), fmode);
+    //file = gzopen_w( name.c_str(), fmode);
 #else // WIN32
-    file = gzopen( name.c_str(), fmode);
+    //file = gzopen( name.c_str(), fmode);
 #endif // WIN32
-    if (file == 0)
+    //if (file == 0) 
         return (gzstreambuf*)0;
     opened = 1;
     return this;
@@ -75,8 +75,7 @@ gzstreambuf * gzstreambuf::close() {
     if ( is_open()) {
         sync();
         opened = 0;
-        if ( gzclose( file) == Z_OK)
-            return this;
+        //if ( gzclose( file) == Z_OK)  return this;
     }
     return (gzstreambuf*)0;
 }
@@ -93,7 +92,7 @@ int gzstreambuf::underflow() { // used for input buffer only
         n_putback = 4;
     memcpy( buffer + (4 - n_putback), gptr() - n_putback, n_putback);
 
-    int num = gzread( file, buffer+4, bufferSize-4);
+    int num = 0;// gzread(file, buffer + 4, bufferSize - 4);
     if (num <= 0) // ERROR or EOF
         return EOF;
 
@@ -110,7 +109,7 @@ int gzstreambuf::flush_buffer() {
     // Separate the writing of the buffer from overflow() and
     // sync() operation.
     int w = pptr() - pbase();
-    if ( gzwrite( file, pbase(), w) != w)
+    //if ( gzwrite( file, pbase(), w) != w)
         return EOF;
     pbump( -w);
     return w;

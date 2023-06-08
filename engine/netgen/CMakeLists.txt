@@ -52,31 +52,31 @@ add_library(nglib ${NGLIB_LIBRARY_TYPE})
 
 #######################################################################
 
-ExternalProject_Add(project_zlib
-  ${SUBPROJECT_ARGS}
-  SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/external_dependencies/zlib
-  CMAKE_ARGS
-      -DCMAKE_INSTALL_PREFIX=${ZLIB_DIR}
-      ${SUBPROJECT_CMAKE_ARGS}
-  UPDATE_COMMAND "" # Disable update
-  # BUILD_IN_SOURCE 1
-  # INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory . ${ZLIB_DIR}
-  )
+# ExternalProject_Add(project_zlib
+#   ${SUBPROJECT_ARGS}
+#   SOURCE_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/external_dependencies/zlib
+#   CMAKE_ARGS
+#       -DCMAKE_INSTALL_PREFIX=${ZLIB_DIR}
+#       ${SUBPROJECT_CMAKE_ARGS}
+#   UPDATE_COMMAND "" # Disable update
+#   # BUILD_IN_SOURCE 1
+#   # INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory . ${ZLIB_DIR}
+#   )
 
-list(APPEND NETGEN_DEPENDENCIES project_zlib)
-list(APPEND NETGEN_CMAKE_PREFIX_PATH ${ZLIB_DIR})
+# list(APPEND NETGEN_DEPENDENCIES project_zlib)
+# list(APPEND NETGEN_CMAKE_PREFIX_PATH ${ZLIB_DIR})
 
-if(WIN32)
-  # force linking the static library
-  set(ZLIB_INCLUDE_DIRS ${ZLIB_DIR}/include)
-  set(ZLIB_LIBRARIES  zlibstatic)
-endif(WIN32)
+# if(WIN32)
+#   # force linking the static library
+#   set(ZLIB_INCLUDE_DIRS ${ZLIB_DIR}/include)
+#   set(ZLIB_LIBRARIES  zlibstatic)
+# endif(WIN32)
 
-link_directories(${ZLIB_DIR}/lib)
-target_link_directories(nglib PRIVATE ${ZLIB_DIR}/lib)
-target_include_directories(nglib PRIVATE ${ZLIB_INCLUDE_DIRS})
-target_link_libraries(nglib PRIVATE ${ZLIB_LIBRARIES})
-message("+++++++" ${ZLIB_DIR}/include)
+# link_directories(${ZLIB_DIR}/lib)
+# target_link_directories(nglib PRIVATE ${ZLIB_DIR}/lib)
+# target_include_directories(nglib PRIVATE ${ZLIB_INCLUDE_DIRS})
+# target_link_libraries(nglib PRIVATE ${ZLIB_LIBRARIES})
+# message("+++++++" ${ZLIB_DIR}/include)
 
 
 #######################################################################
