@@ -28,6 +28,15 @@ T_P BezierCurve<T_P>::recursive(int i0, int ik, double t)
 }
 
 template<class T_P>
+T_P BezierCurve<T_P>::DeCasteljau(int i0, int ik, double t)
+{
+	if(ik == i0)
+		return m_P[i0];
+	return DeCasteljau(i0, ik - 1, t) * (1 - t) + DeCasteljau(i0 + 1, ik, t) * t;
+}
+
+
+template<class T_P>
 void BezierCurve<T_P>::generateRC(int divN)
 {
 	m_map.resize(m_n*m_n,0);
@@ -40,6 +49,9 @@ void BezierCurve<T_P>::generateRC(int divN)
 		t += div;
 	}
 }
+
+
+
 
 
 template class BezierCurve<Point2>;

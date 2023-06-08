@@ -18,7 +18,11 @@ set(GC_EIGEN_LOCATION ${EIGEN_DIR})
 add_subdirectory(${ENGINE_DIR}/stb STB)
 add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
 
+
+
+
+
 file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/ImGuizmo.cpp engine/ImGuizmo/ImGuizmo.h)
-add_executable(${PROJECT_NAME}  LayerTetgenDemo.cpp ${IMGUIZMO_SOURCES} )
+add_executable(${PROJECT_NAME}  netgenDemo.cpp ${IMGUIZMO_SOURCES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/src ${ENGINE_DIR} ${EIGEN_DIR} ${ENGINE_DIR}/polyscope) 
 target_link_libraries(${PROJECT_NAME} geometrylab polyscope  ${OPENGL_LIBRARIES})

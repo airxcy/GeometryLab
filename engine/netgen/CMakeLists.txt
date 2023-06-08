@@ -27,7 +27,7 @@ set(NG_COMPILE_FLAGS "" CACHE STRING "Additional compile flags")
 set(NGLIB_LIBRARY_TYPE STATIC CACHE STRING "nglib library type")
 set(NGCORE_LIBRARY_TYPE STATIC CACHE STRING "ngcore library type")
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_modules")
+#set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_modules")
 
 
 
@@ -72,6 +72,7 @@ if(WIN32)
   set(ZLIB_LIBRARIES  zlibstatic)
 endif(WIN32)
 
+link_directories(${ZLIB_DIR}/lib)
 target_link_directories(nglib PRIVATE ${ZLIB_DIR}/lib)
 target_include_directories(nglib PRIVATE ${ZLIB_INCLUDE_DIRS})
 target_link_libraries(nglib PRIVATE ${ZLIB_LIBRARIES})

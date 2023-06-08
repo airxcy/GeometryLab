@@ -22,13 +22,18 @@ public:
 	std::vector<int> m_map;
 	std::vector<std::vector<T_P> > curves;
 	T_P recursive(int i0, int ik, double t);
-
+	T_P DeCasteljau(int i0, int ik, double t);
 	void generateRC(int divN);
 	
 	T_P& operator [](const size_t i)
 	{
 		return m_P[i];
 	};
+
+	T_P  operator ()(double t)
+	{
+		return  DeCasteljau(0,m_d,t);
+	}
 
 	
 };

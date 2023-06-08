@@ -39,7 +39,7 @@ demo.VisVolumeSep();
 
 
 using namespace nglib;
-class NetGenDemo
+class NetGenWrapper
 {
 public:
     char tetvcoding[4][3] =
