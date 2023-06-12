@@ -8,6 +8,8 @@
 #include "TopoDS.hxx"
 #include "TopoDS_Face.hxx"
 #include "BRep_Tool.hxx"
+#include "BRepTools.hxx"
+#include <BRep_Builder.hxx>
 #include "BRepMesh_IncrementalMesh.hxx"
 
 
@@ -17,17 +19,23 @@
 
 void occStepReader::read(const char* fpath)
 {
+    if (BRepTools::Read(shape, fpath, BRep_Builder()))
+        ;
+    else
     {
+        
         STEPControl_Reader reader;
         IFSelect_ReturnStatus stat = reader.ReadFile(fpath);
 
         Standard_Integer NbRoots = reader.NbRootsForTransfer();
         Standard_Integer num = reader.TransferRoots();
         TopoDS_Iterator tree(reader.OneShape());
-
+        
         //tree->Next();
         shape = tree.Value();
+        
         //std::cout << shape.NbChildren() << std::endl;
+ 
     }
 }
 

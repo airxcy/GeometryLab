@@ -38,37 +38,11 @@ SET(OpenCASCADE_LIBS
   TKLCAF
 )
 
-set(ZLIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/NETGENLIB/dependencies/zlib)
 add_subdirectory(${ENGINE_DIR}/netgen NETGENLIB)
-file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/bin/*.dll")
-add_custom_target(copy_dll ALL
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${ENGINE_DIR}/freetype/bin/freetype.dll
-        $<CONFIG>/freetype.dll
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${ZLIB_DIR}/lib/
-        $<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        NETGENLIB/$<CONFIG>/
-        $<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        NETGENLIB/libsrc/core/$<CONFIG>/
-        $<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${occdll}
-        $<CONFIG>/
-    COMMENT "Copying"
-)
-message("------------" ${ZLIB_DIR}/lib)
-
-
-
-
 file(GLOB TRIANGLE_SOURCES ${ENGINE_DIR}/triangle/triangle.c ${ENGINE_DIR}/triangle/triangle.h)
 file(GLOB SRC *.cpp)
 file(GLOB INCLUDES *.h)
 
-link_directories(${ZLIB_DIR}/lib)
 add_library(${PROJECT_NAME}  ${SRC} ${INCLUDES} ${TRIANGLE_SOURCES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE -DTRILIBRARY -DANSI_DECLARATORS  -DNO_TIMER)
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR} 
@@ -76,4 +50,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${EIGEN_DIR}
   ${OpenCASCADE_INCLUDE_DIR}
   ${ENGINE_DIR}/netgen/libsrc ${ENGINE_DIR}/netgen/libsrc/include ${ENGINE_DIR}/netgen/nglib)
 target_link_libraries(${PROJECT_NAME} geometry-central tet ${OpenCASCADE_LIBS} ngcore nglib)
-add_dependencies(${PROJECT_NAME} copy_dll)
+

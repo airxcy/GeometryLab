@@ -7,35 +7,12 @@
 #endif // !OCCGEOMETRY
 #include <occgeom.hpp>
 #include <meshing.hpp>
-#include <Eigen/Dense>
 namespace nglib {
 #include <nglib.h>
 }
 
-
-/*
-NetGenDemo demo;
-netgen::MeshingParameters& mp = demo.meshParam();
-//mp.maxh = diag;
-mp.grading = 0.1;
-mp.optsteps3d = 0;
-mp.blockfill = false;
-mp.uselocalh = false;
-mp.delaunay = false;
-mp.delaunay2d = false;
-mp.checkoverlap = false;
-mp.checkchartboundary = false;
-mp.checkchartboundary = false;
-nglib::Ng_Init();
-demo.mesh.AddFaceDescriptor(netgen::FaceDescriptor(1, 1, 0, 1));
-demo.fromEigen(egm);
-auto bb = plym->boundingBox();
-double diag = (std::get<0>(bb) - std::get<1>(bb)).length();
-std::cout << diag << std::endl;
-demo.tetralization();
-demo.VisVolumeSep();
-*/
-
+typedef VolumeMesh<double, int> TetMesh;
+typedef XMesh<double, int> TriMesh;
 
 
 using namespace nglib;
@@ -49,16 +26,16 @@ public:
         {0,1,3},
         {1,0,2}
     };
+    TetMesh m_mesh;
 
+
+    netgen::OCCGeometry occgeo;
     netgen::Mesh mesh;
-    std::shared_ptr<netgen::Mesh> out;
     netgen::MeshingParameters& meshParam();
-    void occ2Surface(TopoDS_Shape& shape);
+    void addOCCSolid(TopoDS_Shape& shape);
     void tetralization();
-    void fromEigen(XMesh<double,int>& egm);
-    void toEigen(VolumeMesh<double, int>& egm);
-    void VisVolumeWhole();
-    void VisVolumeSep();
+    void addSurface(XMesh<double,int>& egm,int fmarker=0);
+    void translateOutput();
 };
 
 

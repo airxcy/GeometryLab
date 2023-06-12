@@ -20,9 +20,17 @@ add_subdirectory(${ENGINE_DIR}/polyscope POLYSCOPE)
 
 
 
-
+file(GLOB occdll "${ENGINE_DIR}/OCC/win64/vc14/bin/*.dll")
+add_custom_target(copy_dll ALL
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${occdll}
+        $<CONFIG>/
+    COMMENT "Copying"
+)
 
 file(GLOB IMGUIZMO_SOURCES ${ENGINE_DIR}/ImGuizmo/ImGuizmo.cpp engine/ImGuizmo/ImGuizmo.h)
 add_executable(${PROJECT_NAME}  netgenDemo.cpp ${IMGUIZMO_SOURCES} )
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/src ${ENGINE_DIR} ${EIGEN_DIR} ${ENGINE_DIR}/polyscope) 
 target_link_libraries(${PROJECT_NAME} geometrylab polyscope  ${OPENGL_LIBRARIES})
+add_dependencies(${PROJECT_NAME} copy_dll)
+

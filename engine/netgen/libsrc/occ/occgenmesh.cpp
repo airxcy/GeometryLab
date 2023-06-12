@@ -531,7 +531,7 @@ namespace netgen
 
         // setting elements per edge
         for (int i = 1; i <= nedges && !multithread.terminate; i++)
-          {
+        {
             TopoDS_Edge e = TopoDS::Edge (geom.emap(i));
             int layer = OCCGeometry::GetProperties(e).layer;
             multithread.percent = 100 * (i-1)/double(nedges);
@@ -571,14 +571,14 @@ namespace netgen
             TopTools_ListIteratorOfListOfShape parent_face_list;
 
             for(parent_face_list.Initialize(parent_faces); parent_face_list.More(); parent_face_list.Next())
-              {
+            {
                 TopoDS_Face parent_face = TopoDS::Face(parent_face_list.Value());
 
                 int face_index = geom.fmap.FindIndex(parent_face);
 
                 if(face_index >= 1) localh = min(localh,geom.face_maxh[face_index - 1]);
                 localh = min2(localh, OCCGeometry::GetProperties(parent_face).maxh);
-              }
+            }
 
             Handle(Geom_Curve) c = BRep_Tool::Curve(e, s0, s1);
 
@@ -592,7 +592,7 @@ namespace netgen
                 gp_Pnt pnt = c->Value (s0+double(j)/maxj*(s1-s0));
                 mesh.RestrictLocalH (Point3d(pnt.X(), pnt.Y(), pnt.Z()), localh, layer);
               }
-          }
+        }
 
         multithread.task = "Setting local mesh size (edge curvature)";
 
